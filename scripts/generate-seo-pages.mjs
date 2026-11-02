@@ -176,7 +176,10 @@ export function helpers(records) {
         /** What a table shows in the price column: a price, a licence, or the honest gap. */
         priceCell(slug) {
             const r = rec(slug);
-            if (r.pricing) {
+            if (r.pricing && !r.pricing.tiers.length) {
+                // No tiers: say "Free" only when the record says the whole thing is.
+                if (r.pricing.model === "free") return "Free";
+            } else if (r.pricing) {
                 // A free tier beside paid ones isn't "Free": say both.
                 const paid = r.pricing.tiers.filter((t) => Number(t.price) > 0);
                 if (Number(r.pricing.tiers[0].price) === 0 && paid.length) {
@@ -187,6 +190,8 @@ export function helpers(records) {
             }
             if (r.licence && r.licence.openSource) return `Open source (${r.licence.name})`;
             if (r.trial) return "Free to try; paid plans on its site";
+            // Its own site couldn't be read, so "not listed" would be a guess.
+            if (r.profile.via === "third-party") return "Not confirmed";
             return "Not listed on its site";
         },
         /** A source a weakness written in the page's own words leans on. */
@@ -435,6 +440,11 @@ export function render(pageFn, records, others = []) {
     for (const phrase of BANNED) if (lower.includes(phrase)) throw new Error(`${page.slug}: uses "${phrase}"`);
     if (page.description.length > 160) throw new Error(`${page.slug}: description is ${page.description.length} characters, over 160`);
 
+    // Most facts come from each app's own pages. Say so when some don't.
+    const thirdParty = recordsUsed.filter((r) => r.profile && r.profile.via === "third-party").map((r) => r.name);
+    const sourcesNote = thirdParty.length
+        ? `Every fact about another app on this page comes from the source listed for it, on the date shown. ${thirdParty.join(" and ")}'s own site blocks automated reading, so its facts come from the third-party pages below.`
+        : "Every fact about another app on this page comes from that app's own site, store listing or code, on the date shown.";
     const sourceItems = [...sources.entries()]
         .map(([u, [n, d]]) => `<li>${escapeHtml(n)}: <a href="${escapeHtml(u)}">${escapeHtml(u)}</a> (checked ${longDate(d)})</li>`)
         .join("\n        ");
@@ -468,7 +478,7 @@ export function render(pageFn, records, others = []) {
 
     <section class="sources">
       <h2>Sources</h2>
-      <p>Every fact about another app on this page comes from that app's own site, store listing or code, on the date shown. We make Vibresia, so we've tried to say where each of the others is the better choice. If something here is out of date, <a href="https://github.com/sydlawrencedev/vibresia/issues">tell us</a> and we'll fix it.</p>
+      <p>${sourcesNote} We make Vibresia, so we've tried to say where each of the others is the better choice. If something here is out of date, <a href="https://github.com/sydlawrencedev/vibresia/issues">tell us</a> and we'll fix it.</p>
       <ul>
         ${sourceItems}
       </ul>

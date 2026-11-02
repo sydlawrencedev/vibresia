@@ -24,3 +24,8 @@ Every fact about another app on these pages comes from that app's own site, stor
 - [Does MilkDrop work on Mac?](https://vibresia.com/blog/does-milkdrop-work-on-mac): no; what does instead
 - [Vibresia vs Synesthesia](https://vibresia.com/comparison/vibresia-vs-synesthesia): the free alternative for watching music at home, and when Synesthesia is the better pick
 - [Vibresia vs TouchDesigner](https://vibresia.com/comparison/vibresia-vs-touchdesigner): a finished music visualiser against a build-it-yourself environment
+- [Vibresia vs projectM](https://vibresia.com/comparison/vibresia-vs-projectm): a finished Mac app against the open-source MilkDrop rebuild
+- [Vibresia vs Plane9](https://vibresia.com/comparison/vibresia-vs-plane9): a free Mac alternative to a Windows-only visualiser
+- [Vibresia vs Magic Music Visuals](https://vibresia.com/comparison/vibresia-vs-magic-music-visuals): a finished visualiser against a modular editor for live visuals
+- [Vibresia vs Shadertoy](https://vibresia.com/comparison/vibresia-vs-shadertoy): shaders that react to the music the Mac is playing
+- [All comparisons](https://vibresia.com/comparison): every head-to-head in one list

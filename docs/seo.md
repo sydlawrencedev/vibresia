@@ -6,6 +6,31 @@ Throughout, `{product}` is your product, `{competitor}` is another product in yo
 
 Run it as phases, in order. Each phase has a gate: don't start the next one until the gate passes.
 
+### How an agent runs this
+
+A gate is a check, not a pause. Most gates are things a script or test can pass, and the agent moves on when they pass. Only these need a person:
+
+1. **The truth sheet (1a)**: the owner confirms what the product does and doesn't do.
+2. **The URL plan (1c)**: the owner approves which pages exist.
+3. **The first page of each template**: the owner of brand voice approves the copy once; later pages of that template follow it.
+4. **Anything that publishes or spends**: a production deploy, a post, a purchase, if the agent isn't allowed to do it.
+
+Everything else runs without asking: research, records, validators, generators, tests, browser checks, the changelog, and moving on to the next phase or batch.
+
+**Done means done.** A batch is finished when its pages are built, every check passes, the pages have been looked at in a browser at phone and desktop width, it's committed, and (if the kick-off allows it) merged and pushed. After a deploy, "done" also means the live checks have run: pages, sitemaps, redirects, structured data, analytics arriving. Don't end a turn with a list of what's left when the next item needs no person: do it.
+
+**Git.** Say in the kick-off whether the agent may commit, merge to the main branch and push. If it may, it does all three when the checks pass, without asking for each. If it may not, it asks once per batch ("commit, merge and push?"), not once per step.
+
+**Volume.** Phase 6 says launch in waves of about 50 pages per template. The first wave is every row in the URL plan that has demand evidence and a complete record, up to that number. Don't start with three pages and wait to be asked for more.
+
+**Delegate the parts that don't depend on each other.** Researching one competitor doesn't need another's record, and drafting one page doesn't need another page. Where the agent can run sub-agents:
+
+- **Research (1b)**: one sub-agent per competitor, or per three or four. Each reads primary sources and returns its record, every fact with a source URL and the date checked. The lead agent merges them and runs the validator; a record the validator fails goes back to the sub-agent that wrote it.
+- **Drafting (Phase 2)**: one sub-agent per page or per few pages, each given the truth sheet, the records it may use and the template's page file as an example. The lead agent reads every draft against the records before it builds: a sub-agent's claim is not a source.
+- **Review**: a separate sub-agent checks the built pages for claims the records don't support and for the Phase 5 writing rules, before the batch is called done.
+
+Keep generators, validators, shared files (`competitors.json`, the URL plan, the changelog) and git with the lead agent, so two agents never write the same file.
+
 ### Where the files go
 
 File paths here are relative to the project root. `{data}` is wherever the project keeps structured data its pages are built from: `src/data/` in a Next.js or Astro app, `data/` beside a static site, a worker's own folder if pages are rendered there. Pick it once, before Phase 1, and write it into the product truth sheet so every generator reads from the same place.
@@ -151,10 +176,11 @@ URL: `/compare/{a}-vs-{b}` or a category-scoped path (`/{category}/comparison/{a
 
 ### 2c. `{product}` vs `{competitor}`
 
-URL: `/{product}-vs-{competitor}`. Optional data-backed sub-pages: `/pricing`, `/review`, `/free-trial`, `/alternatives`, rendered only when the data exists.
+URL: `/comparison/{product}-vs-{competitor}`, with a hub at `/comparison` that lists them all. This is also the page for the singular "{competitor} alternative" query: the reader wants one replacement, so show the two products and make the case for yours. (The plural "{competitor} alternatives" with several real options is a 2a list.) No year in the URL; the year goes in the title. Optional data-backed sub-pages: `/pricing`, `/review`, `/free-trial`, `/alternatives`, rendered only when the data exists.
 
 - Only build for competitors with measurable brand search volume. Start with the top 10-20.
-- Honest verdict at a glance, including "pick {competitor} if…".
+- Honest verdict at a glance, including "pick {competitor} if…". Argue for your product, but only where it wins for the reader: a page saying you beat a tool your product doesn't replace is wrong for its readers and a risky comparative claim (Phase 5).
+- Every head-to-head links to the hub and to every other head-to-head, generated, so no new page hangs off one link.
 - Feature table with ✓/✗ only for features verified in Phase 1b.
 - Pricing comparison worked through a realistic example (e.g. what a percentage fee or per-seat price costs a typical customer over a year). A worked number is more persuasive than any adjective.
 - Switching section: what it takes to move, how long, what you lose.
@@ -261,4 +287,4 @@ We hit every one of these. Check them on day one.
 
 ## Kick-off prompt for a new project
 
-> Using `seo.md`: decide `{data}` for this codebase, then run Phase 1 for {product} ({one-line description}, market: {market}). Read the codebase and write `content/product-truth.md` for me to check. Then list the 20 competitors with the most search demand, research each from primary sources into `{data}/competitors.json` with a source and verification date on every fact, and build the validator. Then pull demand data and produce `content/url-plan.csv` for templates 2a-2d. Stop at each gate for my review. Don't generate pages until the plan is approved.
+> Using `seo.md`: decide `{data}` for this codebase, then run Phase 1 for {product} ({one-line description}, market: {market}). Read the codebase and write `content/product-truth.md` for me to check. Then list the 20 competitors with the most search demand, research each from primary sources into `{data}/competitors.json` with a source and verification date on every fact, and build the validator. Then pull demand data and produce `content/url-plan.csv` for templates 2a-2d. Stop for my review at the truth sheet and the URL plan only (see "How an agent runs this"); run everything else through to done. Use sub-agents for competitor research and page drafts. {You may / may not} commit, merge to main and push when every check passes.

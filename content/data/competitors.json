@@ -429,5 +429,56 @@
     "profile": { "sourceUrl": "https://github.com/jberg/butterchurn", "verifiedISO": "2026-11-02" },
     "limits": ["A library and a browser demo: audio comes in as a Web Audio node, from an audio source or the microphone"],
     "licence": { "name": "MIT", "openSource": true, "sourceUrl": "https://github.com/jberg/butterchurn", "verifiedISO": "2026-11-02" }
+  },
+  {
+    "slug": "magic-music-visuals",
+    "name": "Magic Music Visuals",
+    "category": "vj",
+    "audience": "vj_pro",
+    "homepage": "https://magicmusicvisuals.com/",
+    "tagline": "A modular music visualiser and VJ application for Windows and macOS.",
+    "bestFor": "Musicians and VJs who want to build visuals for live performances or music videos in a modular editor.",
+    "platforms": ["macos", "windows"],
+    "strengths": [
+      "A modular interface for manipulating many different types of media",
+      "Nearly every editable parameter can be driven by multi-channel audio or MIDI input",
+      "Made for live visuals at music performances, and for music videos of recorded songs",
+      "Several audio, MIDI and OSC inputs at once, and a full-screen mode for live shows"
+    ],
+    "ourAngle": "Magic is a modular editor you build visuals in, with live-performance inputs. Vibresia is a finished visualiser for the music the Mac is playing, free, where a new scene is one function or a sentence to an AI assistant.",
+    "profile": {
+      "sourceUrl": "https://en.wikipedia.org/wiki/Magic_Music_Visuals",
+      "verifiedISO": "2026-11-02",
+      "via": "third-party",
+      "note": "Third-party sources: the product's own site blocks automated reading with a human check. Strength 4 is from https://www.vintagesynth.com/articles/best-music-visualizers-your-synth-tracks (2021)."
+    },
+    "trial": {
+      "limits": "A free demo for trial purposes; the source doesn't say what it limits.",
+      "sourceUrl": "https://www.vintagesynth.com/articles/best-music-visualizers-your-synth-tracks",
+      "verifiedISO": "2026-11-02"
+    }
+  },
+  {
+    "slug": "shadertoy",
+    "name": "Shadertoy",
+    "category": "creative-coding",
+    "audience": "creative_coder",
+    "homepage": "https://www.shadertoy.com/",
+    "tagline": "An online community and tool for creating and sharing GLSL shaders in the browser, through WebGL.",
+    "bestFor": "Shader programmers who want to write, share and learn from shaders in a browser, on any computer.",
+    "platforms": ["web"],
+    "strengths": [
+      "Runs in a web browser, so it works on any computer with WebGL",
+      "Inputs include microphone, webcam, keyboard, mouse, VR headsets, SoundCloud, video and textures",
+      "Sharing with permanent URLs, embedding in other sites, and private sharing",
+      "A community that comments on and likes each other's shaders"
+    ],
+    "ourAngle": "Shadertoy is the place to write and share shaders in a browser. Vibresia is for shader writers who want their shader to react to the music the Mac is actually playing, full screen, with the audio analysis done for them.",
+    "profile": {
+      "sourceUrl": "https://en.wikipedia.org/wiki/Shadertoy",
+      "verifiedISO": "2026-11-02",
+      "via": "third-party",
+      "note": "Third-party source: shadertoy.com blocks automated reading with a human check."
+    }
   }
 ]

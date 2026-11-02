@@ -19,7 +19,36 @@ Recurring dates:
 - **Eight weeks after launch**: decide which `later` rows in
   `content/url-plan.csv` to build, from impressions.
 
-## 2026-11-02 (not yet deployed): batch 2
+## 2026-11-02 (not yet deployed): batch 3
+
+Four more head-to-heads, chosen by "{competitor} alternative(s)" demand in
+Google autocomplete (2026-11-02), where Vibresia is a real answer for the
+searcher. Author: Syd Lawrence.
+
+| URL | Target query | Title |
+| --- | --- | --- |
+| `/comparison/vibresia-vs-projectm` | projectm alternative | projectM Alternative for Mac (2026): Vibresia vs projectM |
+| `/comparison/vibresia-vs-plane9` | plane9 alternatives | Plane9 Alternative for Mac (2026): Vibresia vs Plane9 |
+| `/comparison/vibresia-vs-magic-music-visuals` | magic music visuals alternative | Magic Music Visuals Alternative (2026): Vibresia vs Magic |
+| `/comparison/vibresia-vs-shadertoy` | shadertoy alternative | Shadertoy Alternative for Music (2026): Vibresia vs Shadertoy |
+
+- Magic Music Visuals and Shadertoy block automated reading with a human
+  check, so their records come from third-party pages (Wikipedia; a 2021
+  VintageSynth article) and are marked `"via": "third-party"`. Their pages
+  say so in the sources section, and the price cell reads "Not confirmed"
+  rather than guessing. Magic's prices (found only in 2020-2021 sources)
+  are left out until someone confirms them on its site.
+- Demand without a head-to-head: Resolume, Winamp, VDMX, NestDrop,
+  Specterr and VideoSync. Their searchers want a VJ tool, a music player or
+  a music-video maker, which Vibresia isn't. Resolume stays a "later"
+  referee list.
+- All six head-to-heads link to each other and to `/comparison`.
+- `docs/seo.md` gained "How an agent runs this": which gates need a person,
+  what done means, git, first-wave volume, and delegating to sub-agents.
+  2c now lives at `/comparison/{product}-vs-{competitor}` and covers the
+  singular "{competitor} alternative" query.
+
+## 2026-11-02 (deployed 2026-11-02): batch 2
 
 Template 2c, head-to-heads at `/comparison/vibresia-vs-{competitor}`. Author:
 Syd Lawrence. These replace the planned "{competitor} alternatives" lists for
@@ -49,7 +78,7 @@ who should pick the other one.
 - Price cells for an app with a free tier beside paid ones now read "Free
   version; paid from ..." instead of "Free" (TouchDesigner on the hub).
 
-## 2026-11-02 (not yet deployed): batch 1
+## 2026-11-02 (deployed 2026-11-02): batch 1
 
 Batch 1 of `content/url-plan.csv`. Template 2a. Author: Syd Lawrence.
 
@@ -81,5 +110,13 @@ Batch 1 of `content/url-plan.csv`. Template 2a. Author: Syd Lawrence.
 - Demand evidence: Google autocomplete on 2026-11-02 (no volume data).
 - Competitor facts checked 2026-11-02, from each app's own pages.
 
-After deploying: fill in the date above, submit both sitemaps in Search
-Console, and note the first impressions here.
+Checked live on 2026-11-02: every page above, the `/comparison` hub and the
+author page return 200 with their own canonical and JSON-LD; the three
+sitemaps and `robots.txt` serve; Googlebot and GPTBot get 200; `/ingest`
+forwards to PostHog (a GET is 405, any other path 404). `.html` URLs and a
+trailing slash redirect to the clean URL with a 307 (Cloudflare's asset
+handling), and the canonical tags name the clean URL.
+
+Still to do: submit `/sitemap.xml`, `/sitemaps/blog.xml` and
+`/sitemaps/comparisons.xml` in Search Console, and note the first
+impressions here.
