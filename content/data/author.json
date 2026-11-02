@@ -1,0 +1,22 @@
+{
+  "_about": "The author of the search pages. The byline, the Person schema and /author/syd-lawrence are all built from this (scripts/generate-seo-pages.mjs). Source: Syd's answers to the playbook's five author questions on 2026-11-02, and his LinkedIn headline. Change it only with his OK.",
+  "slug": "syd-lawrence",
+  "name": "Syd Lawrence",
+  "byline": "a visual artist and developer who makes Vibresia",
+  "jobTitle": "Visual artist and developer; founder of Minith Labs",
+  "description": "Visual artist and developer who makes Vibresia. Over 20 years building software; visual work on 41 number-one albums for artists including Kylie, Calvin Harris, the Rolling Stones and One Direction.",
+  "image": "https://github.com/sydlawrencedev.png",
+  "bio": [
+    "I'm a visual artist and developer, and I make Vibresia, the free Mac app that turns whatever your Mac is playing into visuals, at <a href=\"https://minithlabs.com\">Minith Labs</a>. I write its code, its <a href=\"https://github.com/sydlawrencedev/vibresia\">source is public</a>, and I write the comparison pages on this site.",
+    "I've been building software for over 20 years. My visual work has been part of 41 number-one albums, for artists including Kylie, Calvin Harris, the Rolling Stones and One Direction, and I've worked with Tate Modern. I've built and sold two companies, and I've spoken at Web Summit, SXSW, Amsterdam Dance Event, Google I/O and Facebook's F8.",
+    "The parts of that which matter for these pages: I write shaders and real-time graphics, I've built software that listens to and analyses audio, and I've made and performed music and visuals myself. So when a page here talks about beat detection, GLSL or what a VJ needs on stage, it's from doing it."
+  ],
+  "knowsAbout": ["Music visualisation", "Real-time graphics", "GLSL shaders", "Audio analysis", "VJing", "macOS software"],
+  "sameAs": [
+    "https://github.com/sydlawrencedev",
+    "https://minithlabs.com",
+    "https://www.linkedin.com/in/sydlawrence/",
+    "https://x.com/sydlawrence"
+  ],
+  "worksFor": { "name": "Minith Labs", "url": "https://minithlabs.com" }
+}

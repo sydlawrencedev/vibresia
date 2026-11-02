@@ -19,6 +19,25 @@ Recurring dates:
 - **Eight weeks after launch**: decide which `later` rows in
   `content/url-plan.csv` to build, from impressions.
 
+## 2026-11-02 (not yet deployed): schema, author and reel
+
+- Every indexable page now carries one shared `Organization` (Minith Labs,
+  `https://minithlabs.com/#org`) and `WebSite` node from
+  `content/data/schema.json`, and an `FAQPage` whose questions are visible
+  on the page. New FAQs on the homepage, `/agents`, `/comparison`, the
+  author page and all 18 `/share/{scene}` pages. `scripts/check-schema.mjs`
+  (in `npm test` and the release script) fails any indexable page without
+  them. Noindex pages (privacy, terms, `/vibe`, `/vibescapes`, `/share/`,
+  `/s/{id}`) are skipped.
+- Author: `content/data/author.json`, from Syd's answers to five questions.
+  Byline now "a visual artist and developer who makes Vibresia"; the Person
+  schema gains jobTitle, description, image (GitHub avatar), knowsAbout and
+  LinkedIn and X in sameAs. `/author/syd-lawrence` is now generated, with a
+  bio and a list of every search page.
+- The homepage demo reel (`media/demo-low.mp4`, poster first) is on every
+  search page under the table, loaded only when scrolled near, so it doesn't
+  slow the first paint. Its first play is counted as `demo_played`.
+
 ## 2026-11-02 (deployed 2026-11-02): batch 3
 
 Four more head-to-heads, chosen by "{competitor} alternative(s)" demand in

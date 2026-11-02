@@ -66,6 +66,10 @@
   .sources { color: var(--muted); font-size: 14px; }
   .sources li { overflow-wrap: anywhere; }
   .related { padding-left: 20px; }
+  .reel { margin: 26px 0 0; }
+  .reel video { width: 100%; aspect-ratio: 1280 / 844; border-radius: 14px; border: 1px solid var(--line); background: var(--panel); display: block; }
+  .reel figcaption { color: var(--muted); font-size: 14px; margin-top: 8px; }
+  .avatar { border-radius: 50%; border: 1px solid var(--line); margin: 0 0 18px; display: block; }
   .versus { min-width: 480px; }
   .versus tbody th { font-weight: 500; color: var(--muted); }
   .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
@@ -79,6 +83,28 @@
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "Organization",
+      "@id": "https://minithlabs.com/#org",
+      "name": "Minith Labs",
+      "url": "https://minithlabs.com/",
+      "sameAs": [
+        "https://github.com/sydlawrencedev"
+      ],
+      "founder": {
+        "@id": "https://vibresia.com/author/syd-lawrence#person"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://vibresia.com/#website",
+      "name": "Vibresia",
+      "url": "https://vibresia.com/",
+      "inLanguage": "en-GB",
+      "publisher": {
+        "@id": "https://minithlabs.com/#org"
+      }
+    },
+    {
       "@type": "Article",
       "headline": "Does MilkDrop work on Mac?",
       "description": "MilkDrop is a Winamp plug-in for Windows and doesn't run on macOS. Here's what does: projectM for the presets, or a native Mac visualiser.",
@@ -91,15 +117,32 @@
         "name": "Syd Lawrence",
         "@id": "https://vibresia.com/author/syd-lawrence#person",
         "url": "https://vibresia.com/author/syd-lawrence",
+        "jobTitle": "Visual artist and developer; founder of Minith Labs",
+        "description": "Visual artist and developer who makes Vibresia. Over 20 years building software; visual work on 41 number-one albums for artists including Kylie, Calvin Harris, the Rolling Stones and One Direction.",
+        "image": "https://github.com/sydlawrencedev.png",
+        "knowsAbout": [
+          "Music visualisation",
+          "Real-time graphics",
+          "GLSL shaders",
+          "Audio analysis",
+          "VJing",
+          "macOS software"
+        ],
+        "worksFor": {
+          "@id": "https://minithlabs.com/#org"
+        },
         "sameAs": [
           "https://github.com/sydlawrencedev",
-          "https://minithlabs.com"
+          "https://minithlabs.com",
+          "https://www.linkedin.com/in/sydlawrence/",
+          "https://x.com/sydlawrence"
         ]
       },
       "publisher": {
-        "@type": "Organization",
-        "name": "Minith Labs",
-        "url": "https://minithlabs.com"
+        "@id": "https://minithlabs.com/#org"
+      },
+      "isPartOf": {
+        "@id": "https://vibresia.com/#website"
       },
       "image": "https://vibresia.com/media/share.jpg",
       "inLanguage": "en-GB"
@@ -176,10 +219,26 @@
   <main>
     <p class="eyebrow">MilkDrop on a Mac</p>
     <h1>Does MilkDrop work on Mac?</h1>
-    <p class="byline">By <a href="/author/syd-lawrence">Syd Lawrence</a>, who makes Vibresia. Facts last checked 2 November 2026; updated 2 November 2026.</p>
+    <p class="byline">By <a href="/author/syd-lawrence">Syd Lawrence</a>, a visual artist and developer who makes Vibresia. Facts last checked 2 November 2026; updated 2 November 2026.</p>
     <p class="answer">No. MilkDrop is a visualiser plug-in for Winamp on Windows, and its author's <a href="https://www.geisswerks.com/milkdrop/">page</a> lists Windows 98 through Windows 7 with no Mac version. You can still get its presets on a Mac with <a href="https://github.com/projectM-visualizer/projectm">projectM</a>, an open-source rebuild of MilkDrop, or skip the presets and use a visualiser made for the Mac.</p>
     
     
+    <figure class="reel">
+      <video muted loop playsinline preload="none" poster="/media/poster.jpg" data-src="/media/demo-low.mp4" aria-label="Vibresia playing visuals to music"></video>
+      <figcaption>Vibresia, reacting to whatever the Mac is playing.</figcaption>
+    </figure>
+    <script>
+      (function () {
+        var v = document.querySelector(".reel video");
+        if (!v || !("IntersectionObserver" in window)) return;
+        new IntersectionObserver(function (entries, o) {
+          if (!entries[0].isIntersecting) return;
+          o.disconnect();
+          v.src = v.dataset.src;
+          v.play().catch(function () {});
+        }, { rootMargin: "200px" }).observe(v);
+      })();
+    </script>
     <p class="cta"><a class="button" data-install data-track="download_clicked" data-placement="seo-top" data-template="2a" data-slug="does-milkdrop-work-on-mac" href="/download?src=seo-does-milkdrop-work-on-mac-top">Try Vibresia with what's playing now</a><span>Free, no account, macOS 14.2+ on Apple silicon.</span></p>
     
     <h2>What MilkDrop is</h2>

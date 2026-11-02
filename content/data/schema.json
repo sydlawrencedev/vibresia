@@ -1,0 +1,19 @@
+{
+  "_about": "The structured-data nodes every indexable page carries, word for word. Generators read this; hand-written pages (index.html, agents.html) copy it, and scripts/check-schema.mjs fails a page whose copy differs. See docs/seo.md, Phase 4.",
+  "organization": {
+    "@type": "Organization",
+    "@id": "https://minithlabs.com/#org",
+    "name": "Minith Labs",
+    "url": "https://minithlabs.com/",
+    "sameAs": ["https://github.com/sydlawrencedev"],
+    "founder": { "@id": "https://vibresia.com/author/syd-lawrence#person" }
+  },
+  "website": {
+    "@type": "WebSite",
+    "@id": "https://vibresia.com/#website",
+    "name": "Vibresia",
+    "url": "https://vibresia.com/",
+    "inLanguage": "en-GB",
+    "publisher": { "@id": "https://minithlabs.com/#org" }
+  }
+}

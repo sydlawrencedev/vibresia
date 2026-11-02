@@ -79,6 +79,29 @@ def render(slug: str, title: str, desc: str) -> str:
     og_image = f"https://vibresia.com/share/{slug}.jpg"
     canonical = f"https://vibresia.com/share/{slug}"
 
+    # Every indexable page carries the shared Organization and WebSite nodes
+    # and FAQs it shows on the page (docs/seo.md, Phase 4). The questions
+    # are the same three for every vibescape, about this one by name.
+    faq = [
+        (f"What is {title}?", f"{title} is a vibescape: a live visual in Vibresia that moves with whatever your Mac is playing. {desc}"),
+        (f"How do I play {title}?", f"Install Vibresia on a Mac with Apple silicon and macOS 14.2 or later, then press Open in Vibresia on this page, and the app switches to {title}."),
+        ("Is Vibresia free?", "Yes. Every vibescape and every feature is free, with no account, and the code is open source under the MIT licence."),
+    ]
+    schema = json.loads((ROOT / "content/data/schema.json").read_text())
+    ld = json.dumps({
+        "@context": "https://schema.org",
+        "@graph": [
+            schema["organization"], schema["website"],
+            {"@type": "WebPage", "@id": f"{canonical}#page", "url": canonical, "name": f"{title}, a Vibresia vibescape",
+             "description": desc, "image": og_image, "isPartOf": {"@id": schema["website"]["@id"]},
+             "publisher": {"@id": schema["organization"]["@id"]}},
+            {"@type": "FAQPage", "mainEntity": [
+                {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]},
+        ],
+    }, indent=2, ensure_ascii=False).replace("<", "\\u003c")
+    esc = lambda t: t.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    faq_html = "\n".join(f"    <h3>{esc(q)}</h3>\n    <p>{esc(a)}</p>" for q, a in faq)
+
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -112,6 +135,9 @@ def render(slug: str, title: str, desc: str) -> str:
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;700&display=swap"></noscript>
 <link rel="stylesheet" href="/share/share-page.css">
 <link rel="stylesheet" href="/chrome.css">
+<script type="application/ld+json">
+{ld}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -143,6 +169,11 @@ def render(slug: str, title: str, desc: str) -> str:
   </div>
 
   <p class="share-cta"><small class="say-mac">Press <strong>Open in Vibresia</strong> and the app will switch to {safe_title}. You’ll need Vibresia on your Mac — free, no account.</small><small class="say-phone">Send it to your Mac and open it there, and the app will switch to {safe_title}. You’ll need Vibresia on your Mac — free, no account.</small></p>
+
+  <section class="faq">
+    <h2>Questions people ask</h2>
+{faq_html}
+  </section>
 
   <!-- The four most recently shared vibescapes. Filled in by recent.js from
        the gallery, so that these static pages and the page the Worker

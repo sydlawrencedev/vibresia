@@ -66,6 +66,10 @@
   .sources { color: var(--muted); font-size: 14px; }
   .sources li { overflow-wrap: anywhere; }
   .related { padding-left: 20px; }
+  .reel { margin: 26px 0 0; }
+  .reel video { width: 100%; aspect-ratio: 1280 / 844; border-radius: 14px; border: 1px solid var(--line); background: var(--panel); display: block; }
+  .reel figcaption { color: var(--muted); font-size: 14px; margin-top: 8px; }
+  .avatar { border-radius: 50%; border: 1px solid var(--line); margin: 0 0 18px; display: block; }
   .versus { min-width: 480px; }
   .versus tbody th { font-weight: 500; color: var(--muted); }
   .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
@@ -79,6 +83,28 @@
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "Organization",
+      "@id": "https://minithlabs.com/#org",
+      "name": "Minith Labs",
+      "url": "https://minithlabs.com/",
+      "sameAs": [
+        "https://github.com/sydlawrencedev"
+      ],
+      "founder": {
+        "@id": "https://vibresia.com/author/syd-lawrence#person"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://vibresia.com/#website",
+      "name": "Vibresia",
+      "url": "https://vibresia.com/",
+      "inLanguage": "en-GB",
+      "publisher": {
+        "@id": "https://minithlabs.com/#org"
+      }
+    },
+    {
       "@type": "Article",
       "headline": "Vibresia vs TouchDesigner: the simpler alternative for music visuals on a Mac",
       "description": "If you only want visuals that move to music, TouchDesigner makes you build them. Vibresia is a free Mac visualiser that plays out of the box.",
@@ -91,15 +117,32 @@
         "name": "Syd Lawrence",
         "@id": "https://vibresia.com/author/syd-lawrence#person",
         "url": "https://vibresia.com/author/syd-lawrence",
+        "jobTitle": "Visual artist and developer; founder of Minith Labs",
+        "description": "Visual artist and developer who makes Vibresia. Over 20 years building software; visual work on 41 number-one albums for artists including Kylie, Calvin Harris, the Rolling Stones and One Direction.",
+        "image": "https://github.com/sydlawrencedev.png",
+        "knowsAbout": [
+          "Music visualisation",
+          "Real-time graphics",
+          "GLSL shaders",
+          "Audio analysis",
+          "VJing",
+          "macOS software"
+        ],
+        "worksFor": {
+          "@id": "https://minithlabs.com/#org"
+        },
         "sameAs": [
           "https://github.com/sydlawrencedev",
-          "https://minithlabs.com"
+          "https://minithlabs.com",
+          "https://www.linkedin.com/in/sydlawrence/",
+          "https://x.com/sydlawrence"
         ]
       },
       "publisher": {
-        "@type": "Organization",
-        "name": "Minith Labs",
-        "url": "https://minithlabs.com"
+        "@id": "https://minithlabs.com/#org"
+      },
+      "isPartOf": {
+        "@id": "https://vibresia.com/#website"
       },
       "image": "https://vibresia.com/media/share.jpg",
       "inLanguage": "en-GB"
@@ -243,7 +286,7 @@
   <main>
     <p class="eyebrow">TouchDesigner alternative</p>
     <h1>Vibresia vs TouchDesigner: the simpler alternative for music visuals on a Mac</h1>
-    <p class="byline">By <a href="/author/syd-lawrence">Syd Lawrence</a>, who makes Vibresia. Facts last checked 2 November 2026; updated 2 November 2026.</p>
+    <p class="byline">By <a href="/author/syd-lawrence">Syd Lawrence</a>, a visual artist and developer who makes Vibresia. Facts last checked 2 November 2026; updated 2 November 2026.</p>
     <p class="answer">If what you want from <a href="https://derivative.ca/">TouchDesigner</a> is visuals that move to your music, Vibresia gets you there faster: it's a finished, free Mac visualiser that listens to whatever is playing, and a new scene is one GLSL function or a sentence to an AI assistant. TouchDesigner can build almost anything, a music visualiser included, but you build it. For installations, interactive work or anything beyond music in and picture out, pick TouchDesigner. We make Vibresia, so check our reasons against the sources at the bottom.</p>
     <div class="table-scroll"><table class="versus">
         <thead><tr><th scope="col"></th><th scope="col">Vibresia</th><th scope="col">TouchDesigner</th></tr></thead>
@@ -261,6 +304,22 @@
       <div><h3>Pick Vibresia if</h3><p>you want visuals for the music you're playing, today, without building a project first; you'd like to write scenes as code or by describing them to an AI assistant; and you don't want a resolution cap or a licence to think about.</p></div>
       <div><h3>Pick TouchDesigner if</h3><p>you're building an installation, interactive piece or live show, you need inputs and outputs beyond music and a screen, or you work on Windows. TouchDesigner is a whole environment; Vibresia is one finished app.</p></div>
     </div>
+    <figure class="reel">
+      <video muted loop playsinline preload="none" poster="/media/poster.jpg" data-src="/media/demo-low.mp4" aria-label="Vibresia playing visuals to music"></video>
+      <figcaption>Vibresia, reacting to whatever the Mac is playing.</figcaption>
+    </figure>
+    <script>
+      (function () {
+        var v = document.querySelector(".reel video");
+        if (!v || !("IntersectionObserver" in window)) return;
+        new IntersectionObserver(function (entries, o) {
+          if (!entries[0].isIntersecting) return;
+          o.disconnect();
+          v.src = v.dataset.src;
+          v.play().catch(function () {});
+        }, { rootMargin: "200px" }).observe(v);
+      })();
+    </script>
     <p class="cta"><a class="button" data-install data-track="download_clicked" data-placement="seo-top" data-template="2c" data-slug="vibresia-vs-touchdesigner" href="/download?src=seo-vibresia-vs-touchdesigner-top">Try Vibresia free with what's playing now</a><span>Free, no account, macOS 14.2+ on Apple silicon.</span></p>
     
     <h2>Why Vibresia is the better pick for music visuals</h2>

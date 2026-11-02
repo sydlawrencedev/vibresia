@@ -41,12 +41,51 @@ export const BANNED = [
     "dive into", "dive in", "revolutionise", "revolutionize", "cutting-edge", "next-level", "—",
 ];
 
+// Who writes the pages. The byline, the Person schema and the author page all
+// come from content/data/author.json, which the playbook's author questions
+// fill in (docs/seo.md, Phase 5).
+export const AUTHOR_DATA = JSON.parse(fs.readFileSync(path.join(ROOT, "content/data/author.json"), "utf8"));
+const AUTHOR_PATH = `/author/${AUTHOR_DATA.slug}`;
+
+// The Organization and WebSite nodes every page carries, from one file, so
+// no page describes Minith Labs differently (docs/seo.md, Phase 4).
+export const SCHEMA = JSON.parse(fs.readFileSync(path.join(ROOT, "content/data/schema.json"), "utf8"));
+const ORG_REF = { "@id": SCHEMA.organization["@id"] };
+
+/** A page's JSON-LD: the shared nodes, then the page's own. */
+function graphJson(nodes) {
+    return JSON.stringify({ "@context": "https://schema.org", "@graph": [SCHEMA.organization, SCHEMA.website, ...nodes] }, null, 2)
+        .replace(/</g, "\\u003c");
+}
+
+/** FAQPage from the same questions the page shows, so the two can't differ. */
+function faqNode(faq) {
+    return {
+        "@type": "FAQPage",
+        mainEntity: faq.map((f) => ({
+            "@type": "Question", name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a.replace(/<[^>]+>/g, "") },
+        })),
+    };
+}
+
+function faqHtml(faq) {
+    return `<section class="faq">
+      <h2>Questions people ask</h2>
+      ${faq.map((f) => `<h3>${escapeHtml(f.q)}</h3>\n      <p>${f.a}</p>`).join("\n      ")}
+    </section>`;
+}
 const AUTHOR = {
     "@type": "Person",
-    name: "Syd Lawrence",
-    "@id": "https://vibresia.com/author/syd-lawrence#person",
-    url: "https://vibresia.com/author/syd-lawrence",
-    sameAs: ["https://github.com/sydlawrencedev", "https://minithlabs.com"],
+    name: AUTHOR_DATA.name,
+    "@id": `${ORIGIN}${AUTHOR_PATH}#person`,
+    url: `${ORIGIN}${AUTHOR_PATH}`,
+    jobTitle: AUTHOR_DATA.jobTitle,
+    description: AUTHOR_DATA.description,
+    image: AUTHOR_DATA.image,
+    knowsAbout: AUTHOR_DATA.knowsAbout,
+    worksFor: { "@id": "https://minithlabs.com/#org" },
+    sameAs: AUTHOR_DATA.sameAs,
 };
 
 // Vibresia, shaped like a competitor record so a list can treat it the same
@@ -285,6 +324,30 @@ function verdictHtml(h, page) {
     </div>`;
 }
 
+/**
+ * The homepage's demo reel, so a reader sees Vibresia move before deciding
+ * to download it (Phase 3: let the visitor do something first). It's 2 MB,
+ * so it waits for the reader to scroll near it: the poster is what loads
+ * with the page, and the answer stays the largest thing on first paint.
+ * analytics.js already counts its first play as demo_played.
+ */
+const REEL = `<figure class="reel">
+      <video muted loop playsinline preload="none" poster="/media/poster.jpg" data-src="/media/demo-low.mp4" aria-label="Vibresia playing visuals to music"></video>
+      <figcaption>Vibresia, reacting to whatever the Mac is playing.</figcaption>
+    </figure>
+    <script>
+      (function () {
+        var v = document.querySelector(".reel video");
+        if (!v || !("IntersectionObserver" in window)) return;
+        new IntersectionObserver(function (entries, o) {
+          if (!entries[0].isIntersecting) return;
+          o.disconnect();
+          v.src = v.dataset.src;
+          v.play().catch(function () {});
+        }, { rootMargin: "200px" }).observe(v);
+      })();
+    </script>`;
+
 /** Vibresia, then the comparisons hub for a head-to-head, then the page. */
 function breadcrumbs(page, url) {
     const trail = [{ name: "Vibresia", item: `${ORIGIN}/` }];
@@ -338,7 +401,8 @@ function jsonLd(page, h, url, verifiedISO) {
             datePublished: page.publishedISO,
             dateModified: page.updatedISO,
             author: AUTHOR,
-            publisher: { "@type": "Organization", name: "Minith Labs", url: "https://minithlabs.com" },
+            publisher: ORG_REF,
+            isPartOf: { "@id": SCHEMA.website["@id"] },
             image: `${ORIGIN}/media/share.jpg`,
             inLanguage: "en-GB",
         },
@@ -357,16 +421,9 @@ function jsonLd(page, h, url, verifiedISO) {
         });
     }
     if (page.versus) graph.push(appNode(h, "vibresia"), appNode(h, page.versus));
-    if (page.faq && page.faq.length) {
-        graph.push({
-            "@type": "FAQPage",
-            mainEntity: page.faq.map((f) => ({
-                "@type": "Question", name: f.q,
-                acceptedAnswer: { "@type": "Answer", text: f.a.replace(/<[^>]+>/g, "") },
-            })),
-        });
-    }
-    return JSON.stringify({ "@context": "https://schema.org", "@graph": graph }, null, 2).replace(/</g, "\\u003c");
+    if (!page.faq || !page.faq.length) throw new Error(`${page.slug}: every page needs FAQs (docs/seo.md, Phase 4)`);
+    graph.push(faqNode(page.faq));
+    return graphJson(graph);
 }
 
 const STYLE = `  :root {
@@ -403,6 +460,10 @@ const STYLE = `  :root {
   .sources { color: var(--muted); font-size: 14px; }
   .sources li { overflow-wrap: anywhere; }
   .related { padding-left: 20px; }
+  .reel { margin: 26px 0 0; }
+  .reel video { width: 100%; aspect-ratio: 1280 / 844; border-radius: 14px; border: 1px solid var(--line); background: var(--panel); display: block; }
+  .reel figcaption { color: var(--muted); font-size: 14px; margin-top: 8px; }
+  .avatar { border-radius: 50%; border: 1px solid var(--line); margin: 0 0 18px; display: block; }
   .versus { min-width: 480px; }
   .versus tbody th { font-weight: 500; color: var(--muted); }
   .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
@@ -455,10 +516,11 @@ export function render(pageFn, records, others = []) {
         page, url, source: `content/pages/${page.slug}.mjs`, ldJson: jsonLd(page, h, url, verifiedISO),
         main: `<p class="eyebrow">${escapeHtml(page.eyebrow)}</p>
     <h1>${escapeHtml(page.h1)}</h1>
-    <p class="byline">By <a href="/author/syd-lawrence">Syd Lawrence</a>, who makes Vibresia. Facts last checked ${longDate(verifiedISO)}; updated ${longDate(page.updatedISO)}.</p>
+    <p class="byline">By <a href="${AUTHOR_PATH}">${escapeHtml(AUTHOR_DATA.name)}</a>, ${escapeHtml(AUTHOR_DATA.byline)}. Facts last checked ${longDate(verifiedISO)}; updated ${longDate(page.updatedISO)}.</p>
     <p class="answer">${page.answer}</p>
     ${table}
     ${verdict}
+    ${REEL}
     ${cta(page, "top", page.cta)}
     ${page.entries ? `<h2>${escapeHtml(page.entriesHeading)}</h2>\n    ${entries}` : ""}
     ${sections}
@@ -501,7 +563,7 @@ function shell({ page, url, source, ldJson, main }) {
 <link rel="canonical" href="${url}">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="theme-color" content="#06010d">
-<meta property="og:type" content="${page.publishedISO ? "article" : "website"}">
+<meta property="og:type" content="${page.ogType || (page.publishedISO ? "article" : "website")}">
 <meta property="og:site_name" content="Vibresia">
 <meta property="og:url" content="${url}">
 <meta property="og:title" content="${title}">
@@ -549,6 +611,21 @@ ${partial("footer.html")}
 `;
 }
 
+const HUB_FAQ = [
+    {
+        q: "Which comparison should I read?",
+        a: `Start with the app you use now, or the one you were about to try. If you'd rather see every option for the Mac in one list, read <a href="/blog/best-music-visualizer-for-mac-2026">the best music visualizers for Mac</a>.`,
+    },
+    {
+        q: "Are these comparisons fair if you make Vibresia?",
+        a: "We have a reason to favour Vibresia, so every page says who the other app is better for, and every fact about the other app comes from a named source with the date it was checked.",
+    },
+    {
+        q: "Is Vibresia free?",
+        a: "Yes. Every feature is free, with no account and no trial, and the code is open source under the MIT licence. It needs macOS 14.2 or later on Apple silicon.",
+    },
+];
+
 /**
  * The comparisons hub: one entry per head-to-head, in the words each page
  * already uses to describe itself, so the hub can't say something the page
@@ -566,7 +643,8 @@ export function renderHub(comparisons, records) {
     const graph = [
         {
             "@type": "CollectionPage", name: HUB.title, description: HUB.description, url, inLanguage: "en-GB",
-            publisher: { "@type": "Organization", name: "Minith Labs", url: "https://minithlabs.com" },
+            publisher: ORG_REF,
+            isPartOf: { "@id": SCHEMA.website["@id"] },
         },
         {
             "@type": "BreadcrumbList",
@@ -582,12 +660,60 @@ export function renderHub(comparisons, records) {
     ];
     return shell({
         page, url, source: "the head-to-head pages in content/pages/",
-        ldJson: JSON.stringify({ "@context": "https://schema.org", "@graph": graph }, null, 2).replace(/</g, "\\u003c"),
+        ldJson: graphJson([...graph, faqNode(HUB_FAQ)]),
         main: `<p class="eyebrow">Comparisons</p>
     <h1>Vibresia, compared</h1>
     <p class="answer">Each page here puts Vibresia next to one other app: what each costs, what each is good at, and who should pick which. We make Vibresia, so every page also says when the other app is the better choice, and every fact about the other app comes from its own site.</p>
     <p>Vibresia is a free Mac app that turns whatever the Mac is playing into visuals. If you'd rather see every option for the Mac in one list, read <a href="/blog/best-music-visualizer-for-mac-2026">the best music visualizers for Mac</a>.</p>
-    ${entries.join("\n    ")}`,
+    ${entries.join("\n    ")}
+
+    ${faqHtml(HUB_FAQ)}`,
+    });
+}
+
+/**
+ * The author page: who writes the search pages, how they're researched, and
+ * every page they've written, so the list can't fall behind the site.
+ */
+export function renderAuthor(pages) {
+    const url = `${ORIGIN}${AUTHOR_PATH}`;
+    const page = {
+        title: `${AUTHOR_DATA.name}, who makes Vibresia`,
+        description: `${AUTHOR_DATA.name} is ${AUTHOR_DATA.byline}, and writes its comparison pages. About ${AUTHOR_DATA.name.split(" ")[0]}, how the pages are researched, and how to report a mistake.`,
+        template: "author", slug: AUTHOR_DATA.slug, ogType: "profile",
+    };
+    const faq = [
+        { q: "Who writes the comparison pages?", a: `${escapeHtml(AUTHOR_DATA.name)}, ${escapeHtml(AUTHOR_DATA.byline)}.` },
+        { q: "Where do the facts about other apps come from?", a: "From each app's own website, store listing, documentation or code, stored with the page and the date it was checked. When an app's site can't be read, from named third-party pages, and the page says so." },
+        { q: "How do I report a mistake?", a: `<a href="https://github.com/sydlawrencedev/vibresia/issues">Open an issue</a> on GitHub with the page and what's wrong, and it'll be fixed.` },
+    ];
+    const list = [...pages.filter((p) => !p.versus), ...pages.filter((p) => p.versus)]
+        .map((p) => `<li><a href="${pathOf(p)}">${escapeHtml(p.versus ? p.breadcrumb : p.h1)}</a></li>`);
+    list.push(`<li><a href="${HUB.path}">${escapeHtml(HUB.linkText)}</a></li>`);
+    const links = AUTHOR_DATA.sameAs.map((u) => `<a href="${escapeHtml(u)}">${escapeHtml(new URL(u).hostname.replace(/^www\./, ""))}</a>`);
+    return shell({
+        page, url, source: "content/data/author.json",
+        ldJson: graphJson([{ "@type": "ProfilePage", url, mainEntity: AUTHOR, isPartOf: { "@id": SCHEMA.website["@id"] } }, faqNode(faq)]),
+        main: `<p class="eyebrow">Author</p>
+    <h1>${escapeHtml(AUTHOR_DATA.name)}</h1>
+    <img class="avatar" src="${escapeHtml(AUTHOR_DATA.image)}" alt="${escapeHtml(AUTHOR_DATA.name)}" width="120" height="120">
+    ${AUTHOR_DATA.bio.map((b) => `<p>${b}</p>`).join("\n    ")}
+    <p>Elsewhere: ${links.join(" · ")}</p>
+
+    <h2>How the comparison pages are written</h2>
+    <p>Every fact about another app, its price, what it runs on, what it does well and where it falls short, comes from that app's own website, store listing, documentation or code. Each one is stored with the page it came from and the day it was checked, and the site won't build if a fact is missing its source or is more than a year old. When an app's own site can't be read, the facts come from named third-party pages, and the page says so.</p>
+    <p>Where I haven't used an app myself, the page says so and describes what its maker says it does. Prices are shown in the currency the maker uses, and left out when they can't be confirmed.</p>
+    <p>Vibresia is my app, so I have a reason to favour it. Each page says who the other apps are better for, and a list puts the better pick first when Vibresia isn't it.</p>
+
+    <h2>Something wrong?</h2>
+    <p>If a price has changed or a page gets something wrong, <a href="https://github.com/sydlawrencedev/vibresia/issues">open an issue</a> and I'll fix it.</p>
+
+    <h2>Pages</h2>
+    <ul class="related">
+        ${list.join("\n        ")}
+    </ul>
+
+    ${faqHtml(faq)}`,
     });
 }
 
@@ -629,6 +755,7 @@ async function main() {
     const pages = await loadPages(records);
     const all = pages.map((p) => p.page);
     const outputs = new Map(pages.map(({ fn, page }) => [path.join(ROOT, "site", `${pathOf(page)}.html`), render(fn, records, all)]));
+    outputs.set(path.join(ROOT, `site${AUTHOR_PATH}.html`), renderAuthor(all));
     const comparisons = all.filter((p) => p.versus);
     if (comparisons.length) outputs.set(path.join(ROOT, HUB.file), renderHub(comparisons, records));
     for (const [section, { sitemap: file }] of Object.entries(SECTIONS)) {

@@ -96,6 +96,17 @@ test("no page in a sitemap is an orphan, and no internal link is broken", () => 
     assert.deepEqual(broken, [], "internal links to pages that don't exist");
 });
 
+test("every indexable page has the shared Organization node and FAQs it shows", async () => {
+    const { check, checkPage, SCHEMA } = await import("./check-schema.mjs");
+    assert.deepEqual(check(), []);
+    const ld = (nodes) => `<script type="application/ld+json">${JSON.stringify({ "@graph": nodes })}</script>`;
+    const faq = { "@type": "FAQPage", mainEntity: [{ "@type": "Question", name: "Is it free?" }] };
+    assert.deepEqual(checkPage(ld([SCHEMA.organization, SCHEMA.website, faq]) + "<h3>Is it free?</h3>"), []);
+    assert.match(checkPage(ld([SCHEMA.organization, SCHEMA.website, faq])).join(), /isn't on the page/);
+    assert.match(checkPage(ld([{ ...SCHEMA.organization, name: "Someone else" }, SCHEMA.website, faq]) + "Is it free?").join(), /differs/);
+    assert.throws(() => render(page({ faq: [] }), records), /every page needs FAQs/);
+});
+
 test("the orphan check does catch an orphan", () => {
     const pages = new Map([["/", '<a href="/a">a</a>'], ["/a", ""], ["/b", '<a href="/">home</a>']]);
     const { reached, broken } = crawl(pages);

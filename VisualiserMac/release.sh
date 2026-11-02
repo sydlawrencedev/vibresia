@@ -35,6 +35,9 @@ node ../scripts/generate-seo-pages.mjs --check
 # No orphans: every page in a sitemap is reachable by links from the
 # homepage, and no internal link leads nowhere (docs/seo.md, Phase 4).
 node ../scripts/check-links.mjs
+# Every indexable page has the shared Organization and WebSite nodes and
+# FAQs that are on the page (docs/seo.md, Phase 4).
+node ../scripts/check-schema.mjs
 ../scripts/check-posthog.sh
 ../scripts/check-no-webhook-leak.sh
 # The share page embeds a copy of the app's shaders, because a browser can't

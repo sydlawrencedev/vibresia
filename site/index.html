@@ -44,6 +44,28 @@
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "Organization",
+      "@id": "https://minithlabs.com/#org",
+      "name": "Minith Labs",
+      "url": "https://minithlabs.com/",
+      "sameAs": [
+        "https://github.com/sydlawrencedev"
+      ],
+      "founder": {
+        "@id": "https://vibresia.com/author/syd-lawrence#person"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://vibresia.com/#website",
+      "name": "Vibresia",
+      "url": "https://vibresia.com/",
+      "inLanguage": "en-GB",
+      "publisher": {
+        "@id": "https://minithlabs.com/#org"
+      }
+    },
+    {
       "@type": "SoftwareApplication",
       "@id": "https://vibresia.com/#app",
       "name": "Vibresia",
@@ -72,14 +94,65 @@
         "Auto-detects the genre of what is playing and stages the band to match",
         "Free, no account, and it updates itself"
       ],
-      "author": { "@id": "https://minithlabs.com/#org" },
-      "publisher": { "@id": "https://minithlabs.com/#org" }
+      "author": {
+        "@id": "https://minithlabs.com/#org"
+      },
+      "publisher": {
+        "@id": "https://minithlabs.com/#org"
+      }
     },
     {
-      "@type": "Organization",
-      "@id": "https://minithlabs.com/#org",
-      "name": "Minith Labs",
-      "url": "https://minithlabs.com/"
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is Vibresia free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Every feature is free, with no trial, no ads and no account. The source is on GitHub under the MIT licence."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which Macs does it run on?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Macs with Apple silicon, on macOS 14.2 or later. There's no Intel, Windows, Linux, iPhone or Android version."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it work with Spotify?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Vibresia listens to the Mac's system audio, so it reacts to Spotify, Apple Music, a browser or a film, with no plug-in. It can use the microphone instead."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it upload my music?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Audio is analysed on your Mac and never uploaded or stored. When your music app says what's playing, the title and artist are looked up in Apple's public catalogue to work out the genre."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I make my own vibescapes?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. A vibescape is one GLSL function, and the app compiles it and explains errors before it saves. You can also describe one to an AI assistant and have it written for you."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it play MilkDrop presets?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Vibresia has its own vibescapes. To play MilkDrop presets on a Mac, use projectM; see Vibresia vs projectM."
+          }
+        }
+      ]
     }
   ]
 }
@@ -359,6 +432,18 @@
       <div class="fact"><h3>Every update is included</h3><p>Check for updates from the app and install in one click. Every vibescape you have now keeps working, and every one added later comes with the same download.</p></div>
       <div class="fact"><h3>Your audio stays on your Mac</h3><p>Audio never leaves your Mac. The title and artist of a track, when your music app says what it is playing, are looked up in Apple's public catalogue to work out the band's genre. Usage stats are anonymous, and you can switch them off in the app.</p></div>
       <div class="fact"><h3>Yours to keep and to pass on</h3><p>Redistribute it to anyone. The source is on GitHub under the MIT licence, so read it, fork it or send a patch. New vibescapes are welcome, and most are a single shader.</p></div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <h2>Questions people ask</h2>
+    <div class="shareware">
+      <div class="fact"><h3>Is Vibresia free?</h3><p>Yes. Every feature is free, with no trial, no ads and no account. The source is on GitHub under the MIT licence.</p></div>
+      <div class="fact"><h3>Which Macs does it run on?</h3><p>Macs with Apple silicon, on macOS 14.2 or later. There's no Intel, Windows, Linux, iPhone or Android version.</p></div>
+      <div class="fact"><h3>Does it work with Spotify?</h3><p>Yes. Vibresia listens to the Mac's system audio, so it reacts to Spotify, Apple Music, a browser or a film, with no plug-in. It can use the microphone instead.</p></div>
+      <div class="fact"><h3>Does it upload my music?</h3><p>No. Audio is analysed on your Mac and never uploaded or stored. When your music app says what's playing, the title and artist are looked up in Apple's public catalogue to work out the genre.</p></div>
+      <div class="fact"><h3>Can I make my own vibescapes?</h3><p>Yes. A vibescape is one GLSL function, and the app compiles it and explains errors before it saves. You can also describe one to an AI assistant and have it written for you.</p></div>
+      <div class="fact"><h3>Does it play MilkDrop presets?</h3><p>No. Vibresia has its own vibescapes. To play MilkDrop presets on a Mac, use projectM; see <a href="/comparison/vibresia-vs-projectm">Vibresia vs projectM</a>.</p></div>
     </div>
   </section>
 

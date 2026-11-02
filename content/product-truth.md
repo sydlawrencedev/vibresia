@@ -14,6 +14,9 @@ don't write around it. Checked against the code and site on 2026-11-02.
 - Generators live in `scripts/` and write HTML into `site/`.
 - The URL plan is `content/url-plan.csv`; the SEO changelog is
   `SEO_CHANGELOG.md` at the repo root.
+- The author of the search pages, with credentials and profiles, is
+  `content/data/author.json`. The byline, Person schema and author page are
+  built from it.
 
 ## What it is
 

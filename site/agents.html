@@ -81,6 +81,87 @@
 
 </style>
 <link rel="stylesheet" href="/chrome.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://minithlabs.com/#org",
+      "name": "Minith Labs",
+      "url": "https://minithlabs.com/",
+      "sameAs": [
+        "https://github.com/sydlawrencedev"
+      ],
+      "founder": {
+        "@id": "https://vibresia.com/author/syd-lawrence#person"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://vibresia.com/#website",
+      "name": "Vibresia",
+      "url": "https://vibresia.com/",
+      "inLanguage": "en-GB",
+      "publisher": {
+        "@id": "https://minithlabs.com/#org"
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://vibresia.com/agents#page",
+      "url": "https://vibresia.com/agents",
+      "name": "Vibe with your AI",
+      "isPartOf": {
+        "@id": "https://vibresia.com/#website"
+      },
+      "publisher": {
+        "@id": "https://minithlabs.com/#org"
+      },
+      "about": {
+        "@id": "https://vibresia.com/#app"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Which AI assistants work with Vibresia?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Any that speak MCP. This page has setup for Claude Code, Claude Desktop, Cursor, Windsurf, Zed, VS Code, Continue, Aider and Gemini CLI, and the web server at vibresia.com/mcp works as a custom connector in browser-based assistants."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What's the difference between the local and web servers?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The local one runs inside the app on your Mac: it can compile a vibescape, draw a preview and hear the music playing. The web one needs nothing installed and returns a link that plays in any browser, but it can't draw, check that a shader compiles, or hear your Mac."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need to know GLSL?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Describe what you want and the agent writes the shader. If you'd rather write it yourself, a vibescape is one GLSL function, and the app shows you the picture before you keep it."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is it free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Vibresia and both servers are free, with no account."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -248,6 +329,15 @@ mcp-server-config:
 
     <h2>Without an agent</h2>
     <p>Prefer to write it yourself? In the app, <b>View All → + Custom Vibescape</b> takes the same route: paste the code, press <b>Test</b>, and you'll see the picture before you keep it.</p>
+    <h2>Questions people ask</h2>
+    <h3>Which AI assistants work with Vibresia?</h3>
+    <p>Any that speak MCP. This page has setup for Claude Code, Claude Desktop, Cursor, Windsurf, Zed, VS Code, Continue, Aider and Gemini CLI, and the web server at vibresia.com/mcp works as a custom connector in browser-based assistants.</p>
+    <h3>What's the difference between the local and web servers?</h3>
+    <p>The local one runs inside the app on your Mac: it can compile a vibescape, draw a preview and hear the music playing. The web one needs nothing installed and returns a link that plays in any browser, but it can't draw, check that a shader compiles, or hear your Mac.</p>
+    <h3>Do I need to know GLSL?</h3>
+    <p>No. Describe what you want and the agent writes the shader. If you'd rather write it yourself, a vibescape is one GLSL function, and the app shows you the picture before you keep it.</p>
+    <h3>Is it free?</h3>
+    <p>Yes. Vibresia and both servers are free, with no account.</p>
   </main>
 
   <!-- chrome:footer -->

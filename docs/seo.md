@@ -40,6 +40,8 @@ File paths here are relative to the project root. `{data}` is wherever the proje
 | File | Purpose |
 |---|---|
 | `content/product-truth.md` | What the product does and doesn't do (Phase 1a) |
+| `{data}/author.json` | Who writes the pages: byline, credentials, profiles (Phase 5) |
+| `{data}/schema.json` | The Organization and WebSite nodes every page carries (Phase 4) |
 | `{data}/competitors.json` | One sourced record per competitor (Phase 1b) |
 | `{data}/competitor-pairs.json` | Third-party pairs worth a page (Phase 2b) |
 | `competitor-profiles/raw/{slug}/` | Screenshots and notes from signing up (Phase 1b) |
@@ -252,6 +254,7 @@ We hit every one of these. Check them on day one.
 - [ ] **Middleware actually runs in production.** Verify headers and redirects on the deployed site, not in dev.
 - [ ] **Sitemap index** split by template (`/sitemaps/comparisons.xml`, `/sitemaps/questions.xml`), with real `lastmod`. Submit each to Search Console so indexing can be tracked per template.
 - [ ] **Schema per template**: `Article` + `Person` author (with credentials, `sameAs`), `FAQPage`, `ItemList` for best-of lists, `BreadcrumbList` everywhere, `SoftwareApplication`/`Product` with sourced offers for comparisons.
+- [ ] **FAQs and Organization on every indexable page**, not just the search pages: the homepage, docs pages, hubs, author pages, generated pages. One `Organization` (and `WebSite`) node, defined once in `{data}/schema.json` and copied word for word everywhere, with every other node pointing at it by `@id` (`publisher`, `worksFor`). Every `FAQPage` question is visible on the page. A check fails any indexable page that's missing either, or whose Organization node differs; noindex pages are skipped.
 - [ ] **Internal linking**: hubs ↔ spokes, every competitor page ↔ its pairs and alternatives post, a related-links block on every template. No orphan pages.
 - [ ] **One URL per intent.** Before generating, check no two URLs target the same query. Run a cannibalisation check on Search Console monthly (one query, several ranking pages).
 - [ ] **`llms.txt` and AI crawler access** (GPTBot, ClaudeBot, PerplexityBot allowed in robots.txt) so comparison tables and stats get cited.
@@ -266,6 +269,7 @@ We hit every one of these. Check them on day one.
 - Run every page through an AI-writing audit (no "In today's fast-paced world", no "delve", no em-dash cascades, no empty superlatives).
 - Minimum original content: 600 words for comparison and best-of pages, 300 for spokes **plus** a computed element. A page under the bar doesn't publish; it waits or merges into its parent.
 - E-E-A-T: a real named author with credentials relevant to the topic, an author page, and first-hand evidence ("we signed up for the free trial on {date}; here's what we saw").
+- Get the author's credentials by asking them five questions (role, years of experience, what makes them credible on this topic, public profiles, photo). Store the answers once, in `{data}/author.json`, and build the byline, the `Person` schema and the author page from it, so they can't disagree. The author page lists every page the author wrote, generated.
 - Dates, currency and spelling in the target market's format.
 - Legal: comparative claims must be factual and verifiable (UK CAP code, US FTC and EU rules on comparative advertising all apply). Don't use competitor logos without permission; trademarked names in text are fine for comparison.
 

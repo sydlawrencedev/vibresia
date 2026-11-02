@@ -66,6 +66,10 @@
   .sources { color: var(--muted); font-size: 14px; }
   .sources li { overflow-wrap: anywhere; }
   .related { padding-left: 20px; }
+  .reel { margin: 26px 0 0; }
+  .reel video { width: 100%; aspect-ratio: 1280 / 844; border-radius: 14px; border: 1px solid var(--line); background: var(--panel); display: block; }
+  .reel figcaption { color: var(--muted); font-size: 14px; margin-top: 8px; }
+  .avatar { border-radius: 50%; border: 1px solid var(--line); margin: 0 0 18px; display: block; }
   .versus { min-width: 480px; }
   .versus tbody th { font-weight: 500; color: var(--muted); }
   .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
@@ -79,6 +83,28 @@
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "Organization",
+      "@id": "https://minithlabs.com/#org",
+      "name": "Minith Labs",
+      "url": "https://minithlabs.com/",
+      "sameAs": [
+        "https://github.com/sydlawrencedev"
+      ],
+      "founder": {
+        "@id": "https://vibresia.com/author/syd-lawrence#person"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://vibresia.com/#website",
+      "name": "Vibresia",
+      "url": "https://vibresia.com/",
+      "inLanguage": "en-GB",
+      "publisher": {
+        "@id": "https://minithlabs.com/#org"
+      }
+    },
+    {
       "@type": "Article",
       "headline": "Vibresia vs Plane9: the free alternative for a Mac",
       "description": "Plane9 is a free 3D visualiser for Windows only. On a Mac, Vibresia is the free alternative that reacts to whatever is playing. Here's how they compare.",
@@ -91,15 +117,32 @@
         "name": "Syd Lawrence",
         "@id": "https://vibresia.com/author/syd-lawrence#person",
         "url": "https://vibresia.com/author/syd-lawrence",
+        "jobTitle": "Visual artist and developer; founder of Minith Labs",
+        "description": "Visual artist and developer who makes Vibresia. Over 20 years building software; visual work on 41 number-one albums for artists including Kylie, Calvin Harris, the Rolling Stones and One Direction.",
+        "image": "https://github.com/sydlawrencedev.png",
+        "knowsAbout": [
+          "Music visualisation",
+          "Real-time graphics",
+          "GLSL shaders",
+          "Audio analysis",
+          "VJing",
+          "macOS software"
+        ],
+        "worksFor": {
+          "@id": "https://minithlabs.com/#org"
+        },
         "sameAs": [
           "https://github.com/sydlawrencedev",
-          "https://minithlabs.com"
+          "https://minithlabs.com",
+          "https://www.linkedin.com/in/sydlawrence/",
+          "https://x.com/sydlawrence"
         ]
       },
       "publisher": {
-        "@type": "Organization",
-        "name": "Minith Labs",
-        "url": "https://minithlabs.com"
+        "@id": "https://minithlabs.com/#org"
+      },
+      "isPartOf": {
+        "@id": "https://vibresia.com/#website"
       },
       "image": "https://vibresia.com/media/share.jpg",
       "inLanguage": "en-GB"
@@ -214,7 +257,7 @@
   <main>
     <p class="eyebrow">Plane9 alternative</p>
     <h1>Vibresia vs Plane9: the free alternative for a Mac</h1>
-    <p class="byline">By <a href="/author/syd-lawrence">Syd Lawrence</a>, who makes Vibresia. Facts last checked 2 November 2026; updated 2 November 2026.</p>
+    <p class="byline">By <a href="/author/syd-lawrence">Syd Lawrence</a>, a visual artist and developer who makes Vibresia. Facts last checked 2 November 2026; updated 2 November 2026.</p>
     <p class="answer"><a href="https://www.plane9.com/">Plane9</a> doesn't run on a Mac: its download page lists Windows only. If you're on a Mac and want what Plane9 gives Windows users, free visuals that move with the music, Vibresia is the alternative: it's free, it listens to whatever the Mac is playing, and you can write new scenes or have an AI assistant write them. On Windows, Plane9 is still the pick, with far more scenes and VR support. We make Vibresia, so check our reasons against the sources at the bottom.</p>
     <div class="table-scroll"><table class="versus">
         <thead><tr><th scope="col"></th><th scope="col">Vibresia</th><th scope="col">Plane9</th></tr></thead>
@@ -232,6 +275,22 @@
       <div><h3>Pick Vibresia if</h3><p>you're on a Mac with Apple silicon and want free visuals for Spotify, Apple Music, a browser or a film, and you'd like to write new scenes as code or by describing them to an AI assistant.</p></div>
       <div><h3>Pick Plane9 if</h3><p>you're on Windows and want a free 3D visualiser or screensaver with hundreds of scenes, or you want to watch in an Oculus Rift or HTC Vive. Vibresia doesn't run on Windows and has no VR mode.</p></div>
     </div>
+    <figure class="reel">
+      <video muted loop playsinline preload="none" poster="/media/poster.jpg" data-src="/media/demo-low.mp4" aria-label="Vibresia playing visuals to music"></video>
+      <figcaption>Vibresia, reacting to whatever the Mac is playing.</figcaption>
+    </figure>
+    <script>
+      (function () {
+        var v = document.querySelector(".reel video");
+        if (!v || !("IntersectionObserver" in window)) return;
+        new IntersectionObserver(function (entries, o) {
+          if (!entries[0].isIntersecting) return;
+          o.disconnect();
+          v.src = v.dataset.src;
+          v.play().catch(function () {});
+        }, { rootMargin: "200px" }).observe(v);
+      })();
+    </script>
     <p class="cta"><a class="button" data-install data-track="download_clicked" data-placement="seo-top" data-template="2c" data-slug="vibresia-vs-plane9" href="/download?src=seo-vibresia-vs-plane9-top">Try Vibresia free with what's playing now</a><span>Free, no account, macOS 14.2+ on Apple silicon.</span></p>
     
     <h2>Why Vibresia is the pick on a Mac</h2>

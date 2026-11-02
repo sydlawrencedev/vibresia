@@ -64,6 +64,10 @@
   .sources { color: var(--muted); font-size: 14px; }
   .sources li { overflow-wrap: anywhere; }
   .related { padding-left: 20px; }
+  .reel { margin: 26px 0 0; }
+  .reel video { width: 100%; aspect-ratio: 1280 / 844; border-radius: 14px; border: 1px solid var(--line); background: var(--panel); display: block; }
+  .reel figcaption { color: var(--muted); font-size: 14px; margin-top: 8px; }
+  .avatar { border-radius: 50%; border: 1px solid var(--line); margin: 0 0 18px; display: block; }
   .versus { min-width: 480px; }
   .versus tbody th { font-weight: 500; color: var(--muted); }
   .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
@@ -77,15 +81,38 @@
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "Organization",
+      "@id": "https://minithlabs.com/#org",
+      "name": "Minith Labs",
+      "url": "https://minithlabs.com/",
+      "sameAs": [
+        "https://github.com/sydlawrencedev"
+      ],
+      "founder": {
+        "@id": "https://vibresia.com/author/syd-lawrence#person"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://vibresia.com/#website",
+      "name": "Vibresia",
+      "url": "https://vibresia.com/",
+      "inLanguage": "en-GB",
+      "publisher": {
+        "@id": "https://minithlabs.com/#org"
+      }
+    },
+    {
       "@type": "CollectionPage",
       "name": "Vibresia Compared: Head-to-Heads With Other Visualisers",
       "description": "Vibresia side by side with other music visualisers and visual tools: what each costs, what each does well, and who should pick which.",
       "url": "https://vibresia.com/comparison",
       "inLanguage": "en-GB",
       "publisher": {
-        "@type": "Organization",
-        "name": "Minith Labs",
-        "url": "https://minithlabs.com"
+        "@id": "https://minithlabs.com/#org"
+      },
+      "isPartOf": {
+        "@id": "https://vibresia.com/#website"
       }
     },
     {
@@ -144,6 +171,35 @@
           "position": 6,
           "name": "Vibresia vs TouchDesigner",
           "url": "https://vibresia.com/comparison/vibresia-vs-touchdesigner"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Which comparison should I read?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Start with the app you use now, or the one you were about to try. If you'd rather see every option for the Mac in one list, read the best music visualizers for Mac."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Are these comparisons fair if you make Vibresia?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We have a reason to favour Vibresia, so every page says who the other app is better for, and every fact about the other app comes from a named source with the date it was checked."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Vibresia free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Every feature is free, with no account and no trial, and the code is open source under the MIT licence. It needs macOS 14.2 or later on Apple silicon."
+          }
         }
       ]
     }
@@ -205,6 +261,16 @@
       <p class="meta">Free version; paid from US$300 · Windows, Mac</p>
       <p>If you only want visuals that move to music, TouchDesigner makes you build them. Vibresia is a free Mac visualiser that plays out of the box.</p>
     </article>
+
+    <section class="faq">
+      <h2>Questions people ask</h2>
+      <h3>Which comparison should I read?</h3>
+      <p>Start with the app you use now, or the one you were about to try. If you'd rather see every option for the Mac in one list, read <a href="/blog/best-music-visualizer-for-mac-2026">the best music visualizers for Mac</a>.</p>
+      <h3>Are these comparisons fair if you make Vibresia?</h3>
+      <p>We have a reason to favour Vibresia, so every page says who the other app is better for, and every fact about the other app comes from a named source with the date it was checked.</p>
+      <h3>Is Vibresia free?</h3>
+      <p>Yes. Every feature is free, with no account and no trial, and the code is open source under the MIT licence. It needs macOS 14.2 or later on Apple silicon.</p>
+    </section>
   </main>
 
   <!-- chrome:footer -->
