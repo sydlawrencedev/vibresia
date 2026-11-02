@@ -19,7 +19,7 @@ directory asks for it. Two servers:
 | Glama (source) | local | glama.ai, Add Server, Runs from source | Submitted for review 2026-11-02. Glama will ask for a Dockerfile, which a macOS app can't provide |
 | awesome-mcp-servers (punkpeye) | local | PR, with the Glama badge | After Glama |
 | Smithery | — | — | Closed to submissions: since 2026-10-31 it is a curated, read-only directory run by Arcade, with no accounts |
-| mcp.so | both | mcp.so/submit (free, reviewed) | To do |
+| mcp.so | remote | Free review request as a GitHub issue (the site's form only offers the $39 option) | [chatmcp/mcpso#6615](https://github.com/chatmcp/mcpso/issues/6615) |
 | mcpservers.org | both | mcpservers.org/submit (free, reviewed) | To do: asks for a contact email |
 | Cursor directory | both | cursor.directory | To do |
 
