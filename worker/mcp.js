@@ -55,7 +55,9 @@ function tool(name, title, description, schema, { readOnly = true, destructive =
         title,
         description,
         inputSchema: schema,
-        annotations: { readOnlyHint: readOnly, destructiveHint: destructive, openWorldHint: openWorld },
+        // The title again, inside the annotations: the Claude directory reads it
+        // from here, older clients from the top level.
+        annotations: { title, readOnlyHint: readOnly, destructiveHint: destructive, openWorldHint: openWorld },
     };
 }
 
