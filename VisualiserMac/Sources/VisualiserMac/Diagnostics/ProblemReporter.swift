@@ -8,11 +8,12 @@ import Foundation
 /// holds it as a Worker secret, so the app posts to our own domain instead and
 /// the secret stays where it belongs.
 ///
-/// This is deliberately independent of the analytics switch. Analytics is
-/// usage data the user opts into; a crash report or a capture failure is
-/// something the user told us to do by choosing that source, and a visualiser
-/// that silently falls back to a dead input is a bug we can't see. What's sent
-/// is app state — vibescape, genre, error text — never audio, never track names.
+/// This doesn't check the analytics switch itself. Analytics is usage data the
+/// user opts into; a capture failure is something the user told us to do by
+/// choosing that source, and a visualiser that silently falls back to a dead
+/// input is a bug we can't see. Crash reports are the caller's call, and
+/// `CrashReporter` only sends them with the switch on. What's sent is app
+/// state — vibescape, genre, error text — never audio, never track names.
 enum ProblemReporter {
     /// The site. Overridable so a fork can point at its own instance.
     private static var endpoint: URL? {

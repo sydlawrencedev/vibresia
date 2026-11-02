@@ -375,8 +375,8 @@ final class CrashReporter {
             }
             // Discord gets the same report on the same trip. It can't come from
             // the crash handler — see there — so this is the earliest it can
-            // arrive, and it doesn't wait on the analytics switch having been
-            // left on.
+            // arrive. It is behind the analytics switch like the upload is: the
+            // privacy page promises that turning it off stops crash reports.
             ProblemReporter.report(.from(report))
             uploaded.insert(report.id)
             try? FileManager.default.removeItem(at: url)

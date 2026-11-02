@@ -126,10 +126,12 @@ the failure a stack trace will never show you), `source_failure` and
 `app_crash` (with the top frames). A denied permission prompt is a choice, not
 a fault, so it isn't reported.
 
-Unlike usage analytics, this is **not** behind the in-app toggle: a crash is
-the report you can least afford to lose, and the user asked for that source
-explicitly. What's sent is app state — vibescape, genre, error text — never audio or
-track names. Errors get their own cooldown (one a minute, 60/hour) so a broken
+The two audio reports are **not** behind the in-app toggle: the user asked
+for that source explicitly, and a dead input is a bug nothing else will show.
+`app_crash` is: it goes out with the crash upload to PostHog, which waits for
+"Share anonymous usage" to be on, so switching that off stops both. What's
+sent is app state — vibescape, genre, error text — never audio or track
+names. Errors get their own cooldown (one a minute, 60/hour) so a broken
 install can't flood the channel, and `DISCORD_ERRORS_ENABLED = "false"` turns
 them off without touching download alerts.
 
