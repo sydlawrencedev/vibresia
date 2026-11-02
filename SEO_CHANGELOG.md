@@ -19,7 +19,7 @@ Recurring dates:
 - **Eight weeks after launch**: decide which `later` rows in
   `content/url-plan.csv` to build, from impressions.
 
-## 2026-11-02 (not yet deployed): batch 9, eleven more referee pairs
+## 2026-11-02 (deployed 2026-11-02): batch 9, eleven more referee pairs
 
 The URL plan's rows were used up, so this wave came from a wider autocomplete
 sweep on 2026-11-02. The playbook's own evidence says third-party X vs Y
@@ -60,6 +60,12 @@ pages are the biggest traffic engine, and this is the wave it points at.
   301s to it. The redirects are now generated from the pairs file, so a new
   pair cannot be forgotten.
 - 39 search pages now, and 29 competitor records.
+
+Checked live on 2026-11-02: all 39 search pages and the author page return
+200 with their own canonical and JSON-LD; the eleven new reverse orders 301
+to the canonical one; `/sitemaps/comparisons.xml` lists 28 URLs,
+`blog.xml` 3 and `questions.xml` 9; `robots.txt` lists all three sitemaps;
+`llms.txt` lists every new pair; and the comparisons hub lists them.
 
 ## 2026-11-02 (deployed 2026-11-02): batch 8, more referee pairs
 

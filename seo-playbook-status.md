@@ -52,8 +52,8 @@ until then.
 | 2d spokes, batch 5 | amazon-music, deezer, vlc; footer link to the app hub | live |
 | 2b referee pairs (`/comparison/{a}-vs-{b}`) | projectm-vs-milkdrop (third option on), nestdrop-vs-milkdrop, resolume-vs-vdmx, resolume-vs-touchdesigner, touchdesigner-vs-vdmx | live |
 | 2b referee pairs, batch 8 | resolume-vs-madmapper, resolume-vs-obs, resolume-vs-millumin, touchdesigner-vs-blender, touchdesigner-vs-vvvv | live |
-| 2b referee pairs, batch 9 | vmix-vs-obs, vmix-vs-resolume, vmix-vs-wirecast, watchout-vs-resolume, qlab-vs-resolume, propresenter-vs-resolume, propresenter-vs-obs, propresenter-vs-vmix, houdini-vs-touchdesigner, madmapper-vs-touchdesigner, madmapper-vs-millumin | merged, deploy pending |
-| "Control and connections" table | on the VJ pairs, and the batch 8 and 9 pairs | live except batch 9 |
+| 2b referee pairs, batch 9 | vmix-vs-obs, vmix-vs-resolume, vmix-vs-wirecast, watchout-vs-resolume, qlab-vs-resolume, propresenter-vs-resolume, propresenter-vs-obs, propresenter-vs-vmix, houdini-vs-touchdesigner, madmapper-vs-touchdesigner, madmapper-vs-millumin | live |
+| "Control and connections" table | on the VJ pairs, and the batch 8 and 9 pairs | live |
 
 39 search pages and 29 competitor records. 21 referee pairs in total, all
 from the "third-party X vs Y" template, which the playbook's evidence says
