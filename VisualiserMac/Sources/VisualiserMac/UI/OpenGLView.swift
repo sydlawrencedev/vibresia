@@ -38,6 +38,12 @@ final class GLVisualizerNSView: NSOpenGLView {
     /// link skips queueing while one is pending, so a slow frame drops frames
     /// instead of building an unbounded backlog that freezes the app.
     private let renderPending = OSAllocatedUnfairLock(initialState: false)
+    /// When the last frame was drawn, for throttling behind the panel.
+    private var lastFrameTime: CFTimeInterval = 0
+    /// The frame rate while the Vibescapes panel is open. The panel covers
+    /// most of the window and shares the main thread with the drawing, so
+    /// full rate there only makes the panel stutter.
+    private static let panelFrameInterval: CFTimeInterval = 1.0 / 30.0
     /// The area the mouse is watched over.
     private var tracking: NSTrackingArea?
     /// The keyboard, watched rather than taken.
@@ -220,6 +226,14 @@ final class GLVisualizerNSView: NSOpenGLView {
         // to zoom while one is in flight.
         if renderer.isRenderingOffscreen { return }
 
+        // Only the Vibescapes panel: other sheets — the editor, sharing —
+        // are where the live picture is being watched or recorded.
+        let now = CACurrentMediaTime()
+        if AppState.shared?.showVibescapesSheet == true,
+           now - lastFrameTime < Self.panelFrameInterval * 0.9 {
+            return
+        }
+
         let sourceKind = renderer.audio.sourceKindForRender
         let isIdle = (sourceKind == "idle" || sourceKind == "error")
 
@@ -246,6 +260,7 @@ final class GLVisualizerNSView: NSOpenGLView {
         renderer.setSize(width: backing.width, height: backing.height)
         renderer.render()
         openGLContext?.flushBuffer()
+        lastFrameTime = now
 
         if isIdle {
             idleFrameCommitted = true

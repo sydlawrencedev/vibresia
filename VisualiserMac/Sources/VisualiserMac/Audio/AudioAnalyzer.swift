@@ -7,7 +7,6 @@ import Darwin
 final class AudioAnalyzer {
     static let fftSize = 2048
     static let bandCount = 96
-    static let sampleRate: Double = 48000
 
     private let ringBuffer: AudioRingBuffer
 
@@ -56,14 +55,15 @@ final class AudioAnalyzer {
     private static let gateLow: Float = 0.002
     private static let gateHigh: Float = 0.01
 
-    // BPM — onset timestamps
-    private var onsetTimes: [Double] = []
-    private let maxOnsets = 64
-    private static let bpmTimeout: Double = 3.0
-    private var lastTickTime: Double = 0
+    // BPM — every sample goes through the tempo tracker, in order, at the
+    // rate it was captured, independent of how often we're ticked.
+    private var tempo: TempoTracker
+    private var tempoCursor: Int = 0
+    private var tempoScratch = [Float](repeating: 0, count: 4096)
 
     init(ringBuffer: AudioRingBuffer) {
         self.ringBuffer = ringBuffer
+        self.tempo = TempoTracker(sampleRate: ringBuffer.sampleRate)
         self.log2n = vDSP_Length(log2(Float(AudioAnalyzer.fftSize)))
         self.fftSetup = vDSP_create_fftsetup(log2n, FFTRadix(kFFTRadix2))!
         self.halfSize = AudioAnalyzer.fftSize / 2
@@ -97,7 +97,8 @@ final class AudioAnalyzer {
         vDSP_hann_window(&window, vDSP_Length(AudioAnalyzer.fftSize), Int32(vDSP_HANN_NORM))
 
         // pre-compute band edges (Hz -> bin index)
-        bandEdges = Self.computeBandEdges(count: AudioAnalyzer.bandCount)
+        bandEdgesRate = ringBuffer.sampleRate
+        bandEdges = Self.computeBandEdges(count: AudioAnalyzer.bandCount, sampleRate: bandEdgesRate)
     }
 
     deinit {
@@ -112,10 +113,12 @@ final class AudioAnalyzer {
         _ = size
     }
 
-    private let bandEdges: [Int]
+    /// FFT bin ranges for each band. Which bin is which frequency depends on
+    /// the sample rate, so these follow the capture's rate.
+    private var bandEdges: [Int]
+    private var bandEdgesRate: Double
 
-    private static func computeBandEdges(count: Int) -> [Int] {
-        let sampleRate = AudioAnalyzer.sampleRate
+    private static func computeBandEdges(count: Int, sampleRate: Double) -> [Int] {
         let nyquist = sampleRate / 2
         let binCount = AudioAnalyzer.fftSize / 2
         let binHz = nyquist / Double(binCount)
@@ -143,9 +146,11 @@ final class AudioAnalyzer {
             return ringBuffer.readLatest(into: p, count: needed)
         }
         guard ok else { return }
-        // Onsets are timestamped in audio time (samples received), not wall
-        // time, so frame-scheduling jitter doesn't skew the tempo estimate.
-        let audioTime = Double(ringBuffer.totalWritten) / AudioAnalyzer.sampleRate
+        if ringBuffer.sampleRate != bandEdgesRate {
+            bandEdgesRate = ringBuffer.sampleRate
+            bandEdges = Self.computeBandEdges(count: AudioAnalyzer.bandCount, sampleRate: bandEdgesRate)
+        }
+        updateTempo()
 
         var rmsVal: Float = 0
         vDSP_rmsqv(timeDomain, 1, &rmsVal, vDSP_Length(needed))
@@ -240,8 +245,6 @@ final class AudioAnalyzer {
             if framesSinceLastBeat > 12 {
                 isBeat = true
                 framesSinceLastBeat = 0
-                onsetTimes.append(audioTime)
-                if onsetTimes.count > maxOnsets { onsetTimes.removeFirst() }
             }
         }
         bassHistory[historyIndex] = bassInstant
@@ -249,36 +252,30 @@ final class AudioAnalyzer {
         framesSinceLastBeat += 1
         beat = isBeat
         beatStrength = isBeat ? min(1.0, bassInstant) : beatStrength * 0.86
+    }
 
-        // No beats for a few seconds (silence, or a break in the music): forget
-        // the tempo, so the HUD doesn't show a stale BPM and the next song's
-        // estimate isn't mixed with old onsets.
-        if let last = onsetTimes.last, audioTime - last > AudioAnalyzer.bpmTimeout {
-            onsetTimes.removeAll()
-            bpm = 0
+    /// Feeds the tracker everything written since last time.
+    private func updateTempo() {
+        let written = ringBuffer.totalWritten
+        // A new source: the buffer was reset, or its rate changed.
+        if written < tempoCursor || tempo.sampleRate != ringBuffer.sampleRate {
+            tempo = TempoTracker(sampleRate: ringBuffer.sampleRate)
+            tempoCursor = written
         }
-
-        // BPM
-        if onsetTimes.count >= 8 {
-            var intervals: [Double] = []
-            for i in 1..<onsetTimes.count {
-                let d = onsetTimes[i] - onsetTimes[i - 1]
-                if d > 0.25 && d < 1.2 { intervals.append(d) }
+        // After a stall, skip ahead rather than chew through a backlog.
+        let maxBacklog = Int(ringBuffer.sampleRate * 2)
+        if written - tempoCursor > maxBacklog { tempoCursor = written - maxBacklog }
+        while tempoCursor < written {
+            let n = min(tempoScratch.count, written - tempoCursor)
+            let ok = tempoScratch.withUnsafeMutableBufferPointer { buf -> Bool in
+                guard ringBuffer.copy(from: tempoCursor, count: n, into: buf.baseAddress!) else { return false }
+                tempo.push(buf.baseAddress!, count: n)
+                return true
             }
-            if intervals.count >= 4 {
-                intervals.sort()
-                let med = intervals[intervals.count / 2]
-                // Average the intervals close to the median: rejects missed or
-                // extra beats like the median does, but cancels out the
-                // one-frame rounding of individual onset times.
-                let near = intervals.filter { abs($0 - med) < med * 0.08 }
-                var est = 60.0 / (near.reduce(0, +) / Double(near.count))
-                while est < 70 { est *= 2 }
-                while est > 180 { est /= 2 }
-                let target = est.rounded()
-                if bpm == 0 { bpm = target } else { bpm += (target - bpm) * 0.05 }
-            }
+            guard ok else { tempoCursor = written; break }
+            tempoCursor += n
         }
+        bpm = tempo.bpm
     }
 
     /// Copy smoothed bands into a destination buffer.

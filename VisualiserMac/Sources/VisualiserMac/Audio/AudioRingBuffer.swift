@@ -8,9 +8,15 @@ final class AudioRingBuffer {
     private var writeIndex: Int = 0
     private var readIndex: Int = 0
 
+    /// The rate the producer is actually writing at. Set by whoever starts a
+    /// source: system audio and the mic run at the device's rate, which is
+    /// often 44.1kHz, and timing read at the wrong rate is off by 9%.
+    var sampleRate: Double
+
     init(seconds: Double = 2.0, sampleRate: Double = 48000) {
         let cap = AudioRingBuffer.nextPowerOfTwo(Int(seconds * sampleRate * 2))
         self.capacity = cap
+        self.sampleRate = sampleRate
         self.storage = [Float](repeating: 0, count: cap)
     }
 
@@ -118,6 +124,25 @@ final class AudioRingBuffer {
         }
         readIndex = w
         return wanted
+    }
+
+    /// Copies `count` samples starting at absolute position `start` (as
+    /// counted by `totalWritten`), without consuming anything. Fails if they
+    /// haven't all arrived or have already been overwritten.
+    func copy(from start: Int, count: Int, into dest: UnsafeMutablePointer<Float>) -> Bool {
+        let w = writeIndex
+        guard start >= 0, start + count <= w, w - start <= capacity else { return false }
+        let mask = capacity - 1
+        let base = start & mask
+        let firstChunk = min(count, capacity - base)
+        storage.withUnsafeBufferPointer { buf in
+            guard let baseAddr = buf.baseAddress else { return }
+            memcpy(dest, baseAddr.advanced(by: base), firstChunk * MemoryLayout<Float>.size)
+            if firstChunk < count {
+                memcpy(dest.advanced(by: firstChunk), baseAddr, (count - firstChunk) * MemoryLayout<Float>.size)
+            }
+        }
+        return true
     }
 
     /// Total samples ever written: an audio-time clock for the consumer.

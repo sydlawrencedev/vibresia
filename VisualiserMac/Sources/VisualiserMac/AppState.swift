@@ -46,8 +46,10 @@ final class AppState: ObservableObject {
     /// the app is running from somewhere it shouldn't be, and dismissed for
     /// good if the person says no.
     @Published var showMoveToApplications: Bool = false
-    @Published var bpm: Double = 0
-    @Published var lastBeat: Double = 0
+    /// The tempo. Read from the engine when wanted rather than republished:
+    /// a published value that moves every frame redraws every view that
+    /// watches the app state, every frame.
+    var bpm: Double { audio.bpm }
     @Published var isSounding: Bool = false
     /// The Band's lead singer: detected from the vocal pitch, or forced.
     @Published var singerVoice: SingerVoice = .auto {
@@ -240,14 +242,6 @@ final class AppState: ObservableObject {
         audio.$isSounding
             .receive(on: RunLoop.main)
             .assign(to: &$isSounding)
-        audio.$bpm
-            .receive(on: RunLoop.main)
-            .sink { [weak self] in self?.bpm = $0 }
-            .store(in: &cancellables)
-        audio.$lastBeatStrength
-            .receive(on: RunLoop.main)
-            .sink { [weak self] in self?.lastBeat = Double($0) }
-            .store(in: &cancellables)
 
         // Snapshot vibescape is driven from outside (AppDelegate) — leave a hook here
         // so the snapshot can grab the renderer after the GL context is ready.
@@ -613,7 +607,22 @@ final class AppState: ObservableObject {
 
     /// The user's own vibescapes, newest last. Loaded from disk at launch and
     /// whenever the Custom Vibescape sheet saves something.
-    @Published private(set) var customVibescapes: [CustomVibescape] = []
+    @Published private(set) var customVibescapes: [CustomVibescape] = [] {
+        didSet { allVibescapesCache = nil }
+    }
+
+    /// `allVibescapes`, built once per change rather than on every read: it
+    /// reads two defaults keys and is asked for many times a frame (the
+    /// panel's rows, the gallery's installed checks, the scan cycle).
+    private var allVibescapesCache: [VibescapeEntry]?
+
+    /// Drops the cached list and tells the views. The order and the
+    /// switched-off set live in defaults, which aren't published, so
+    /// changing them has to say so.
+    private func vibescapeListChanged() {
+        allVibescapesCache = nil
+        objectWillChange.send()
+    }
 
     /// Built-in vibescapes the user has switched off, by raw value.
     ///
@@ -633,6 +642,7 @@ final class AppState: ObservableObject {
         }
         set {
             UserDefaults.standard.set(Array(newValue).sorted(), forKey: Self.hiddenVibescapesKey)
+            vibescapeListChanged()
         }
     }
 
@@ -652,6 +662,7 @@ final class AppState: ObservableObject {
         }
         set {
             UserDefaults.standard.set(newValue.map { $0.rawValue }, forKey: Self.modeOrderKey)
+            vibescapeListChanged()
         }
     }
 
@@ -670,6 +681,13 @@ final class AppState: ObservableObject {
 
     /// Every vibescape, in the order the user arranged them.
     var allVibescapes: [VibescapeEntry] {
+        if let cached = allVibescapesCache { return cached }
+        let entries = buildAllVibescapes()
+        allVibescapesCache = entries
+        return entries
+    }
+
+    private func buildAllVibescapes() -> [VibescapeEntry] {
         let hidden = hiddenBuiltins
         let builtins = Vibescape.allCases
             .filter { $0 != .autoScan }
@@ -752,6 +770,7 @@ final class AppState: ObservableObject {
     /// the user made.
     func resetVibescapeOrder() {
         UserDefaults.standard.removeObject(forKey: Self.modeOrderKey)
+        vibescapeListChanged()
         pushScanCycle()
     }
 
@@ -771,6 +790,7 @@ final class AppState: ObservableObject {
         // people who hadn't actually rearranged anything.
         if order.compactMap({ $0.builtin }) == Self.defaultVibescapeOrder {
             UserDefaults.standard.removeObject(forKey: Self.modeOrderKey)
+            vibescapeListChanged()
         } else {
             storedVibescapeOrder = order
         }
@@ -925,22 +945,27 @@ final class AppState: ObservableObject {
     /// never touched, and the next frame of real sound puts the analyser
     /// back.
     func refreshCustomVibescapePreviews() {
-        let modes = customVibescapes
+        // Only the ones not drawn yet, or changed since: opening the panel
+        // used to redraw every one of them, every time.
+        let modes = customVibescapes.filter { previewDrawnAt[$0.id] != $0.modified }
         guard !modes.isEmpty else { return }
         Task { @MainActor in
             for mode in modes {
-                audio.analyzer.setSyntheticState()
-                let path = (NSTemporaryDirectory() as NSString)
-                    .appendingPathComponent("audiovane-preview-\(mode.id).png")
-                renderer.renderToPNG(width: 320, height: 180,
-                                     mode: .custom(mode.id), frames: 90, path: path)
-                if let image = NSImage(contentsOfFile: path) {
-                    customVibescapePreviews[mode.id] = image
+                // One frame at the moment the old 90-frame run ended on,
+                // straight to an image: no warm-up frames, no PNG on disk.
+                if let cg = renderer.renderStillImage(width: 320, height: 180,
+                                                      mode: .custom(mode.id), time: 1.5) {
+                    customVibescapePreviews[mode.id] = NSImage(cgImage: cg, size: NSSize(width: 320, height: 180))
+                    previewDrawnAt[mode.id] = mode.modified
                 }
-                try? FileManager.default.removeItem(atPath: path)
+                // Let the panel draw between pictures rather than all at once.
+                await Task.yield()
             }
         }
     }
+
+    /// When each preview was drawn, by the vibescape's modified date.
+    private var previewDrawnAt: [String: Date] = [:]
 
     /// Adds a user's vibescape, once it has been shown to compile.
     ///

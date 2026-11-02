@@ -4,13 +4,20 @@ struct MeterView: View {
     @EnvironmentObject var app: AppState
 
     var body: some View {
-        // Subscribe to the audio engine's display tick so the canvas only
-        // re-evaluates when there's actually new data (~30Hz), not 60Hz from
-        // TimelineView's per-frame schedule.
-        let _ = app.audio.displayTick
-        MeterCanvas(bands: app.audio.snapshot.bands,
-                    isBeat: app.audio.snapshot.beat,
-                    beatStrength: app.audio.snapshot.beatStrength)
+        MeterTicker(audio: app.audio)
+    }
+}
+
+/// Watches the audio engine itself, so the meter redraws on its display
+/// tick (~30Hz) without the rest of the window having to.
+private struct MeterTicker: View {
+    @ObservedObject var audio: AudioEngine
+
+    var body: some View {
+        let _ = audio.displayTick
+        MeterCanvas(bands: audio.snapshot.bands,
+                    isBeat: audio.snapshot.beat,
+                    beatStrength: audio.snapshot.beatStrength)
     }
 }
 

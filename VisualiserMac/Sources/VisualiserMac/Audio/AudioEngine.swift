@@ -11,8 +11,12 @@ final class AudioEngine: ObservableObject {
     /// What's actually running, nil while idle or errored. The picker shows
     /// this as the current choice; the header pill shows its label.
     @Published private(set) var activeSource: AudioSource? = nil
-    @Published private(set) var bpm: Double = 0
-    @Published private(set) var lastBeatStrength: Float = 0
+    /// Not published: it's read when wanted (a share clip's length, the
+    /// MCP tools), and nothing on screen needs to redraw when it moves.
+    private(set) var bpm: Double = 0
+    /// The beat flash's strength, in an object of its own so that only the
+    /// flash redraws on beats — not every view watching the engine.
+    let beatFlash = BeatFlashLevel()
     /// True while there's audible sound (RMS gate with hysteresis). Overlays
     /// fade out when false so silent vibescapes are a single flat colour.
     @Published private(set) var isSounding: Bool = false
@@ -35,6 +39,8 @@ final class AudioEngine: ObservableObject {
     @Published private(set) var displayTick: Int = 0
     private var lastDisplayTickTime: CFTimeInterval = 0
     private let displayInterval: CFTimeInterval = 1.0 / 30.0
+    private var lastGenreSample: CFTimeInterval = 0
+    private let genreSampleInterval: CFTimeInterval = 1.0 / 20.0
 
     /// Snapshot consumed by the Metal renderer. Atomic struct replacement.
     private(set) var snapshot = AudioSnapshot()
@@ -57,7 +63,9 @@ final class AudioEngine: ObservableObject {
         let rb = AudioRingBuffer(seconds: 6, sampleRate: 48000)
         self.ringBuffer = rb
         self.analyzer = AudioAnalyzer(ringBuffer: rb)
-        rb.onWrite = { [instruments] samples, count in instruments.push(samples, count: count) }
+        rb.onWrite = { [instruments, unowned rb] samples, count in
+            instruments.push(samples, count: count, sampleRate: rb.sampleRate)
+        }
         self.systemCapture = SystemAudioCapture(ringBuffer: rb)
         self.systemCapture.onError = { [weak self] msg in
             DispatchQueue.main.async {
@@ -72,7 +80,9 @@ final class AudioEngine: ObservableObject {
     /// if there has been ten seconds of it, and what there is if there isn't.
     /// The buffer's length is the length of the recording.
     func recentAudio(upTo seconds: Double) -> AVAudioPCMBuffer? {
-        let sampleRate = 48000.0
+        // Tagged with the rate it was captured at, or it plays back at the
+        // wrong speed and pitch.
+        let sampleRate = ringBuffer.sampleRate
         let wanted = Int(seconds * sampleRate)
         guard wanted > 0 else { return nil }
 
@@ -91,10 +101,9 @@ final class AudioEngine: ObservableObject {
     ///
     /// ShazamKit takes a buffer of audio and turns it into a signature. It
     /// wants a few seconds of it — the app's ring buffer holds about five and
-    /// a half — and it wants float samples at 48kHz, which is what the
-    /// capture is.
+    /// a half — as float samples at the rate they were captured at.
     func recentAudioBuffer(seconds: Double) -> AVAudioPCMBuffer? {
-        let sampleRate = 48000.0
+        let sampleRate = ringBuffer.sampleRate
         let wanted = Int(seconds * sampleRate)
         guard wanted > 0 else { return nil }
 
@@ -212,6 +221,7 @@ final class AudioEngine: ObservableObject {
             fail(reason: "no mic input", detail: "The input device reports a zero sample rate.")
             return
         }
+        ringBuffer.sampleRate = format.sampleRate
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: format) { [weak self] buffer, _ in
             guard let self else { return }
             guard let data = buffer.floatChannelData else { return }
@@ -248,6 +258,7 @@ final class AudioEngine: ObservableObject {
     func startDemo() {
         stopAll()
         ringBuffer.reset()
+        ringBuffer.sampleRate = 48000
         do {
             try demoTone.start(into: ringBuffer)
             sourceLabel = "demo tone"
@@ -273,6 +284,7 @@ final class AudioEngine: ObservableObject {
     func injectSyntheticTone(seconds: Double = 2.0, sampleRate: Double = 48000) {
         NSLog("[VIZ] injectSyntheticTone start")
         ringBuffer.reset()
+        ringBuffer.sampleRate = sampleRate
         let total = Int(seconds * sampleRate)
         var samples = [Float](repeating: 0, count: total)
         for i in 0..<total {
@@ -311,11 +323,16 @@ final class AudioEngine: ObservableObject {
         // Genre detection runs regardless of source state — even the demo tone
         // or silence yields useful features (zeros), and we want a smooth fade
         // when audio cuts out rather than freezing on the last call.
-        let vocals = instruments.presence()
         let now = CACurrentMediaTime()
-        genreDetector.update(snapshot: snapshot, beat: snapshot.beat,
-                             vocal: vocals.indices.contains(4) ? vocals[4] : 0,
-                             now: now)
+        // Genre works on averages over fifteen seconds; sampling it at the
+        // display's 60-120Hz only made its window longer to scan.
+        if now - lastGenreSample >= genreSampleInterval {
+            lastGenreSample = now
+            let vocals = instruments.presence()
+            genreDetector.update(snapshot: snapshot, beat: snapshot.beat,
+                                 vocal: vocals.indices.contains(4) ? vocals[4] : 0,
+                                 now: now)
+        }
         // In idle/error states, do NOT advance displayTick — that would
         // trigger SwiftUI body re-evaluations and force the OpenGL view's
         // drawable to be re-rasterized, which is the source of the perceived
@@ -346,7 +363,11 @@ final class AudioEngine: ObservableObject {
     }
 
     func refreshSnapshot() {
-        var snap = AudioSnapshot()
+        // Updated in place, so the bands array is reused rather than
+        // allocated every frame. Everything that reads it is on the main
+        // thread with this.
+        var snap = snapshot
+        snapshot = AudioSnapshot(bands: [])
         snap.rms = analyzer.rms
         snap.bass = analyzer.bass
         snap.mid = analyzer.mid
@@ -367,7 +388,7 @@ final class AudioEngine: ObservableObject {
         // anyway, so there's nothing for the user to lose.
         guard sourceState == .live || sourceState == .demo else { return }
         bpm = analyzer.bpm
-        lastBeatStrength = analyzer.beatStrength
+        beatFlash.update(analyzer.beatStrength)
 
         let live = sourceState == .live || sourceState == .demo
         let sounding = live && (isSounding ? snap.rms > 0.003 : snap.rms > 0.008)
@@ -388,4 +409,18 @@ struct AudioSnapshot {
     var bpm: Double = 0
     var sourceIsIdle: Float = 1.0
     var bands: [Float] = Array(repeating: 0, count: AudioAnalyzer.bandCount)
+}
+
+/// How strongly the beat flash is showing.
+///
+/// It decays every frame, so publishing it raw would redraw its watchers at
+/// the display's refresh rate. It's rounded to steps too small to see and
+/// published only when the step changes, and it rests at exactly 0.
+final class BeatFlashLevel: ObservableObject {
+    @Published private(set) var strength: Double = 0
+
+    func update(_ raw: Float) {
+        let stepped = raw < 0.04 ? 0 : (Double(raw) * 50).rounded() / 50
+        if stepped != strength { strength = stepped }
+    }
 }

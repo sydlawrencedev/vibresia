@@ -115,9 +115,25 @@ final class UpdateChecker: ObservableObject {
         CommandLine.arguments.contains("--update-spike")
     }
 
+    /// Whether this copy can replace itself: only an app bundle can.
+    ///
+    /// A binary run straight from a build — `swift build` and then
+    /// `.build/debug/Vibresia` — has no bundle, and `Bundle.main.bundleURL`
+    /// is the folder it sits in. Installing over that replaced the build
+    /// folder with the release app.
+    static var canSelfUpdate: Bool {
+        Bundle.main.bundleURL.pathExtension == "app"
+    }
+
     /// `userInitiated`: from the menu — also report "you're up to date" and errors.
     func check(userInitiated: Bool) {
         if !userInitiated && ProcessInfo.processInfo.environment["VIBRESIA_NO_UPDATE_CHECK"] != nil { return }
+        // Nothing to offer a build that couldn't install it. Asking from the
+        // menu still checks, and the install says why it can't.
+        if !userInitiated && !Self.canSelfUpdate && !isSpiking {
+            NSLog("[UPDATE] not an app bundle (\(Bundle.main.bundleURL.path)), skipping the update check")
+            return
+        }
         // One at a time. The manual check and the hourly one can land on
         // each other, and the answer should not be fetched twice.
         guard !isChecking else { return }
@@ -264,6 +280,11 @@ final class UpdateChecker: ObservableObject {
     }
 
     private func install(from url: URL) {
+        guard Self.canSelfUpdate else {
+            alert("Can't update this copy",
+                  "Vibresia is running from \(Bundle.main.bundleURL.path), which isn't an app bundle, so it can't replace itself. Download the new version from the website instead.")
+            return
+        }
         URLSession.shared.downloadTask(with: url) { file, _, error in
             do {
                 guard let file else { throw error ?? URLError(.badServerResponse) }
@@ -284,6 +305,8 @@ final class UpdateChecker: ObservableObject {
     /// Hands over to a tiny script that waits for us to quit, replaces the
     /// app bundle, clears quarantine and opens the new one.
     private func swapAndRelaunch(newApp: URL, scratch: URL) {
+        // The last step before something is deleted, so it checks again.
+        guard Self.canSelfUpdate else { return }
         let dest = Bundle.main.bundleURL.path
         let script = scratch.appendingPathComponent("swap.sh")
         let body = """

@@ -59,6 +59,11 @@ final class SystemAudioCapture {
         if let fmt = try? Self.tapFormat(tapID) {
             NSLog("[TAP] format: rate=\(fmt.mSampleRate) ch=\(fmt.mChannelsPerFrame) bits=\(fmt.mBitsPerChannel)")
         }
+        // The aggregate runs at the output device's rate, which is whatever
+        // the user's hardware (or Apple Music's lossless switching) picked.
+        if let rate = Self.nominalSampleRate(aggregateID) ?? (try? Self.tapFormat(tapID))?.mSampleRate, rate > 0 {
+            ringBuffer.sampleRate = rate
+        }
 
         // 3. Pull buffers on our own queue.
         try check(AudioDeviceCreateIOProcIDWithBlock(&ioProcID, aggregateID, ioQueue) {
@@ -169,6 +174,17 @@ final class SystemAudioCapture {
                           userInfo: [NSLocalizedDescriptionKey: "Could not read output device UID."])
         }
         return uid.takeRetainedValue() as String
+    }
+
+    private static func nominalSampleRate(_ deviceID: AudioObjectID) -> Double? {
+        var rate: Float64 = 0
+        var size = UInt32(MemoryLayout<Float64>.size)
+        var addr = AudioObjectPropertyAddress(
+            mSelector: kAudioDevicePropertyNominalSampleRate,
+            mScope: kAudioObjectPropertyScopeGlobal,
+            mElement: kAudioObjectPropertyElementMain)
+        let status = AudioObjectGetPropertyData(deviceID, &addr, 0, nil, &size, &rate)
+        return status == noErr && rate > 0 ? rate : nil
     }
 
     private static func tapFormat(_ tapID: AudioObjectID) throws -> AudioStreamBasicDescription {

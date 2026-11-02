@@ -235,11 +235,23 @@ struct VibescapesView: View {
 
     /// The cards, dealt into rows.
     ///
-    /// A plain layout rather than a lazy grid: a lazy grid doesn't lay
-    /// itself out until there's a real scroll view to scroll, which left the
-    /// panel blank in the headless UI shots.
+    /// Lazy in the window, so only the rows on screen are built and the
+    /// gallery only fetches the pictures being looked at. Plain for the
+    /// headless UI shots: a lazy stack doesn't lay itself out until there's a
+    /// real scroll view to scroll, which left the panel blank.
+    @ViewBuilder
     private var grid: some View {
-        VStack(spacing: 14) {
+        if scrollable {
+            LazyVStack(spacing: 14) { gridRows }
+                .padding(18)
+        } else {
+            VStack(spacing: 14) { gridRows }
+                .padding(18)
+        }
+    }
+
+    @ViewBuilder
+    private var gridRows: some View {
             if tab == .installed {
                 ForEach(rows, id: \.self) { row in
                     VibescapeRow(entries: row, columns: columnsPerRow,
@@ -248,8 +260,6 @@ struct VibescapesView: View {
             } else {
                 galleryGrid
             }
-        }
-        .padding(18)
     }
 
     /// Whether a gallery item is on this Mac already.
@@ -257,21 +267,38 @@ struct VibescapesView: View {
     /// A built-in is here whatever else is true — it ships with the app —
     /// but it can be switched off, and a switched-off built-in is offered
     /// as a plus, which switches it on and runs it.
-    private func isInstalled(_ item: GalleryModel.Item) -> Bool {
+    private func isInstalled(_ item: GalleryModel.Item, in installed: Installed) -> Bool {
         if item.isBuiltIn {
             guard let mode = Vibescape(rawValue: item.id) else { return true }
-            return app.enabledVibescapes.contains { $0.id == .builtin(mode) }
+            return installed.enabledBuiltins.contains(mode)
         }
+        // A shared vibescape is matched by the share it came from. A copy
+        // that arrived on the long link has no share id of its own, so the
+        // name and the author are matched as well.
+        return installed.shareIDs.contains(item.id)
+            || installed.nameAuthors.contains(Installed.key(item.name, item.author))
+    }
+
+    /// What's on this Mac, gathered once per redraw rather than searched
+    /// once per gallery card.
+    private struct Installed {
+        var enabledBuiltins: Set<Vibescape> = []
+        var shareIDs: Set<String> = []
+        var nameAuthors: Set<String> = []
+        static func key(_ name: String, _ author: String) -> String { name + "\u{1F}" + author }
+    }
+
+    private var installed: Installed {
+        var result = Installed()
         for entry in app.allVibescapes {
-            guard case .custom(let id) = entry.id,
-                  let mode = app.customVibescape(id: id) else { continue }
-            // A shared vibescape is matched by the share it came from.
-            if let shareID = mode.shareID, shareID == item.id { return true }
-            // A copy that arrived on the long link has no share id of its
-            // own, so the name and the author are matched as well.
-            if mode.name == item.name, mode.author == item.author { return true }
+            if let mode = entry.id.builtin {
+                if entry.isEnabled { result.enabledBuiltins.insert(mode) }
+            } else if case .custom(let id) = entry.id, let mode = app.customVibescape(id: id) {
+                if let shareID = mode.shareID { result.shareIDs.insert(shareID) }
+                result.nameAuthors.insert(Installed.key(mode.name, mode.author))
+            }
         }
-        return false
+        return result
     }
 
     /// Adds a gallery vibescape to Installed and runs it.
@@ -329,8 +356,10 @@ struct VibescapesView: View {
     }
 
     /// The shared vibescapes, dealt into rows.
+    @ViewBuilder
     private var galleryGrid: some View {
-        VStack(spacing: 14) {
+        let installed = self.installed
+        Group {
             if gallery.failed && gallery.items.isEmpty {
                 Text("The gallery could not be reached. Check the connection and try again.")
                     .font(.system(size: 12))
@@ -355,7 +384,7 @@ struct VibescapesView: View {
                 HStack(alignment: .top, spacing: 14) {
                     ForEach(row) { item in
                         GalleryCard(item: item,
-                                    isInstalled: isInstalled(item),
+                                    isInstalled: isInstalled(item, in: installed),
                                     isBusy: installing.contains(item.id),
                                     onAdd: { install(item) })
                     }
@@ -423,14 +452,7 @@ private struct GalleryCard: View {
         ZStack(alignment: .bottomTrailing) {
             Link(destination: item.url) {
                 VStack(alignment: .leading, spacing: 0) {
-                    AsyncImage(url: item.imageURL) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image.resizable().aspectRatio(contentMode: .fill)
-                        default:
-                            Rectangle().fill(Color.white.opacity(0.06))
-                        }
-                    }
+                    RemoteImage(url: item.imageURL)
                     .frame(height: 108)
                     .clipped()
                     VStack(alignment: .leading, spacing: 2) {

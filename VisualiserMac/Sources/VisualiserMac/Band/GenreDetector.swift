@@ -82,7 +82,12 @@ final class GenreDetector {
         window.append(s)
         // Trim, then recompute onsetDensity from the trimmed window so it
         // reflects only the last 15s.
-        window.removeAll { now - $0.t > windowDuration }
+        // Oldest first, so the expired ones are a prefix.
+        if let keep = window.firstIndex(where: { now - $0.t <= windowDuration }) {
+            window.removeFirst(keep)
+        } else {
+            window.removeAll(keepingCapacity: true)
+        }
         let span = max(0.1, now - windowStart)
         let recentBeats = window.reduce(0) { $0 + ($1.onsetDensity > 0 ? 1 : 0) }
         let density = Float(recentBeats) / Float(span)

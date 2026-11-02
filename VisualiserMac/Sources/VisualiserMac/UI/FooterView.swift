@@ -12,8 +12,6 @@ struct FooterView: View {
     @EnvironmentObject var app: AppState
 
     var body: some View {
-        // Subscribe to the throttled display tick (see AudioEngine).
-        let _ = app.audio.displayTick
         // While auto-scanning, report the vibescape actually on screen rather
         // than the "AUTO SCAN" that was selected — including its author, which
         // is how you know whose vibescape Auto Scan just handed you.

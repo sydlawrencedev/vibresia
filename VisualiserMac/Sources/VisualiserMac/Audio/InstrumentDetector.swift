@@ -34,17 +34,21 @@ final class InstrumentDetector: NSObject, SNResultsObserving {
         .vocals: ["singing", "choir_singing", "rapping"],
     ]
 
-    static let sampleRate: Double = 48000
-    private static let chunkFrames = 4800   // hand audio to the analyzer every 0.1s
-
-    private let format = AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1)!
-    private let analyzer: SNAudioStreamAnalyzer
+    // Analysis-queue state. The classifier is built for one sample rate, so
+    // it's rebuilt when the capture's rate changes.
+    private var sampleRate: Double = 48000
+    private var format = AVAudioFormat(standardFormatWithSampleRate: 48000, channels: 1)!
+    private var analyzer: SNAudioStreamAnalyzer
     private let queue = DispatchQueue(label: "viz.instruments", qos: .utility)
     private var framePosition: AVAudioFramePosition = 0
+    /// Audio time before the last rebuild, so the clock doesn't jump back.
+    private var timeBeforeRebuild: Double = 0
 
-    // Audio-thread staging (single producer).
-    private var staging = [Float](repeating: 0, count: chunkFrames)
+    // Audio-thread staging (single producer). Audio goes to the analyzer
+    // every 0.1s, so a chunk is a tenth of the rate.
+    private var staging = [Float](repeating: 0, count: 4800)
     private var stagingCount = 0
+    private var stagingRate: Double = 48000
 
     private var lastLog: CFAbsoluteTime = 0
     private let lock = NSLock()
@@ -70,6 +74,10 @@ final class InstrumentDetector: NSObject, SNResultsObserving {
     override init() {
         analyzer = SNAudioStreamAnalyzer(format: format)
         super.init()
+        addRequest()
+    }
+
+    private func addRequest() {
         do {
             let request = try SNClassifySoundRequest(classifierIdentifier: .version1)
             // Shortest window the classifier allows, with heavy overlap, so
@@ -134,26 +142,42 @@ final class InstrumentDetector: NSObject, SNResultsObserving {
         }
     }
 
-    /// Audio thread: called with every mono buffer written to the ring buffer.
-    func push(_ samples: UnsafePointer<Float>, count: Int) {
+    /// Audio thread: called with every mono buffer written to the ring buffer,
+    /// at the rate it was captured at.
+    func push(_ samples: UnsafePointer<Float>, count: Int, sampleRate rate: Double) {
         guard isEnabled else { return }
+        if rate != stagingRate {
+            // A part-filled chunk at the old rate is dropped, not mislabelled.
+            stagingRate = rate
+            stagingCount = 0
+            staging = [Float](repeating: 0, count: max(1, Int(rate / 10)))
+        }
         var offset = 0
         while offset < count {
-            let n = min(count - offset, Self.chunkFrames - stagingCount)
+            let n = min(count - offset, staging.count - stagingCount)
             staging.withUnsafeMutableBufferPointer { buf in
                 buf.baseAddress!.advanced(by: stagingCount).update(from: samples.advanced(by: offset), count: n)
             }
             stagingCount += n
             offset += n
-            if stagingCount == Self.chunkFrames {
+            if stagingCount == staging.count {
                 let chunk = staging
                 stagingCount = 0
-                queue.async { [weak self] in self?.analyze(chunk) }
+                queue.async { [weak self] in self?.analyze(chunk, sampleRate: rate) }
             }
         }
     }
 
-    private func analyze(_ chunk: [Float]) {
+    private func analyze(_ chunk: [Float], sampleRate rate: Double) {
+        if rate != sampleRate, let newFormat = AVAudioFormat(standardFormatWithSampleRate: rate, channels: 1) {
+            timeBeforeRebuild += Double(framePosition) / sampleRate
+            sampleRate = rate
+            format = newFormat
+            analyzer.removeAllRequests()
+            analyzer = SNAudioStreamAnalyzer(format: format)
+            addRequest()
+            framePosition = 0
+        }
         guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(chunk.count)) else { return }
         buffer.frameLength = AVAudioFrameCount(chunk.count)
         chunk.withUnsafeBufferPointer { src in
@@ -166,17 +190,17 @@ final class InstrumentDetector: NSObject, SNResultsObserving {
 
     /// Runs on the analysis queue for each 0.1s chunk.
     private func trackVocalPitch(_ chunk: [Float]) {
-        let now = Double(framePosition) / Self.sampleRate
+        let now = timeBeforeRebuild + Double(framePosition) / sampleRate
         lock.lock()
         chunkTime = now
         let singing = confidence[Part.vocals.rawValue]
         lock.unlock()
         guard singing > 0.25 else { return }
 
-        // High-pass (~150Hz) to drop bass and kick, then average down 4x to
-        // 12kHz, which also low-passes.
+        // High-pass (~150Hz) to drop bass and kick, then average down 4x
+        // (12kHz from 48kHz), which also low-passes.
         var x = [Float](repeating: 0, count: chunk.count / 4)
-        let a: Float = 0.98
+        let a = Float(1 - 2 * Double.pi * 150 / sampleRate)
         for i in 0..<x.count {
             var acc: Float = 0
             for j in 0..<4 {
@@ -187,7 +211,7 @@ final class InstrumentDetector: NSObject, SNResultsObserving {
             }
             x[i] = acc / 4
         }
-        guard let f0 = Self.yin(x, sampleRate: 12000, minHz: 80, maxHz: 1000) else { return }
+        guard let f0 = Self.yin(x, sampleRate: Float(sampleRate / 4), minHz: 80, maxHz: 1000) else { return }
 
         lock.lock(); defer { lock.unlock() }
         pitchSamples.append((now, f0))

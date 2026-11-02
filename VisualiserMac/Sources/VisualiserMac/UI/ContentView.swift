@@ -91,7 +91,7 @@ struct ContentView: View {
             .zIndex(60)
 
             // beat flash
-            BeatFlash(strength: app.lastBeat)
+            BeatFlash(level: app.audio.beatFlash)
                 .allowsHitTesting(false)
 
             // intro overlay
@@ -221,7 +221,8 @@ enum CRTCache {
 }
 
 struct BeatFlash: View {
-    let strength: Double
+    @ObservedObject var level: BeatFlashLevel
+    private var strength: Double { level.strength }
 
     /// Beat flashes are visually invisible below this, so we hide the whole
     /// overlay rather than re-rendering an imperceptible tint 60 times a second.
