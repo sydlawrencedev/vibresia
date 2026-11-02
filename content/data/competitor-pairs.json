@@ -1,5 +1,5 @@
 {
-  "_about": "Third-party pairs worth a referee page (docs/seo.md, Phase 2b). Only pairs that share an audience. The canonical order is the one people search; the reverse 301s to it (site/_redirects). thirdOption is opt-in: Vibresia appears on a pair's page only when it is true, and a test fails if it shows anywhere else.",
+  "_about": "Third-party pairs worth a referee page (docs/seo.md, Phase 2b). Only pairs that share an audience. The canonical order is the one people search: the less famous product first, the way somebody types it when they know the smaller tool and want to know how it compares. The reverse 301s to it (site/_redirects). thirdOption is opt-in: Vibresia appears on a pair's page only when it is true, and a test fails if it shows anywhere else.",
   "pairs": [
     {
       "slug": "projectm-vs-milkdrop",
@@ -80,6 +80,94 @@
       "b": "vvvv",
       "audience": "Mac and Windows artists building live visuals from a patch of nodes.",
       "whyCompared": "Both are real-time visual programming environments with a patch of nodes and a live renderer, and both run on a Mac, so they get compared directly.",
+      "thirdOption": false
+    },
+    {
+      "slug": "vmix-vs-obs",
+      "a": "vmix",
+      "b": "obs",
+      "audience": "People running a live video feed, choosing between paid production software and free streaming software.",
+      "whyCompared": "Both switch between sources and send the result out as a stream or a recording, and one of them is free, so people setting up a stream weigh one against the other.",
+      "thirdOption": false
+    },
+    {
+      "slug": "vmix-vs-resolume",
+      "a": "vmix",
+      "b": "resolume",
+      "audience": "People running a live show or a live stream, choosing between a production switcher and a VJ application.",
+      "whyCompared": "Both take video sources and put them on a screen live, and both are paid, so people doing either job weigh one against the other.",
+      "thirdOption": false
+    },
+    {
+      "slug": "vmix-vs-wirecast",
+      "a": "vmix",
+      "b": "wirecast",
+      "audience": "People streaming an event, choosing between two paid live production tools.",
+      "whyCompared": "Both are live video production software for streaming and recording, and they are the pair people compare once they are past the free option.",
+      "thirdOption": false
+    },
+    {
+      "slug": "watchout-vs-resolume",
+      "a": "watchout",
+      "b": "resolume",
+      "audience": "Venue and installation teams driving screens and projectors with prepared media.",
+      "whyCompared": "Both play prepared media to screens at an event, from different starting points: one a media server with a timeline, one a VJ application you perform from.",
+      "thirdOption": false
+    },
+    {
+      "slug": "qlab-vs-resolume",
+      "a": "qlab",
+      "b": "resolume",
+      "audience": "People running a show with prepared media, whether a concert or a theatre production.",
+      "whyCompared": "Both cue media for a live show, one from a show-control timeline and one from a VJ application, and the people booking the show are the ones who compare them.",
+      "thirdOption": false
+    },
+    {
+      "slug": "propresenter-vs-resolume",
+      "a": "propresenter",
+      "b": "resolume",
+      "audience": "Churches and live events running video on a stage screen.",
+      "whyCompared": "Both put video on a stage screen at an event, and the tech teams running churches and venues are the ones weighing one against the other.",
+      "thirdOption": false
+    },
+    {
+      "slug": "propresenter-vs-obs",
+      "a": "propresenter",
+      "b": "obs",
+      "audience": "People streaming or recording an event, choosing between paid and free software.",
+      "whyCompared": "Both mix sources and output a finished feed, and one of them is free, so the choice is often between price and features.",
+      "thirdOption": false
+    },
+    {
+      "slug": "propresenter-vs-vmix",
+      "a": "propresenter",
+      "b": "vmix",
+      "audience": "People running a live event who need a video feed out.",
+      "whyCompared": "Both switch between sources and output a live feed, and both are paid, so people setting up an event weigh one against the other.",
+      "thirdOption": false
+    },
+    {
+      "slug": "houdini-vs-touchdesigner",
+      "a": "houdini",
+      "b": "touchdesigner",
+      "audience": "Creative coders building visuals for installations and live work.",
+      "whyCompared": "Both build visuals procedurally and both are node-based, so people starting in either often weigh one against the other.",
+      "thirdOption": false
+    },
+    {
+      "slug": "madmapper-vs-touchdesigner",
+      "a": "madmapper",
+      "b": "touchdesigner",
+      "audience": "Visual artists building live visuals on a Mac.",
+      "whyCompared": "Both build a visual system and run it live, one as a node graph and one as mapped surfaces, cues and fixtures.",
+      "thirdOption": false
+    },
+    {
+      "slug": "madmapper-vs-millumin",
+      "a": "madmapper",
+      "b": "millumin",
+      "audience": "Artists mapping video onto surfaces and driving lighting at live events.",
+      "whyCompared": "Both warp video onto real surfaces and both control fixtures, and they are the two tools people compare for installation work.",
       "thirdOption": false
     }
   ]

@@ -440,6 +440,16 @@ export function helpers(records) {
 }
 
 /**
+ * The redirects for the referee pairs: one canonical order per pair, and the
+ * reverse 301s to it, so a pair never has two URLs for one query. Generated
+ * from the pairs file, so a new pair cannot be forgotten here.
+ */
+export function refereeRedirects(pairs) {
+    const lines = pairs.map((p) => `/comparison/${p.b}-vs-${p.a}  /comparison/${p.slug}  301`);
+    return `# chrome:referee\n${lines.join("\n")}\n# /chrome:referee`;
+}
+
+/**
  * Every page a fact of a record came from, for the sources list. A fact that
  * came from somewhere other than the app's own site says so, so a reader can
  * tell an official page from a third-party one.
@@ -1110,6 +1120,23 @@ async function main() {
             console.log(`  wrote ${path.relative(ROOT, file)}`);
         }
     }
+    // The referee redirects, from the pairs file. A pair added to
+    // competitor-pairs.json gets its reverse 301 with it, so a pair never
+    // ends up with two URLs for one query.
+    const redirectsPath = path.join(ROOT, "site/_redirects");
+    const redirectsNow = fs.readFileSync(redirectsPath, "utf8");
+    const redirectsWanted = redirectsNow.replace(
+        /# chrome:referee\n[\s\S]*?# \/chrome:referee/,
+        refereeRedirects(PAIRS),
+    );
+    if (redirectsWanted !== redirectsNow) {
+        if (check) stale.push(path.relative(ROOT, redirectsPath));
+        else {
+            fs.writeFileSync(redirectsPath, redirectsWanted);
+            console.log(`  wrote ${path.relative(ROOT, redirectsPath)}`);
+        }
+    }
+
     // A sitemap the generator no longer writes is one that still lists pages
     // for a template that has moved. It has to go, or the old file keeps
     // asking to be indexed.

@@ -19,7 +19,9 @@
 # looked like it only affected the bare page.
 
 # Referee pages have one canonical order per pair (content/competitor-pairs.json);
-# the reverse order redirects to it (docs/seo.md, Phase 2b).
+# the reverse order redirects to it (docs/seo.md, Phase 2b). The block below
+# is generated from the pairs file, so a new pair never has two URLs.
+# chrome:referee
 /comparison/milkdrop-vs-projectm  /comparison/projectm-vs-milkdrop  301
 /comparison/milkdrop-vs-nestdrop  /comparison/nestdrop-vs-milkdrop  301
 /comparison/vdmx-vs-resolume  /comparison/resolume-vs-vdmx  301
@@ -30,3 +32,15 @@
 /comparison/millumin-vs-resolume  /comparison/resolume-vs-millumin  301
 /comparison/blender-vs-touchdesigner  /comparison/touchdesigner-vs-blender  301
 /comparison/vvvv-vs-touchdesigner  /comparison/touchdesigner-vs-vvvv  301
+/comparison/obs-vs-vmix  /comparison/vmix-vs-obs  301
+/comparison/resolume-vs-vmix  /comparison/vmix-vs-resolume  301
+/comparison/wirecast-vs-vmix  /comparison/vmix-vs-wirecast  301
+/comparison/resolume-vs-watchout  /comparison/watchout-vs-resolume  301
+/comparison/resolume-vs-qlab  /comparison/qlab-vs-resolume  301
+/comparison/resolume-vs-propresenter  /comparison/propresenter-vs-resolume  301
+/comparison/obs-vs-propresenter  /comparison/propresenter-vs-obs  301
+/comparison/vmix-vs-propresenter  /comparison/propresenter-vs-vmix  301
+/comparison/touchdesigner-vs-houdini  /comparison/houdini-vs-touchdesigner  301
+/comparison/touchdesigner-vs-madmapper  /comparison/madmapper-vs-touchdesigner  301
+/comparison/millumin-vs-madmapper  /comparison/madmapper-vs-millumin  301
+# /chrome:referee
