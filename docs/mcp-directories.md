@@ -13,7 +13,7 @@ directory asks for it. Two servers:
 | Official MCP Registry | remote | `mcp-publisher publish` | Live as `com.vibresia/music-visualizer` 1.1.0 |
 | PulseMCP | remote | Copies the official registry | Waiting on their sync |
 | awesome-remote-mcp-servers | remote | PR | [jaw9c/awesome-remote-mcp-servers#1912](https://github.com/jaw9c/awesome-remote-mcp-servers/pull/1912) |
-| Claude Connectors Directory | remote | claude.ai/directory/manage, paid plan | To do: needs you signed in |
+| Claude Connectors Directory | remote | claude.ai/directory/manage, paid plan | In review as "Vibresia Music Visualiser" (slug `vibresia-music-visualiser`), submitted 2026-11-02 |
 | ChatGPT apps | remote | OpenAI Platform dashboard | To do: needs org verification, a demo video, domain token |
 | Glama | both | glama.ai, sign in with GitHub, Add server | To do: `glama.json` is in the repo |
 | awesome-mcp-servers (punkpeye) | local | PR, with the Glama badge | After Glama |
