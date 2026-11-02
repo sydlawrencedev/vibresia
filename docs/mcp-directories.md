@@ -20,7 +20,7 @@ directory asks for it. Two servers:
 | awesome-mcp-servers (punkpeye) | local | PR, with the Glama badge | After Glama |
 | Smithery | — | — | Closed to submissions: since 2026-10-31 it is a curated, read-only directory run by Arcade, with no accounts |
 | mcp.so | remote | Free review request as a GitHub issue (the site's form only offers the $39 option) | [chatmcp/mcpso#6615](https://github.com/chatmcp/mcpso/issues/6615) |
-| mcpservers.org | both | mcpservers.org/submit (free, reviewed) | To do: asks for a contact email |
+| mcpservers.org | remote | mcpservers.org/submit, free plan, contact syd@minithlabs.com | Submitted 2026-11-02; review within 2 weeks, approval comes by email |
 | Cursor directory | remote | cursor.directory, Submit a plugin, Manual, MCP Server component | Submitted 2026-11-02 at [cursor.directory/plugins/vibresia-music-visualiser](https://cursor.directory/plugins/vibresia-music-visualiser); hidden until its security scan finishes. No logo yet |
 
 To publish a new version to the official registry, bump `version` in
