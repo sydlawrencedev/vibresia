@@ -97,6 +97,10 @@ struct AboutButton: View {
 
             Divider().overlay(Color.white.opacity(0.1))
 
+            ListeningToggle()
+
+            Divider().overlay(Color.white.opacity(0.1))
+
             AnalyticsToggle()
 
             Divider().overlay(Color.white.opacity(0.1))
@@ -222,6 +226,51 @@ private struct WindowToggles: View {
                     .foregroundStyle(Color(white: 0.45))
                     .fixedSize(horizontal: false, vertical: true)
             }
+        }
+    }
+}
+
+/// "Identify by listening" — naming the song by ear.
+///
+/// The music apps say what they are playing, and the app looks that name up
+/// in Apple's catalogue. This is the other way round: it asks Apple's
+/// catalogue to name what it hears, which works for a browser or a film too.
+///
+/// It sends a fingerprint of the sound to Apple, so it is off until somebody
+/// turns it on — the same line the analytics toggle draws, and for the same
+/// reason: what leaves the machine is the person's decision.
+private struct ListeningToggle: View {
+    @EnvironmentObject var app: AppState
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Toggle(isOn: Binding(get: { app.identifyByListening },
+                                 set: { app.identifyByListening = $0 })) {
+                Text("Identify by listening")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(.white)
+            }
+            .toggleStyle(.switch)
+            .controlSize(.mini)
+            .help("When the music apps don't say what is playing, Vibresia can ask Apple's catalogue instead. A one-way fingerprint of a few seconds of sound is sent to Apple to name the track.")
+
+            Text(detail)
+                .font(.system(size: 9))
+                .foregroundStyle(Color(white: 0.45))
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var detail: String {
+        switch app.listeningState {
+        case .off:
+            return "Off. When it's on, a one-way fingerprint of a few seconds of sound goes to Apple to name the track, and only when the music apps don't say."
+        case .idle:
+            return "On. Vibresia asks Apple's catalogue when the music apps don't say what is playing."
+        case .working:
+            return "Asking Apple's catalogue…"
+        case .notAllowed:
+            return "Unavailable: Apple hasn't granted this app the ShazamKit entitlement, so it can't ask. Nothing is sent until it has."
         }
     }
 }

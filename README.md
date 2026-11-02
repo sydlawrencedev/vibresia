@@ -373,10 +373,12 @@ playing. Two ways, and they sit side by side:
   browser, a film — rather than only with the players that post
   notifications. `VisualiserMac/Sources/VisualiserMac/Audio/ShazamIdentifier.swift`.
 
-The first one is what ships. The second one is behind a flag, because
-matching against Shazam's catalogue needs the app to be *allowed* to ask,
-and being allowed is decided by the ShazamKit service on the app's identifier
-in the developer portal.
+The first one is what ships. The second one is behind a setting in the app
+(**Identify by listening**, in the About panel), because matching against
+Shazam's catalogue needs the app to be *allowed* to ask, and being allowed is
+decided by the ShazamKit service on the app's identifier — and because it
+sends a fingerprint of the sound to Apple, which is the person's decision to
+make rather than ours.
 
 ### What ShazamKit needs, and why it isn't on by default
 
@@ -396,8 +398,15 @@ The same app without the entitlement runs, and the match comes back
 `com.apple.ShazamCore error 102` — "not allowed", not "not found".
 
 So the entitlement is opt-in (`SHAZAMKIT=1`) and only worth turning on once
-the ShazamKit service is enabled for `com.minithlabs.visualiser` in the
-developer portal *and* Apple grants it for a Developer ID signature.
+Apple grants it for a Developer ID signature. There is no switch in the
+portal for it: it has to be requested, and the request is written out in
+[docs/shazamkit-entitlement-request.md](docs/shazamkit-entitlement-request.md).
+
+The feature itself ships now and behaves properly in the meantime. With the
+setting on and the entitlement missing, the app asks once, is told "not
+allowed", switches the feature off and says why — it does not keep asking,
+and it does not fall over. The day the entitlement is granted, a rebuild
+with `SHAZAMKIT=1` is all that is needed.
 
 The spike is still here, because that question deserves an answer rather
 than a forum post:
@@ -423,6 +432,14 @@ song — and a wrong song means a wrong genre on the stage, so a result that
 isn't clearly the right song is thrown away rather than used. When the
 catalogue doesn't know the song, the app falls back to the audio heuristic
 it has always used, and nothing is lost.
+
+The one thing that can leave the machine is a **fingerprint**, and only if
+the person turns on **Identify by listening**: a one-way signature of about
+four seconds of sound, made by Apple's own framework, which cannot be
+turned back into audio. It goes to Apple's Shazam service to name the
+track, and the app never sees it. It is off until it is switched on, and
+switching it off stops it — see
+[the privacy page](site/privacy.html) for how it is described there.
 
 To try the lookup without a music app in the picture:
 

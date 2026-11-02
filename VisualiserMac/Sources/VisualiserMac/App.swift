@@ -866,6 +866,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                         NSLog("[SHAZAM] genres: \(match.genres.joined(separator: ", "))")
                     case .noMatch:
                         NSLog("[SHAZAM] the catalogue didn't know it")
+                    case .notAllowed:
+                        NSLog("[SHAZAM] not allowed to ask: Apple's ShazamKit service hasn't granted this app the entitlement")
                     case .failed(let reason):
                         NSLog("[SHAZAM] failed: \(reason)")
                     }

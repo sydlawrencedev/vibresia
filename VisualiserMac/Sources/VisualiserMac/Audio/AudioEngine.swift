@@ -119,6 +119,32 @@ final class AudioEngine: ObservableObject {
         return buffer
     }
 
+    /// The last few seconds of audio, copied rather than taken.
+    ///
+    /// `recentAudioBuffer` consumes: it marks what it took as read, so the
+    /// analyzer's next window comes up short and the beat detection skips a
+    /// frame. This copies instead, so the song matcher and the analysis can
+    /// have the same samples.
+    ///
+    /// Both readers are on the main thread — the analyzer runs in the render
+    /// loop, and this is called from the app's housekeeping timer — so they
+    /// never race each other for the buffer.
+    func recentAudioCopy(seconds: Double) -> AVAudioPCMBuffer? {
+        let sampleRate = ringBuffer.sampleRate
+        let wanted = Int(seconds * sampleRate)
+        guard wanted > 0 else { return nil }
+        let written = ringBuffer.totalWritten
+        guard written >= wanted else { return nil }
+        guard let format = AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1),
+              let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(wanted)) else {
+            return nil
+        }
+        buffer.frameLength = AVAudioFrameCount(wanted)
+        guard let samples = buffer.floatChannelData?[0] else { return nil }
+        guard ringBuffer.copy(from: written - wanted, count: wanted, into: samples) else { return nil }
+        return buffer
+    }
+
     // MARK: - Source switching
 
     // Still filed under the old name, so the chosen source survives the rename.

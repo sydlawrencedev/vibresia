@@ -143,9 +143,9 @@ cat > "$APP_BUNDLE/Contents/Info.plist" <<EOF
     <key>NSHighResolutionCapable</key>
     <true/>
     <key>NSMicrophoneUsageDescription</key>
-    <string>Vibresia listens to the microphone so it can visualize ambient sound. No audio is stored or transmitted.</string>
+    <string>Vibresia listens to the microphone so it can visualize ambient sound. The sound is analysed on your Mac; if you turn on "Identify by listening", a one-way fingerprint of a few seconds is sent to Apple to name the track.</string>
     <key>NSAudioCaptureUsageDescription</key>
-    <string>Vibresia listens to system audio so it can visualize whatever is playing on your Mac. No audio is stored or transmitted.</string>
+    <string>Vibresia listens to system audio so it can visualize whatever is playing on your Mac. The sound is analysed on your Mac; if you turn on "Identify by listening", a one-way fingerprint of a few seconds is sent to Apple to name the track.</string>
     <key>PostHogKey</key>
     <string>${POSTHOG_KEY}</string>
     <key>PostHogHost</key>

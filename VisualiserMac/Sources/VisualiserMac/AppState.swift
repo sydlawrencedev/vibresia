@@ -98,6 +98,26 @@ final class AppState: ObservableObject {
     /// the song, where the detector is a guess from the sound, so it wins
     /// while it lasts.
     @Published private(set) var nowPlaying: SongIdentifier.Song?
+    /// Whether to name the song by listening to it, for the times the music
+    /// apps don't say what is playing.
+    ///
+    /// Off by default, and it stays off until somebody turns it on: it sends
+    /// a fingerprint of the sound to Apple, and "your audio stays on your Mac"
+    /// is a promise the app doesn't get to break on its own.
+    @Published var identifyByListening: Bool = false {
+        didSet {
+            guard identifyByListening != oldValue else { return }
+            Self.savedIdentifyByListening = identifyByListening
+            // Turning it off and on again is how somebody retries after Apple
+            // grants the entitlement, so the state starts over rather than
+            // staying stuck on "not allowed".
+            listeningState = identifyByListening ? .idle : .off
+            lastListeningAttempt = nil
+            matchInFlight = false
+        }
+    }
+    /// What the listener is doing.
+    @Published private(set) var listeningState: ListeningState = .off
     /// While auto-scanning, the vibescape currently on screen. Mirrors the
     /// renderer's scanner so the header can show what's playing right now.
     @Published private(set) var scanTarget: VibescapeID = .builtin(.tunnel)
@@ -191,6 +211,9 @@ final class AppState: ObservableObject {
         // back to Rock. Genre *detection* still re-arms per song as usual.
         self.genre = Self.savedGenre
         self.renderer.genre = self.genre
+        // Whether to name the song by listening is the person's choice, so it
+        // survives a relaunch rather than quietly resetting.
+        self.identifyByListening = Self.savedIdentifyByListening
         // `--autoscan` starts straight into the scanner (used for testing).
         if CommandLine.arguments.contains("--autoscan") {
             self.activeVibescape = .builtin(.autoScan)
@@ -258,6 +281,7 @@ final class AppState: ObservableObject {
             self?.expireSongIfNeeded()
             self?.pumpAutoGenre()
             self?.refreshNowPlaying()
+            self?.refreshSongByListening()
             self?.syncScanTarget()
             self?.writeEvalLine()
             self?.refreshCrashState()
@@ -1630,7 +1654,10 @@ final class AppState: ObservableObject {
     /// seconds, and by the time it answers the person may have skipped to
     /// another song, in which case the answer is about a song that isn't
     /// playing any more.
-    private func applySong(_ song: SongIdentifier.Song, forChange change: Int) {
+    ///
+    /// `source` says where the answer came from — the catalogue lookup by
+    /// name, or Shazam's catalogue by ear — so the two can be told apart.
+    private func applySong(_ song: SongIdentifier.Song, forChange change: Int, source: String = "catalogue") {
         guard change == songLookupChange else { return }
         // A song we already know about: the same track change can be seen
         // more than once, and the answer won't have changed.
@@ -1652,6 +1679,7 @@ final class AppState: ObservableObject {
                 "genre": song.catalogueGenre,
                 "genre_id": song.genre?.rawValue ?? -1,
                 "known": song.genre != nil,
+                "source": source,
             ])
         }
     }
@@ -1663,6 +1691,107 @@ final class AppState: ObservableObject {
         songGenre = nil
         songGenreUntil = nil
         nowPlaying = nil
+    }
+
+    // MARK: - Naming the song by listening
+
+    /// What the listener is doing.
+    enum ListeningState: Equatable {
+        /// Off: the person hasn't asked for it.
+        case off
+        /// On, and waiting for something worth matching.
+        case idle
+        /// On, and asking Apple's catalogue now.
+        case working
+        /// On, but the app isn't allowed to ask.
+        ///
+        /// Apple's ShazamKit service decides that on the app's identifier, and
+        /// nothing in the app can change it — it needs an entitlement Apple
+        /// grants for a Developer ID build. So this is the end of the road
+        /// until then, and the app says so instead of trying every minute.
+        case notAllowed
+    }
+
+    /// How long to wait between attempts.
+    ///
+    /// A match needs several seconds of sound and a round trip to Apple, and
+    /// the person asked for a visualiser, not a song title. Once a minute is
+    /// often enough to catch a track and rare enough not to pester anybody.
+    private static let listeningCooldown: TimeInterval = 60
+
+    /// When the last attempt was made, so the cooldown has something to count
+    /// from.
+    private var lastListeningAttempt: Date?
+
+    /// Whether a match is in flight, so the timer doesn't start a second one
+    /// while the first is still waiting for Apple.
+    private var matchInFlight = false
+
+    /// Asks Shazam's catalogue what is playing, when there's a reason to.
+    ///
+    /// The music apps say what they are playing and the app looks that name
+    /// up in Apple's catalogue. This is the other way round: it listens, so it
+    /// works for a browser or a film, and for a music app whose song isn't in
+    /// the catalogue. It only runs when the app doesn't already know what the
+    /// song is — the cheap answer wins.
+    private func refreshSongByListening() {
+        guard identifyByListening, listeningState != .notAllowed else { return }
+        guard nowPlaying == nil else { return }
+        guard !matchInFlight else { return }
+        // Nothing to match in silence, and the demo tone isn't a song.
+        guard audio.sourceState == .live, audio.isSounding else { return }
+        let now = Date()
+        guard now.timeIntervalSince(lastListeningAttempt ?? .distantPast) >= Self.listeningCooldown else { return }
+        guard let buffer = audio.recentAudioCopy(seconds: ShazamIdentifier.seconds) else { return }
+
+        matchInFlight = true
+        lastListeningAttempt = now
+        listeningState = .working
+        // The track change the attempt was for: a match takes seconds to come
+        // back, and by then the person may have skipped to another song, in
+        // which case the answer is about a song that isn't playing.
+        let change = audio.tracks.changeCount
+        Task { [weak self] in
+            let outcome = await ShazamIdentifier().match(buffer)
+            await MainActor.run { self?.applyListeningOutcome(outcome, forChange: change) }
+        }
+    }
+
+    /// Takes what Shazam said and puts it on the stage.
+    private func applyListeningOutcome(_ outcome: ShazamIdentifier.Outcome, forChange change: Int) {
+        matchInFlight = false
+        switch outcome {
+        case .notAllowed:
+            listeningState = .notAllowed
+            NSLog("[SHAZAM] not allowed to ask: Apple's ShazamKit service hasn't granted this app the entitlement")
+            CrashReporter.shared.log("shazam not allowed")
+        case .matched(let match):
+            listeningState = .idle
+            // The track may have changed while the answer was on its way.
+            guard change == audio.tracks.changeCount else { return }
+            // Shazam's catalogue says what genre the song is, in its own
+            // words, and it goes through the same mapping as the other one.
+            let genreName = match.genres.first ?? ""
+            let song = SongIdentifier.Song(
+                title: match.title,
+                artist: match.artist,
+                catalogueGenre: genreName,
+                genre: GenreMapping.genre(for: genreName))
+            applySong(song, forChange: change, source: "shazam")
+        case .noMatch:
+            listeningState = .idle
+        case .failed(let reason):
+            listeningState = .idle
+            NSLog("[SHAZAM] match failed: \(reason)")
+        }
+    }
+
+    /// Whether the person asked for the song to be named by listening. Kept
+    /// between launches, because it is their choice and not a setting that
+    /// should quietly reset.
+    private static var savedIdentifyByListening: Bool {
+        get { UserDefaults.standard.bool(forKey: "vibresia.identifyByListening") }
+        set { UserDefaults.standard.set(newValue, forKey: "vibresia.identifyByListening") }
     }
 }
 
