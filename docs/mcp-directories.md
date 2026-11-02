@@ -15,7 +15,8 @@ directory asks for it. Two servers:
 | awesome-remote-mcp-servers | remote | PR | [jaw9c/awesome-remote-mcp-servers#1912](https://github.com/jaw9c/awesome-remote-mcp-servers/pull/1912) |
 | Claude Connectors Directory | remote | claude.ai/directory/manage, paid plan | In review as "Vibresia Music Visualiser" (slug `vibresia-music-visualiser`), submitted 2026-11-02 |
 | ChatGPT apps | remote | OpenAI Platform dashboard | To do: needs org verification, a demo video, domain token |
-| Glama | both | glama.ai, sign in with GitHub, Add server | To do: `glama.json` is in the repo |
+| Glama (hosted) | remote | Imported from the official registry; claimed via `/.well-known/glama.json` | Ownership verified. Health checks fail with 403 from Cloudflare before reaching the worker |
+| Glama (source) | local | glama.ai, Add Server, Runs from source | Submitted for review 2026-11-02. Glama will ask for a Dockerfile, which a macOS app can't provide |
 | awesome-mcp-servers (punkpeye) | local | PR, with the Glama badge | After Glama |
 | Smithery | remote | smithery.ai, sign in | To do |
 | mcp.so | both | mcp.so/submit (free, reviewed) | To do |
