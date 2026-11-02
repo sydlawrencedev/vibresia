@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Small on purpose: only URLs that are meant to be in search results
      belong here, and that is the homepage, the page about setting up an AI
-     assistant, and the two plain-text pages an assistant reads (install.md,
-     llms.txt). Submit to Google Search Console at
+     assistant, and the author page the search pages' bylines point to.
+     The search pages have their own sitemap, /sitemaps/blog.xml (listed in
+     robots.txt). Submit both to Google Search Console at
      https://search.google.com/search-console/sitemaps/submit
      after each `npx wrangler deploy`.
 
@@ -21,5 +22,11 @@
     <lastmod>2026-10-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vibresia.com/author/syd-lawrence</loc>
+    <lastmod>2026-11-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
   </url>
 </urlset>

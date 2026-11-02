@@ -39,7 +39,8 @@ export const BANNED = [
 const AUTHOR = {
     "@type": "Person",
     name: "Syd Lawrence",
-    url: "https://github.com/sydlawrencedev",
+    "@id": "https://vibresia.com/author/syd-lawrence#person",
+    url: "https://vibresia.com/author/syd-lawrence",
     sameAs: ["https://github.com/sydlawrencedev", "https://minithlabs.com"],
 };
 
@@ -379,7 +380,7 @@ ${partial("nav.html")}
   <main>
     <p class="eyebrow">${escapeHtml(page.eyebrow)}</p>
     <h1>${escapeHtml(page.h1)}</h1>
-    <p class="byline">By Syd Lawrence, who makes Vibresia. Facts last checked ${longDate(verifiedISO)}; updated ${longDate(page.updatedISO)}.</p>
+    <p class="byline">By <a href="/author/syd-lawrence">Syd Lawrence</a>, who makes Vibresia. Facts last checked ${longDate(verifiedISO)}; updated ${longDate(page.updatedISO)}.</p>
     <p class="answer">${page.answer}</p>
     ${table}
     ${cta(page, "top", page.cta)}

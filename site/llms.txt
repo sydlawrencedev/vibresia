@@ -14,3 +14,11 @@ To install for a user, run `curl -fsSL https://vibresia.com/install.sh | bash`, 
 - [Issues](https://github.com/sydlawrencedev/vibresia/issues)
 - [Contributing](https://github.com/sydlawrencedev/vibresia/blob/main/CONTRIBUTING.md): new vibescapes especially welcome
 - [Setting up an AI assistant](https://vibresia.com/agents): point any MCP-capable agent at Vibresia so it can write vibescapes itself
+
+## Comparisons
+
+Every fact about another app on these pages comes from that app's own site, store listing or code, with the date it was checked. Vibresia's maker wrote them, and each one says where another app is the better choice.
+
+- [The best music visualizer for Mac in 2026](https://vibresia.com/blog/best-music-visualizer-for-mac-2026): seven Mac visualisers with prices, strengths and weaknesses
+- [MilkDrop alternatives for Mac in 2026](https://vibresia.com/blog/milkdrop-alternatives-mac-2026): five ways to get MilkDrop-style visuals on a Mac
+- [Does MilkDrop work on Mac?](https://vibresia.com/blog/does-milkdrop-work-on-mac): no; what does instead
