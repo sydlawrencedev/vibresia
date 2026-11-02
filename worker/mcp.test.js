@@ -79,10 +79,14 @@ function makeEnv() {
     };
 }
 
-async function rpc(env, method, params, id = 1) {
+async function rpc(env, method, params, id = 1, address = "203.0.113.1") {
     const request = new Request("https://vibresia.com/mcp", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json, text/event-stream" },
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream",
+            "CF-Connecting-IP": address,
+        },
         body: JSON.stringify({ jsonrpc: "2.0", id, method, params }),
     });
     const response = await handleMcp(request, env);
@@ -90,8 +94,8 @@ async function rpc(env, method, params, id = 1) {
     return response.json();
 }
 
-function callTool(env, name, args) {
-    return rpc(env, "tools/call", { name, arguments: args });
+function callTool(env, name, args, address) {
+    return rpc(env, "tools/call", { name, arguments: args }, 1, address);
 }
 
 /// The text of a tool's answer, taking the JSON-RPC envelope off it.
@@ -204,6 +208,14 @@ test("making a vibescape gives back a link", async () => {
     const text = textOf(result);
     assert.match(text, /https:\/\/vibresia\.com\/s\/[a-z2-9]{6}/);
     assert.ok(text.includes("not in the public gallery yet"));
+});
+
+test("one address making vibescapes too fast slows itself down and nobody else", async () => {
+    const { env } = makeEnv();
+    const args = { code: "vec3 render(vec2 p, float t) { return vec3(uBass); }", name: "Quick" };
+    assert.equal(isError(await callTool(env, "create_vibescape", args, "203.0.113.1")), false);
+    assert.equal(isError(await callTool(env, "create_vibescape", args, "203.0.113.1")), true);
+    assert.equal(isError(await callTool(env, "create_vibescape", args, "198.51.100.7")), false);
 });
 
 test("a vibescape that is made is not in the gallery until it is shared", async () => {

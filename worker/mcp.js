@@ -260,21 +260,29 @@ function randomShareId() {
 const CREATE_SECONDS_BETWEEN = 5;
 const CREATE_MAX_PER_HOUR = 30;
 const SHARE_MAX_PER_HOUR = 60;
-const createLog = { last: 0, count: 0, hour: 0 };
-const shareLog = { last: 0, count: 0, hour: 0 };
+/// One log per address, so one busy script slows itself down and nobody else.
+/// They live in the isolate's memory only: an address is never written down,
+/// and the logs go when the isolate does.
+const createLogs = new Map();
+const shareLogs = new Map();
+/// How many addresses to remember before the oldest are forgotten, so the
+/// maps cannot grow without end.
+const MAX_ADDRESSES = 5000;
 
 /// Clears the rate limiters. Exported so the tests can start from a clean
 /// slate, and so a deliberate reset is possible.
 export function resetMcpRateLimiters() {
-    createLog.last = 0;
-    createLog.count = 0;
-    createLog.hour = 0;
-    shareLog.last = 0;
-    shareLog.count = 0;
-    shareLog.hour = 0;
+    createLogs.clear();
+    shareLogs.clear();
 }
 
-function rateLimited(log, secondsBetween, maxPerHour) {
+function rateLimited(logs, address, secondsBetween, maxPerHour) {
+    let log = logs.get(address);
+    if (!log) {
+        if (logs.size >= MAX_ADDRESSES) logs.delete(logs.keys().next().value);
+        log = { last: 0, count: 0, hour: 0 };
+        logs.set(address, log);
+    }
     const now = Date.now();
     if (now - log.hour > 3_600_000) {
         log.hour = now;
@@ -411,7 +419,7 @@ async function callTool(params, env, request) {
             const name = typeof args.name === "string" ? args.name.trim() : "";
             if (code.trim() === "") return textResult("Give it some code to draw with.", true);
             if (name === "") return textResult("Give it a name.", true);
-            if (rateLimited(createLog, CREATE_SECONDS_BETWEEN, CREATE_MAX_PER_HOUR)) {
+            if (rateLimited(createLogs, clientAddress(request), CREATE_SECONDS_BETWEEN, CREATE_MAX_PER_HOUR)) {
                 return textResult("That is a lot of vibescapes in a short time. Try again in a moment.", true);
             }
             const payload = await encodePayload({
@@ -450,7 +458,7 @@ async function callTool(params, env, request) {
             if (!SHARE_ID_PATTERN.test(id)) {
                 return textResult("That is not a share id. It is the last six characters of the link.", true);
             }
-            if (rateLimited(shareLog, 1, SHARE_MAX_PER_HOUR)) {
+            if (rateLimited(shareLogs, clientAddress(request), 1, SHARE_MAX_PER_HOUR)) {
                 return textResult("That is a lot of shares in a short time. Try again in a moment.", true);
             }
             const row = await env.SHARES.prepare("SELECT id FROM shares WHERE id = ?").bind(id).first();
