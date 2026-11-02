@@ -39,6 +39,15 @@ who should pick the other one.
   its site" to "US$199, one-time", and it links to the new comparison.
 - Resolume stays a "later" referee list, with no head-to-head: its
   searchers want another VJ tool, and Vibresia isn't one.
+- New hub `/comparison` lists every head-to-head, is in the comparisons
+  sitemap and is linked from every page's footer. Each head-to-head links to
+  the hub and to every other head-to-head ("More comparisons").
+- New check `scripts/check-links.mjs` (in `npm test` and the release
+  script): every sitemap page must be reachable from the homepage, and no
+  internal link may lead nowhere. Deepest sitemap page is two clicks from
+  the homepage.
+- Price cells for an app with a free tier beside paid ones now read "Free
+  version; paid from ..." instead of "Free" (TouchDesigner on the hub).
 
 ## 2026-11-02 (not yet deployed): batch 1
 

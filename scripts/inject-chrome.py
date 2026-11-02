@@ -43,6 +43,7 @@ def pages(root):
                 found.append(f"site/share/{name}")
     # The search pages are generated too (scripts/generate-seo-pages.mjs),
     # from the same partials.
+    found.append("site/comparison.html")  # the comparisons hub
     for section in ("blog", "comparison"):
         folder = os.path.join(root, "site", section)
         if os.path.isdir(folder):

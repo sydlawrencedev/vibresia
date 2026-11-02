@@ -32,6 +32,9 @@ node ../scripts/check-competitors.mjs
 # The search pages are generated from content/pages/ and those records;
 # a page that's stale, thin or uses a banned phrase stops the release.
 node ../scripts/generate-seo-pages.mjs --check
+# No orphans: every page in a sitemap is reachable by links from the
+# homepage, and no internal link leads nowhere (docs/seo.md, Phase 4).
+node ../scripts/check-links.mjs
 ../scripts/check-posthog.sh
 ../scripts/check-no-webhook-leak.sh
 # The share page embeds a copy of the app's shaders, because a browser can't

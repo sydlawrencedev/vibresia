@@ -11,11 +11,13 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { DATA } from "./check-competitors.mjs";
-import { render, loadPages, helpers, money, longDate, pathOf, MIN_WORDS } from "./generate-seo-pages.mjs";
+import { render, renderHub, loadPages, helpers, money, longDate, pathOf, HUB, MIN_WORDS } from "./generate-seo-pages.mjs";
+import { check as checkLinks, crawl, linksIn } from "./check-links.mjs";
 
 const records = JSON.parse(fs.readFileSync(DATA, "utf8"));
 const pages = await loadPages(records);
-const built = pages.map(({ fn, page }) => ({ page, html: render(fn, records) }));
+const all = pages.map((p) => p.page);
+const built = pages.map(({ fn, page }) => ({ page, html: render(fn, records, all) }));
 
 const filler = Array(MIN_WORDS).fill("word").join(" ");
 
@@ -85,6 +87,32 @@ test("every page file is a planned row in the URL plan, with one URL per query",
         assert.ok(row, `${pathOf(page)} isn't in content/url-plan.csv`);
         assert.notEqual(row[1], "later", `${page.slug} is built but planned for later`);
         assert.equal(row[5], page.template, `${page.slug} is planned as template ${row[5]}`);
+    }
+});
+
+test("no page in a sitemap is an orphan, and no internal link is broken", () => {
+    const { orphans, broken } = checkLinks();
+    assert.deepEqual(orphans, [], "pages no link from the homepage reaches");
+    assert.deepEqual(broken, [], "internal links to pages that don't exist");
+});
+
+test("the orphan check does catch an orphan", () => {
+    const pages = new Map([["/", '<a href="/a">a</a>'], ["/a", ""], ["/b", '<a href="/">home</a>']]);
+    const { reached, broken } = crawl(pages);
+    assert.ok(!reached.has("/b"), "a page nothing links to was reached");
+    assert.deepEqual(crawl(new Map([["/", '<a href="/nowhere">x</a>']])).broken, ["/ → /nowhere"]);
+    assert.deepEqual([...linksIn('<a href="https://vibresia.com/x?y=1#z">')], ["/x"]);
+});
+
+test("the comparisons hub lists every head-to-head, and each links back to it and to the others", () => {
+    const comparisons = all.filter((p) => p.versus);
+    const hub = renderHub(comparisons, records);
+    for (const c of comparisons) assert.ok(hub.includes(`href="${pathOf(c)}"`), `the hub doesn't list ${c.slug}`);
+    for (const { page, html } of built.filter((b) => b.page.versus)) {
+        assert.ok(html.includes(`href="${HUB.path}"`), `${page.slug} doesn't link to the hub`);
+        for (const other of comparisons.filter((c) => c.slug !== page.slug)) {
+            assert.ok(html.includes(`href="${pathOf(other)}"`), `${page.slug} doesn't link to ${other.slug}`);
+        }
     }
 });
 
