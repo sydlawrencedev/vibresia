@@ -19,7 +19,7 @@ Recurring dates:
 - **Eight weeks after launch**: decide which `later` rows in
   `content/url-plan.csv` to build, from impressions.
 
-## 2026-11-02 (not yet deployed): batch 3
+## 2026-11-02 (deployed 2026-11-02): batch 3
 
 Four more head-to-heads, chosen by "{competitor} alternative(s)" demand in
 Google autocomplete (2026-11-02), where Vibresia is a real answer for the
@@ -47,6 +47,21 @@ searcher. Author: Syd Lawrence.
   what done means, git, first-wave volume, and delegating to sub-agents.
   2c now lives at `/comparison/{product}-vs-{competitor}` and covers the
   singular "{competitor} alternative" query.
+
+Checked live on 2026-11-02: the four pages and the updated hub return 200
+with their own canonical and JSON-LD; `/sitemaps/comparisons.xml` lists 7
+URLs; `llms.txt` lists every comparison.
+
+Core Web Vitals, 2026-11-02 (lab, in a browser at 375px, not throttled; the
+PageSpeed Insights API was over its keyless daily quota): best-of and
+head-to-head pages are about 65 KB in total with no layout shift (CLS 0) and
+a 30-170 ms time to first byte. The two render-blocking requests are the
+Google Fonts stylesheet and `/chrome.css`. Paint timings need a foreground
+tab or PageSpeed Insights; take field data from Search Console once the
+pages have traffic.
+
+`docs/seo.md` also gained "Keep the playbook moving": five qualifying
+questions at the end of every step.
 
 ## 2026-11-02 (deployed 2026-11-02): batch 2
 

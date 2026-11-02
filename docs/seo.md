@@ -19,6 +19,8 @@ Everything else runs without asking: research, records, validators, generators, 
 
 **Done means done.** A batch is finished when its pages are built, every check passes, the pages have been looked at in a browser at phone and desktop width, it's committed, and (if the kick-off allows it) merged and pushed. After a deploy, "done" also means the live checks have run: pages, sitemaps, redirects, structured data, analytics arriving. Don't end a turn with a list of what's left when the next item needs no person: do it.
 
+**Keep the playbook moving.** The agent's job isn't finished until the playbook is, so it keeps steering towards that. At the end of every step it says which phase is next and what finishing it gets the owner, then asks **five qualifying questions** whose answers decide how to proceed: which template to build next, what the owner can supply (credentials, first-hand testing, a confirmed price), what may run without asking, what to measure. Each is multiple choice with the agent's recommendation first, so answering takes seconds. Don't ask what the code, the data or a check can answer, and don't let the questions replace work that needs no answer: do that work, then ask.
+
 **Git.** Say in the kick-off whether the agent may commit, merge to the main branch and push. If it may, it does all three when the checks pass, without asking for each. If it may not, it asks once per batch ("commit, merge and push?"), not once per step.
 
 **Volume.** Phase 6 says launch in waves of about 50 pages per template. The first wave is every row in the URL plan that has demand evidence and a complete record, up to that number. Don't start with three pages and wait to be asked for more.
