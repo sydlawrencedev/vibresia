@@ -13,6 +13,7 @@ export default (h) => ({
     h1: "Resolume vs TouchDesigner: a VJ application or a programming environment?",
     answer: `Pick ${h.link("resolume")} if you want a ready-made VJ application for playing video to screens and projectors at a gig or a venue. Pick ${h.link("touchdesigner")} if you want to build your own live visuals, installations or interactive pieces from nodes, and don't mind building before anything plays. They're different kinds of tool, but both are used for live visuals, which is why people starting out often weigh one against the other.`,
     cta: "Try Vibresia free",
+    connections: true,
     rows: [
         { label: "What it is", value: (h, s) => h.rec(s).tagline },
         { label: "Best for", value: (h, s) => h.rec(s).bestFor },
@@ -35,6 +36,7 @@ export default (h) => ({
             h2: "Where Resolume wins",
             html: `<p><b>It's made for the gig.</b> Resolume is for working VJs and venues running video on screens and projectors. Avenue and Arena are ${h.strength("resolume", 0).replace(/^An/, "an")}. If your job is to turn up and run visuals for a night, you start with an application built around that job, not an empty project.</p>
     <p><b>You can add your own tools later.</b> Resolume also sells Wire, a visual programming tool for building your own effects and generators. It's a separate licence at ${h.cost("resolume", "Wire")}, so you can start with Avenue and add Wire if you find you want to build.</p>
+    <p><b>Arena is where the show features live.</b> Projection mapping, edge blending, SMPTE timecode input, DMX control, capture card output, and groups and slice transforms are Arena only, so a rig that needs any of them needs Arena rather than Avenue.</p>
     <p><b>You can try it for as long as you like.</b> Resolume is free to use indefinitely. The catch is that video output has a Resolume watermark and audio has a robot voice until you enter a serial number. That's enough to learn the software, not to play a paid show.</p>`,
         },
         {
@@ -48,7 +50,8 @@ export default (h) => ({
             html: `<p><b>Paid work costs money with either.</b> Neither has a free option you can use for a paid job. Resolume's free version watermarks the video, and TouchDesigner's free licence rules out paid work. The cheapest paid route is ${h.cost("resolume", "Avenue")} for Avenue or ${h.cost("touchdesigner", "Commercial")} for TouchDesigner Commercial.</p>
     <p><b>Updates run out.</b> Both sell perpetual licences, which is good: you own what you paid for. But Resolume includes 12 months of updates and TouchDesigner a year. After that, the software keeps working, but new versions aren't included.</p>
     <p><b>Neither is a shortcut.</b> Resolume gives you an application, but you still bring the content and run the show. TouchDesigner gives you the parts, and you build the rest. Either way, the visuals are only as good as the work you put in.</p>
-    <p><b>Only Mac and Windows.</b> Both list macOS and Windows and nothing else. TouchDesigner on a Mac needs ${h.rec("touchdesigner").requirements.split(";")[0]}.</p>`,
+    <p><b>Only Mac and Windows.</b> Both list macOS and Windows and nothing else. TouchDesigner on a Mac needs ${h.rec("touchdesigner").requirements.split(";")[0]}.</p>
+    <p><b>Both cap what you can drive.</b> Resolume's number of outputs is limited by the graphics card, to five outputs and a control monitor, and a registered licence on a machine that stays offline has to check in every 30 days or the watermark comes back. TouchDesigner shares textures over shared memory, so its Syphon and Spout work only on the computer it is running on and cannot send a texture to another machine, and its free licence leaves the shared memory operators out altogether.</p>`,
         },
         {
             h2: "What it costs",

@@ -316,6 +316,20 @@
           <tr><th scope="row">Best for</th><td>Artists and developers building interactive installations, live visuals and generative work.</td><td>VJs and visual artists building live shows, installations or projection work on a Mac.</td></tr>
         </tbody>
       </table></div>
+    <h2>Control and connections</h2>
+    <div class="table-scroll"><table class="versus">
+        <thead><tr><th scope="col"></th><th scope="col">TouchDesigner</th><th scope="col">VDMX</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">MIDI</th><td><b>Yes</b>: TouchDesigner reads MIDI with the MIDI In CHOP and sends MIDI with the MIDI Out CHOP, which can address any available MIDI device.</td><td><b>Yes</b>: VDMX sends and receives standard MIDI messages with multiple devices and software, and by default enables and receives from every MIDI input the system detects.</td></tr>
+          <tr><th scope="row">OSC</th><td><b>Yes</b>: TouchDesigner supports Open Sound Control through four operators, the OSC In CHOP and OSC Out CHOP for CHOP channels and the OSC In DAT and OSC Out DAT for raw messages, all over UDP.</td><td><b>Yes</b>: VDMX sends and receives OSC to and from multiple network addresses, and adds OSCQuery so it can publish its parameters for remote control and browse other software's address space.</td></tr>
+          <tr><th scope="row">Syphon</th><td><b>Yes</b>: Syphon is supported on macOS by the Syphon Spout In TOP and Syphon Spout Out TOP, which share textures with other applications through shared memory, with Syphon restricted to 8-bit RGBA.</td><td><b>Yes</b>: VDMX can publish and receive any number of video feeds over Syphon.</td></tr>
+          <tr><th scope="row">Spout</th><td><b>Yes</b>: Spout is supported on Windows by the same two operators, and requires an Nvidia or AMD GPU because Intel does not work, with Spout limited by default to 10 active senders per computer.</td><td><b>No</b>: Spout is a shared-memory video system for Windows, and VDMX runs only on macOS, so it has no Spout input or output.</td></tr>
+          <tr><th scope="row">NDI</th><td><b>Yes</b>: NDI is built in as native operators, the NDI In TOP, NDI Out TOP and NDI DAT, using the NDI SDK bundled with each build, with no documented limit on frame rate or resolution beyond the hardware, while multi-cast configuration is done outside TouchDesigner with the separate NDI Access Manager tool.</td><td><b>Yes</b>: VDMX can send and receive any number of video feeds over NDI, with the NDI Output plugin publishing streams to the network.</td></tr>
+          <tr><th scope="row">DMX</th><td><b>Yes</b>: The DMX Out CHOP sends channels to DMX, Art-Net, sACN, KiNET and FTDI devices, and a DMX In CHOP receives DMX, with DMX512 hardware limited to a 44Hz refresh rate.</td><td><b>Yes</b>: VDMX sends and receives DMX over Art-Net to and from multiple universes, and its Video To DMX plugin converts video pixels into DMX values.</td></tr>
+          <tr><th scope="row">Video in and out</th><td><b>Yes</b>: Video input comes from the Video Device In TOP for external cameras, capture cards, capture dongles, IP cameras and decoders, with several devices able to stream at once, while output goes to the screen, to SDI and HDMI cards via the Video Device Out TOP, or to TouchPlayer for standalone playback; the Non-Commercial licence caps image resolution at 1280x1280.</td><td><b>Yes</b>: VDMX takes video input from cameras, capture cards, Syphon, NDI and window or screen capture, and sends output to connected displays, Blackmagic hardware, Syphon and NDI.</td></tr>
+        </tbody>
+      </table></div>
+    <p class="meta">Every row comes from the app's own documentation, on the date shown in the sources below. "Not that we could find" means we could not find it documented, not that the app cannot do it.</p>
     <div class="verdict even">
       <div><h3>Pick TouchDesigner if</h3><p>you want to build your own interactive installation, live visual system or generative piece from nodes, you need Windows as well as macOS, or you want to learn for free before paying for a Commercial licence.</p></div>
       <div><h3>Pick VDMX if</h3><p>you're a VJ on a Mac who wants a finished app for live shows: layers, blend modes, effect chains and MIDI, OSC or DMX control, ready to use rather than built from scratch.</p></div>
@@ -332,10 +346,12 @@
     <p><b>Compositing:</b> Layer compositing with blend modes, masks and real-time FX chains.<br><b>Control:</b> Control by MIDI, OSC and DMX, plus audio analysis, LFOs and step sequencers.<br><b>Shaders and plug-ins:</b> ISF (GLSL) generators and effects, alongside FFGL and Vuo.<br><b>Getting video in and out:</b> Inputs and outputs over Syphon and NDI, fullscreen displays and disk recording.</p>
     <p>For a VJ, that list is most of a show. Audio analysis, LFOs and step sequencers are built in, and MIDI, OSC and DMX control lets you run the show from hardware or other software.</p>
     <p>It also asks less of an older Mac. VDMX needs macOS 13 or later, Intel or Apple silicon. TouchDesigner on a Mac needs macOS 13 or later on a 2020-or-later Mac (Apple silicon highly recommended). And the paid version costs less: US$199.99 once for VDMX6, against US$600 for a TouchDesigner Commercial licence.</p>
+    <p><b>They wire into the same gear.</b> MIDI, OSC, Syphon, NDI, DMX and video all work in both, so either one drops into a rig that already has them. VDMX sends and receives DMX over Art-Net to and from multiple universes, and its Video To DMX plugin turns video pixels into lighting values. VDMX has no Spout, because it is macOS only and Spout is the Windows equivalent of Syphon; TouchDesigner has both, and its Spout needs an Nvidia or AMD GPU.</p>
     <h2>Where both fall short</h2>
     <p>Neither is free for paid work. TouchDesigner's free licence rules out paid projects and caps output at 1280x1280, and its Educational licence at US$300 rules out paid work too. VDMX's trial can't save a project, so you can try it but you can't run a real show from it without buying.</p>
     <p>Neither is a quick start for someone who only wants something to look at. TouchDesigner gives you an environment to build in. VDMX gives you a full VJ rig, which still means loading clips, building layers and mapping controls before a show.</p>
     <p>And on a Mac, both need macOS 13 or later. If your Mac can't run that, neither is an option.</p>
+    <p>Both also have a ceiling on how much you can drive. TouchDesigner shares textures over shared memory, so its Syphon and Spout work only on the computer it is running on and cannot send a texture to another machine, and its free licence leaves the shared memory operators out altogether. VDMX's outputs are limited by the display ports on the Mac, so extra screens usually need a splitter or a video wall processor, and playback runs through AVFoundation, so AV1 files cannot be played and h.264 stops at 4k.</p>
     <h2>What it costs, and using both</h2>
     <p>On their own, VDMX6 is US$199.99, one-time and TouchDesigner Commercial is US$600, one-time. TouchDesigner Pro, which adds Pro Support (6 hours), is US$2,200. TouchDesigner's prices are listed as "from", and its licences are perpetual with a year of updates included. Vidvox mentions educational, hobbyist and upgrade discounts for VDMX without giving amounts.</p>
     <p>You don't have to pick only one. VDMX6 Plus, at US$349, adds Vuo and TouchDesigner integration, so you can bring TouchDesigner work into a VDMX setup. TouchDesigner is licensed separately, so for paid work the pair comes to <b>US$949</b>: VDMX6 Plus plus a TouchDesigner Commercial licence. If you're still learning, the free Non-Commercial licence brings that down to the price of VDMX6 Plus alone, within its 1280x1280 cap.</p>
@@ -377,12 +393,22 @@
 
     <section class="sources">
       <h2>Sources</h2>
-      <p>Every fact about another app on this page comes from that app's own site, store listing or code, on the date shown. We make Vibresia, so we've tried to say where each of the others is the better choice. If something here is out of date, <a href="https://github.com/sydlawrencedev/vibresia/issues">tell us</a> and we'll fix it.</p>
+      <p>Every fact about another app on this page comes from the source listed for it, on the date shown. Some of VDMX's facts come from third-party pages, marked as such below. We make Vibresia, so we've tried to say where each of the others is the better choice. If something here is out of date, <a href="https://github.com/sydlawrencedev/vibresia/issues">tell us</a> and we'll fix it.</p>
       <ul>
         <li>VDMX: <a href="https://vdmx.vidvox.net/">https://vdmx.vidvox.net/</a> (checked 2 November 2026)</li>
         <li>VDMX: <a href="https://cart.vidvox.net/">https://cart.vidvox.net/</a> (checked 2 November 2026)</li>
         <li>VDMX: <a href="https://vidvox.net/">https://vidvox.net/</a> (checked 2 November 2026)</li>
+        <li>VDMX: <a href="https://docs.vidvox.net/vdmx/vdmx_supported_features.html">https://docs.vidvox.net/vdmx/vdmx_supported_features.html</a> (checked 2 November 2026)</li>
+        <li>VDMX: <a href="https://spout.zeal.co/">https://spout.zeal.co/</a> (checked 2 November 2026, third-party source)</li>
+        <li>VDMX: <a href="https://docs.vidvox.net/vdmx/">https://docs.vidvox.net/vdmx/</a> (checked 2 November 2026)</li>
         <li>TouchDesigner: <a href="https://derivative.ca/download">https://derivative.ca/download</a> (checked 2 November 2026)</li>
+        <li>TouchDesigner: <a href="https://docs.derivative.ca/MIDI_Out_CHOP">https://docs.derivative.ca/MIDI_Out_CHOP</a> (checked 2 November 2026)</li>
+        <li>TouchDesigner: <a href="https://docs.derivative.ca/OSC">https://docs.derivative.ca/OSC</a> (checked 2 November 2026)</li>
+        <li>TouchDesigner: <a href="https://docs.derivative.ca/Syphon_Spout_Out_TOP">https://docs.derivative.ca/Syphon_Spout_Out_TOP</a> (checked 2 November 2026)</li>
+        <li>TouchDesigner: <a href="https://docs.derivative.ca/NDI">https://docs.derivative.ca/NDI</a> (checked 2 November 2026)</li>
+        <li>TouchDesigner: <a href="https://docs.derivative.ca/DMX_Out_CHOP">https://docs.derivative.ca/DMX_Out_CHOP</a> (checked 2 November 2026)</li>
+        <li>TouchDesigner: <a href="https://docs.derivative.ca/Video_Device_In_TOP">https://docs.derivative.ca/Video_Device_In_TOP</a> (checked 2 November 2026)</li>
+        <li>TouchDesigner: <a href="https://docs.derivative.ca/">https://docs.derivative.ca/</a> (checked 2 November 2026)</li>
       </ul>
     </section>
   </main>

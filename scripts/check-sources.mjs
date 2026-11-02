@@ -39,7 +39,9 @@ function asText(html) {
     return html
         .replace(/<script[\s\S]*?<\/script>/gi, " ")
         .replace(/<style[\s\S]*?<\/style>/gi, " ")
-        .replace(/<[^>]+>/g, " ")
+        // Only real tags. "<.milk2>" is part of a sentence about a file
+        // format, not markup, and stripping it would lose the quote.
+        .replace(/<\/?[a-zA-Z][^>]*>/g, " ")
         .replace(/&nbsp;/g, " ")
         .replace(/&amp;/g, "&")
         .replace(/&lt;/g, "<")
@@ -49,6 +51,19 @@ function asText(html) {
         .replace(/&#(\d+);/g, (_, d) => String.fromCharCode(Number(d)))
         .replace(/\s+/g, " ")
         .trim();
+}
+
+/**
+ * A page and a quote, both made comparable: spaces collapsed, and the space
+ * a link leaves before a comma taken out. "DMX , Art-Net" and "DMX, Art-Net"
+ * are the same sentence, and only one of them is what the HTML renders.
+ */
+function comparable(s) {
+    return String(s)
+        .replace(/\s+/g, " ")
+        .replace(/\s+([,.;:!?])/g, "$1")
+        .trim()
+        .toLowerCase();
 }
 
 /** Every fact in a record that carries a source, and a quote where we have one. */
@@ -73,7 +88,7 @@ export function factsOf(record) {
 
 /**
  * Checks one source. `fetchPage` is a parameter so a test can hand it a page
- * instead of going to the network.
+ * instead of going to the network. It returns {url, text}.
  */
 export async function checkFact(fact, fetchPage) {
     const problems = [];
@@ -85,7 +100,7 @@ export async function checkFact(fact, fetchPage) {
     try {
         const page = await fetchPage(fact.url);
         finalUrl = page.url;
-        text = asText(page.html);
+        text = page.text;
     } catch (e) {
         return [`${fact.where}: ${fact.url} couldn't be read (${e.message})`];
     }
@@ -97,13 +112,35 @@ export async function checkFact(fact, fetchPage) {
         problems.push(`${fact.where}: ${fact.url} redirects to ${finalHost}, a different site`);
     }
 
-    if (fact.quote) {
-        const needle = fact.quote.replace(/\s+/g, " ").trim();
-        if (!text.toLowerCase().includes(needle.toLowerCase())) {
-            problems.push(`${fact.where}: the quote isn't on ${fact.url}: "${needle}"`);
+    if (fact.quote && text !== null) {
+        const needle = comparable(fact.quote);
+        if (!comparable(text).includes(needle)) {
+            problems.push(`${fact.where}: the quote isn't on ${fact.url}: "${fact.quote}"`);
         }
     }
     return problems;
+}
+
+/** The text of a PDF, through pdftotext. Null when it can't be read. */
+async function pdfText(body) {
+    const { execFileSync } = await import("node:child_process");
+    const fs = await import("node:fs");
+    const os = await import("node:os");
+    const path = await import("node:path");
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "check-sources-"));
+    const file = path.join(dir, "source.pdf");
+    try {
+        fs.writeFileSync(file, body);
+        const out = path.join(dir, "source.txt");
+        execFileSync("pdftotext", ["-layout", file, out], { stdio: "ignore" });
+        return asText(fs.readFileSync(out, "utf8"));
+    } catch {
+        // No pdftotext, or a PDF it can't read: the quote stays unchecked,
+        // and the caller says so rather than pretending it passed.
+        return null;
+    } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+    }
 }
 
 async function fetchPage(url) {
@@ -113,11 +150,16 @@ async function fetchPage(url) {
         headers: {
             // A plain reader, not a scraper pretending to be a browser.
             "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36",
-            accept: "text/html,application/xhtml+xml",
+            accept: "text/html,application/xhtml+xml,application/pdf",
         },
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return { url: res.url, html: await res.text() };
+    const type = res.headers.get("content-type") || "";
+    const body = Buffer.from(await res.arrayBuffer());
+    if (type.includes("pdf") || url.toLowerCase().split("?")[0].endsWith(".pdf")) {
+        return { url: res.url, text: await pdfText(body) };
+    }
+    return { url: res.url, text: asText(body.toString("utf8")) };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
@@ -126,35 +168,27 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const problems = [];
     let checked = 0;
     let quotes = 0;
+    let unchecked = 0;
     // One request per URL, however many facts cite it.
     const pages = new Map();
     for (const fact of facts) {
         if (!pages.has(fact.url)) {
             pages.set(fact.url, fetchPage(fact.url).catch((e) => ({ error: e })));
         }
-        const promise = pages.get(fact.url);
-        const got = await promise;
+        const got = await pages.get(fact.url);
         if (got.error) {
             problems.push(`${fact.where}: ${fact.url} couldn't be read (${got.error.message})`);
             continue;
         }
         checked++;
         if (fact.quote) quotes++;
-        const wanted = hostOf(fact.url);
-        const finalHost = hostOf(got.url);
-        if (finalHost && finalHost !== wanted && !finalHost.endsWith(`.${wanted}`)) {
-            problems.push(`${fact.where}: ${fact.url} redirects to ${finalHost}, a different site`);
-            continue;
-        }
-        if (fact.quote) {
-            const needle = fact.quote.replace(/\s+/g, " ").trim().toLowerCase();
-            if (!asText(got.html).toLowerCase().includes(needle)) {
-                problems.push(`${fact.where}: the quote isn't on ${fact.url}: "${fact.quote}"`);
-            }
-        }
+        const found = await checkFact(fact, async () => got);
+        problems.push(...found);
+        if (fact.quote && got.text === null) unchecked++;
     }
     for (const p of problems) console.error(`error: ${p}`);
     console.log(`checked ${checked} source${checked === 1 ? "" : "s"} (${quotes} with a quote) across ${facts.length} facts`);
+    if (unchecked) console.log(`${unchecked} quote${unchecked === 1 ? "" : "s"} could not be checked (a PDF pdftotext can't read)`);
     if (problems.length) {
         console.error(`${problems.length} source${problems.length === 1 ? "" : "s"} could not be confirmed`);
         process.exit(1);

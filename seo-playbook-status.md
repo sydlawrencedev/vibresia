@@ -47,6 +47,7 @@ until then.
 | 2d question pages (`/blog/*-visualizer-mac`) | hub apple-music-visualizer (live mic scene); spotify, youtube-music, soundcloud, tidal, mixcloud | merged, deploy pending |
 | 2d spokes, batch 5 | amazon-music, deezer, vlc; footer link to the app hub | merged (465e1c4), deploy pending |
 | 2b referee pairs (`/comparison/{a}-vs-{b}`) | projectm-vs-milkdrop (third option on), nestdrop-vs-milkdrop, resolume-vs-vdmx, resolume-vs-touchdesigner, touchdesigner-vs-vdmx | merged, deploy pending |
+| "Control and connections" table on the three VJ pairs | resolume-vs-vdmx, resolume-vs-touchdesigner, touchdesigner-vs-vdmx | merged, deploy pending |
 
 Also: author page `/author/syd-lawrence` (from `content/data/author.json`),
 FAQs and the shared Organization node on every indexable page, the demo reel
@@ -59,6 +60,10 @@ on search pages, `/ingest` analytics proxy in the Worker.
 - Plan and log: `content/url-plan.csv`, `SEO_CHANGELOG.md`.
 - Hub scene shader: `content/scenes/hub-live.glsl`, drawn by `site/share/preview.js` (which now takes `opts.listen`).
 - Drafting brief for referee pages: written to the scratchpad; the shape is in docs/seo.md section 7 if it's needed again.
+- `scripts/check-sources.mjs` fetches every source a fact leans on and checks
+  it stayed on the site we named and that the quote we recorded is on it.
+  Needs the network, so it is not in `npm test`: run it when facts are added
+  or a competitor moves a page.
 
 ## Analytics and routines
 
@@ -86,15 +91,38 @@ on search pages, `/ingest` analytics proxy in the Worker.
 - Snippet-sourced facts (TIDAL, SoundCloud, Amazon Music, Apple Music web
   player) shipped as is, flagged `needsHandCheck`; the build lists them.
 - The owner hasn't tested competitor apps; pages say so.
+- The VJ records (Resolume, VDMX, TouchDesigner, NestDrop) carry what each
+  app can be wired into: MIDI, OSC, Syphon, Spout, NDI, DMX and video, each
+  fact with its own source and date. The three VJ referee pages compare them
+  side by side.
+- "Not that we could find" is the wording when a product's own site doesn't
+  document a protocol. It never says the product can't do it.
+- A source URL that redirects to another site is a failure, not a detail:
+  `check-sources.mjs` fails it. A typo turned `resolume.com` into
+  `resolution.com`, which answers 200 and is a different company.
+- One sitemap per template: `/sitemaps/questions.xml` for the question
+  pages, `blog.xml` for the best-of lists, `comparisons.xml` for the
+  head-to-heads and the hub. The monthly review reports by template and
+  needs the sitemaps to match.
 
 ## Next
 
-1. Owner deploys batches 4-6 (question pages, spokes, referee pages); then check the new pages live and fill in deploy dates in
-   `SEO_CHANGELOG.md`.
-2. Stats page (2e) from anonymous usage in PostHog project Shareware.
+1. Owner deploys batches 4-7 (question pages, spokes, referee pages, the
+   connections tables and the new questions.xml sitemap); then check the new
+   pages live and fill in deploy dates in `SEO_CHANGELOG.md`. Submit
+   `/sitemaps/questions.xml` in Search Console with the other two.
+2. Stats page (2e) from anonymous usage in PostHog project Shareware. It
+   needs read access to that project: this session had only the public
+   ingest key, which cannot read. Ask for a personal API key, or for the
+   PostHog MCP to be connected.
 3. Resolume alternatives referee list (2a) if the owner wants it.
-4. Fill limits and I/O (MIDI, OSC, Syphon, Spout, NDI) in the VJ records
-   (Resolume, VDMX, TouchDesigner, NestDrop) so the referee pages can compare
-   them directly.
-5. After 8 weeks (from early January 2027): decide what to build more of
+4. The second wave: more 2b pairs and more 2d spokes, chosen from
+   autocomplete demand, towards the ~50 pages a template the playbook asks
+   for. The URL plan's "later" rows are used up, so this needs fresh demand
+   research rather than a row from the plan.
+5. Fill limits and I/O in the remaining records: the visualiser records
+   (projectM, MilkDrop, Magic Music Visuals, Shadertoy, Plane9, MuVis) have
+   none, so a page comparing a visualiser with a VJ tool can't say what the
+   visualiser can be wired into.
+6. After 8 weeks (from early January 2027): decide what to build more of
    from the monthly review's per-template numbers.

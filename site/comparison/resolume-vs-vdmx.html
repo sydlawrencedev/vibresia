@@ -309,6 +309,20 @@
           <tr><th scope="row">Best for</th><td>Working VJs and venues running video on screens and projectors.</td><td>VJs and visual artists building live shows, installations or projection work on a Mac.</td></tr>
         </tbody>
       </table></div>
+    <h2>Control and connections</h2>
+    <div class="table-scroll"><table class="versus">
+        <thead><tr><th scope="col"></th><th scope="col">Resolume</th><th scope="col">VDMX</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">MIDI</th><td><b>Yes</b>: Avenue and Arena take MIDI in and send MIDI out, including pad colour feedback, from multiple enabled devices, and Wire adds MIDI In and MIDI Out nodes for generating and reading MIDI data.</td><td><b>Yes</b>: VDMX sends and receives standard MIDI messages with multiple devices and software, and by default enables and receives from every MIDI input the system detects.</td></tr>
+          <tr><th scope="row">OSC</th><td><b>Yes</b>: Avenue and Arena accept OSC input and can send OSC output to other applications over the network, and Wire adds OSC In and OSC Out nodes for reading and writing OSC inside a patch.</td><td><b>Yes</b>: VDMX sends and receives OSC to and from multiple network addresses, and adds OSCQuery so it can publish its parameters for remote control and browse other software's address space.</td></tr>
+          <tr><th scope="row">Syphon</th><td><b>Yes</b>: Avenue and Arena provide Syphon input and output on macOS, and Wire can read and write Syphon textures through its Texture In and Texture Out nodes.</td><td><b>Yes</b>: VDMX can publish and receive any number of video feeds over Syphon.</td></tr>
+          <tr><th scope="row">Spout</th><td><b>Yes</b>: Avenue and Arena provide Spout input and output on Windows, and Wire can read and write Spout textures through its Texture In and Texture Out nodes.</td><td><b>No</b>: Spout is a shared-memory video system for Windows, and VDMX runs only on macOS, so it has no Spout input or output.</td></tr>
+          <tr><th scope="row">NDI</th><td><b>Yes</b>: NDI input is always enabled in Avenue and Arena, and NDI output can be broadcast from the composition, with Arena additionally treating NDI outputs as separate screens in the Advanced Output.</td><td><b>Yes</b>: VDMX can send and receive any number of video feeds over NDI, with the NDI Output plugin publishing streams to the network.</td></tr>
+          <tr><th scope="row">DMX</th><td><b>Yes</b>: DMX output over Art-Net is available in Arena only, and Arena also accepts Art-Net DMX input from a lighting desk, so Avenue has no DMX support.</td><td><b>Yes</b>: VDMX sends and receives DMX over Art-Net to and from multiple universes, and its Video To DMX plugin converts video pixels into DMX values.</td></tr>
+          <tr><th scope="row">Video in and out</th><td><b>Yes</b>: Video input works from webcams and capture cards, with native low-latency support for Blackmagic, AJA and Datapath devices, and video output goes to the displays connected to the computer.</td><td><b>Yes</b>: VDMX takes video input from cameras, capture cards, Syphon, NDI and window or screen capture, and sends output to connected displays, Blackmagic hardware, Syphon and NDI.</td></tr>
+        </tbody>
+      </table></div>
+    <p class="meta">Every row comes from the app's own documentation, on the date shown in the sources below. "Not that we could find" means we could not find it documented, not that the app cannot do it.</p>
     <div class="verdict even">
       <div><h3>Pick Resolume if</h3><p>you play on both macOS and Windows, you want the tool a lot of venues and VJs already know, or you need media-server features, which come with Arena at €799. Avenue at €299 covers VJing on its own.</p></div>
       <div><h3>Pick VDMX if</h3><p>you work only on a Mac and like building your own setup: layers, FX chains, MIDI, OSC and DMX control, audio analysis, LFOs and step sequencers. It starts at US$199.99, and US$349 adds Vuo and TouchDesigner integration.</p></div>
@@ -320,16 +334,19 @@
     <p><b>It runs on Windows as well as macOS.</b> Resolume is listed for Mac, Windows. If your show laptop is a PC, or you swap between machines at different venues, that settles it. VDMX is for Mac only.</p>
     <p><b>It's the common choice.</b> It is an industry-standard pair: Avenue for VJing, Arena adding media-server features. Its stated audience is working VJs and venues running video on screens and projectors. Picking the tool a venue already uses can make a handover or a shared booth easier.</p>
     <p><b>Clear tiers for different jobs.</b> Avenue (€299) is the VJ app. Arena (€799) adds media-server features for bigger rooms. Wire (€399) is a separate visual programming tool, for building your own effects and generators. Each licence includes 12 months of updates, and the licence keeps working once those 12 months are up.</p>
+    <p><b>Arena is where the show features live.</b> Projection mapping, edge blending, SMPTE timecode input, DMX control, capture card output, and groups and slice transforms are Arena only, so a rig that needs any of them needs Arena rather than Avenue. Wire, if you want to build your own generators, adds MIDI and OSC nodes and reads and writes Syphon and Spout textures inside a patch.</p>
     <h2>Where VDMX wins</h2>
     <p><b>A lower starting price.</b> VDMX's main licence, VDMX6, is US$199.99, one-time. Vidvox also mentions educational, hobbyist and upgrade discounts, though it doesn't list the amounts.</p>
     <p><b>A modular rig you build yourself.</b> It does layer compositing with blend modes, masks and real-time FX chains. Control comes from MIDI, OSC and DMX, and it can drive parameters from audio analysis, LFOs and step sequencers. That suits people who want to design how their show behaves rather than use a fixed layout.</p>
     <p><b>Open formats and links to other software.</b> It runs ISF (GLSL) generators and effects alongside FFGL and Vuo. It takes video in and sends it out over Syphon and NDI, drives fullscreen displays, and records to disk. VDMX6 Plus, at US$349, adds Vuo and TouchDesigner integration. TouchDesigner itself is licensed separately.</p>
-    <p>One caution on this section: the control and I/O details here come from VDMX's own page, and our record of Resolume doesn't cover its control options or video connections. Resolume has its own, so if MIDI, OSC, Syphon, Spout or NDI decide it for you, check <a href="https://resolume.com/">Resolume's site</a> before you choose.</p>
+    <p><b>Both wire into the same things.</b> MIDI in and out, OSC in and out, Syphon, NDI and video all work in both, so either one drops into a rig that already has them. DMX is the one place they differ: VDMX sends and receives DMX over Art-Net to and from multiple universes as standard, while in Resolume DMX output is an Arena feature. Resolume has Spout for Windows and Syphon for macOS; VDMX is macOS only, so it has no Spout.</p>
+    <p>The other difference is how many screens each one can drive. Resolume's outputs are limited by the graphics card, to five outputs and a control monitor, and VDMX's are limited by the display ports on the Mac, so extra screens usually need a splitter or a video wall processor.</p>
     <p><b>A trial without a watermark.</b> The VDMX trial is fully functional except that you can't save projects. You can judge the output exactly as an audience would see it.</p>
     <h2>Where both fall short</h2>
     <p><b>Neither is free.</b> Both are paid, one-time purchases, and neither has a free tier. Expect to spend US$199.99 at the low end for VDMX and €299 for Resolume.</p>
     <p><b>Both trials hold something back.</b> Resolume is free to use for as long as you like, but its video output carries a Resolume watermark and its audio has a robot voice until you enter a serial number. That's fine for practice and not for a paying show. VDMX's trial won't save projects, so you can't build a set over several days and keep it without buying.</p>
     <p><b>The extras cost extra.</b> On Resolume, media-server features mean Arena rather than Avenue, and Wire is a separate purchase. On VDMX, Vuo and TouchDesigner integration means the Plus licence, and TouchDesigner needs its own licence on top.</p>
+    <p><b>Both ask something of your machine.</b> Resolume's number of outputs is capped by the graphics card, at five outputs and a control monitor, and a registered licence on a machine that stays offline has to check in every 30 days, or the watermark comes back. VDMX's outputs are capped by the display ports on the Mac, and playback runs through AVFoundation, so AV1 files cannot be played and h.264 stops at 4k.</p>
     <h2>What it costs</h2>
     <p>Prices are as listed on each shop, in the currency each one sells in. We haven't converted them, because the price you pay depends on your own bank's rate and any local tax.</p>
     <p>A Mac-only VJ wanting the basic app: Resolume Avenue is €299; VDMX6 is US$199.99. A VJ wanting more: Resolume Arena is €799, and VDMX6 Plus is US$349. Those two upgrades add different things, media-server features on one and Vuo and TouchDesigner integration on the other, so compare what you need rather than the totals. Every Resolume licence includes 12 months of updates and keeps working after them.</p>
@@ -371,13 +388,23 @@
 
     <section class="sources">
       <h2>Sources</h2>
-      <p>Every fact about another app on this page comes from that app's own site, store listing or code, on the date shown. We make Vibresia, so we've tried to say where each of the others is the better choice. If something here is out of date, <a href="https://github.com/sydlawrencedev/vibresia/issues">tell us</a> and we'll fix it.</p>
+      <p>Every fact about another app on this page comes from the source listed for it, on the date shown. Some of VDMX's facts come from third-party pages, marked as such below. We make Vibresia, so we've tried to say where each of the others is the better choice. If something here is out of date, <a href="https://github.com/sydlawrencedev/vibresia/issues">tell us</a> and we'll fix it.</p>
       <ul>
         <li>Resolume: <a href="https://resolume.com/">https://resolume.com/</a> (checked 2 November 2026)</li>
         <li>Resolume: <a href="https://resolume.com/shop">https://resolume.com/shop</a> (checked 2 November 2026)</li>
+        <li>Resolume: <a href="https://resolume.com/support/en/midi-shortcuts">https://resolume.com/support/en/midi-shortcuts</a> (checked 2 November 2026)</li>
+        <li>Resolume: <a href="https://resolume.com/support/en/osc">https://resolume.com/support/en/osc</a> (checked 2 November 2026)</li>
+        <li>Resolume: <a href="https://resolume.com/support/en/syphonspout">https://resolume.com/support/en/syphonspout</a> (checked 2 November 2026)</li>
+        <li>Resolume: <a href="https://resolume.com/support/en/NDI_inputs_and_outputs">https://resolume.com/support/en/NDI_inputs_and_outputs</a> (checked 2 November 2026)</li>
+        <li>Resolume: <a href="https://resolume.com/support/en/dmx">https://resolume.com/support/en/dmx</a> (checked 2 November 2026)</li>
+        <li>Resolume: <a href="https://resolume.com/support/en/live-inputs">https://resolume.com/support/en/live-inputs</a> (checked 2 November 2026)</li>
+        <li>Resolume: <a href="https://resolume.com/support">https://resolume.com/support</a> (checked 2 November 2026)</li>
         <li>VDMX: <a href="https://vdmx.vidvox.net/">https://vdmx.vidvox.net/</a> (checked 2 November 2026)</li>
         <li>VDMX: <a href="https://cart.vidvox.net/">https://cart.vidvox.net/</a> (checked 2 November 2026)</li>
         <li>VDMX: <a href="https://vidvox.net/">https://vidvox.net/</a> (checked 2 November 2026)</li>
+        <li>VDMX: <a href="https://docs.vidvox.net/vdmx/vdmx_supported_features.html">https://docs.vidvox.net/vdmx/vdmx_supported_features.html</a> (checked 2 November 2026)</li>
+        <li>VDMX: <a href="https://spout.zeal.co/">https://spout.zeal.co/</a> (checked 2 November 2026, third-party source)</li>
+        <li>VDMX: <a href="https://docs.vidvox.net/vdmx/">https://docs.vidvox.net/vdmx/</a> (checked 2 November 2026)</li>
       </ul>
     </section>
   </main>

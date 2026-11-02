@@ -347,6 +347,9 @@ export function money(tier) {
 export function helpers(records) {
     const bySlug = Object.fromEntries([...records, VIBRESIA].map((r) => [r.slug, r]));
     const used = new Set();
+    // Which facts of a record a page actually states, so the source list
+    // names the pages the reader can find each claim on.
+    const usedFacts = new Set();
 
     function rec(slug) {
         const r = bySlug[slug];
@@ -368,6 +371,7 @@ export function helpers(records) {
         limit(slug, i = 0) {
             const l = (rec(slug).limits || [])[i];
             if (!l) throw new Error(`${slug} has no limit ${i}: add it to the record, with its source, first`);
+            usedFacts.add(`${slug}:limits[${i}]`);
             // A limit is a sentence, or an object carrying that sentence and
             // the page it came from.
             return typeof l === "string" ? l : l.text;
@@ -376,12 +380,14 @@ export function helpers(records) {
         limitSource(slug, i = 0) {
             const l = (rec(slug).limits || [])[i];
             if (!l) throw new Error(`${slug} has no limit ${i}`);
+            usedFacts.add(`${slug}:limits[${i}]`);
             return typeof l === "string" ? rec(slug).profile.sourceUrl : l.sourceUrl;
         },
         /** What a product can be wired into. Throws when the record doesn't say. */
         io(slug, kind) {
             const entry = rec(slug).io && rec(slug).io[kind];
             if (!entry) throw new Error(`${slug} has no io.${kind}: add it to the record, with its source, first`);
+            usedFacts.add(`${slug}:io.${kind}`);
             return entry;
         },
         /** One tier's price, by name or the first. Throws with no pricing. */
@@ -430,38 +436,49 @@ export function helpers(records) {
             return s.sourceUrl;
         },
     };
-    return { h, used, bySlug };
+    return { h, used, usedFacts, bySlug };
 }
 
 /**
  * Every page a fact of a record came from, for the sources list. A fact that
  * came from somewhere other than the app's own site says so, so a reader can
  * tell an official page from a third-party one.
+ *
+ * `usedFacts` says which facts the page actually states. A record carries
+ * more facts than any one page repeats, and a source list that named every
+ * one of them would list pages the reader can't find the claim on.
  */
-function sourcesFor(record) {
+function sourcesFor(record, usedFacts = new Set()) {
     const urls = [];
     const add = (u, d, via) => { if (u && d) urls.push([u, d, via === "third-party"]); };
     for (const key of ["profile", "pricing", "licence", "trial", "reviews"]) {
         if (record[key]) add(record[key].sourceUrl, record[key].verifiedISO, record[key].via);
     }
     // A limit and a connection each carry the page they came from.
-    for (const l of record.limits || []) {
-        if (l && typeof l === "object") add(l.sourceUrl, l.verifiedISO, l.via);
-    }
-    if (record.io) {
-        add(record.io.sourceUrl, record.io.verifiedISO, record.io.via);
-        for (const e of Object.values(record.io)) {
-            if (e && typeof e === "object") add(e.sourceUrl, e.verifiedISO, e.via);
+    (record.limits || []).forEach((l, i) => {
+        if (l && typeof l === "object" && usedFacts.has(`${record.slug}:limits[${i}]`)) {
+            add(l.sourceUrl, l.verifiedISO, l.via);
         }
+    });
+    if (record.io) {
+        let anyUsed = false;
+        for (const [kind, e] of Object.entries(record.io)) {
+            if (e && typeof e === "object" && usedFacts.has(`${record.slug}:io.${kind}`)) {
+                add(e.sourceUrl, e.verifiedISO, e.via);
+                anyUsed = true;
+            }
+        }
+        if (anyUsed) add(record.io.sourceUrl, record.io.verifiedISO, record.io.via);
     }
     return urls;
 }
 
-/** A record with any fact that didn't come from the app's own site. */
-function isThirdParty(record) {
+/** A record with any fact the page states that didn't come from the app's own site. */
+function isThirdParty(record, usedFacts = new Set()) {
     if (record.profile && record.profile.via === "third-party") return true;
-    if ((record.limits || []).some((l) => l && typeof l === "object" && l.via === "third-party")) return true;
-    if (record.io && Object.values(record.io).some((e) => e && typeof e === "object" && e.via === "third-party")) return true;
+    if ((record.limits || []).some((l, i) => l && typeof l === "object" && l.via === "third-party" && usedFacts.has(`${record.slug}:limits[${i}]`))) return true;
+    if (record.io && Object.entries(record.io).some(([kind, e]) =>
+        e && typeof e === "object" && e.via === "third-party" && usedFacts.has(`${record.slug}:io.${kind}`))) return true;
     return false;
 }
 
@@ -545,7 +562,7 @@ const IO_LABELS = {
 function ioCell(h, slug, kind) {
     const e = h.io(slug, kind);
     if (e.status === "unknown") return `<span class="unknown">Not that we could find</span>`;
-    return `<b>${e.status === "yes" ? "Yes" : "No"}</b> &mdash; ${escapeHtml(e.text)}`;
+    return `<b>${e.status === "yes" ? "Yes" : "No"}</b>: ${escapeHtml(e.text)}`;
 }
 
 function connectionsHtml(h, page) {
@@ -751,7 +768,7 @@ const STYLE = `  :root {
  * the helpers, so its prose can say a price and still read it from the record.
  */
 export function render(pageFn, records, others = []) {
-    const { h, used } = helpers(records);
+    const { h, used, usedFacts } = helpers(records);
     const page = pageFn(h);
     const url = `${ORIGIN}${pathOf(page)}`;
     if (page.template === "2c" && !page.versus) throw new Error(`${page.slug}: a head-to-head needs versus`);
@@ -775,7 +792,7 @@ export function render(pageFn, records, others = []) {
 
     const recordsUsed = [...used].map((s) => h.rec(s));
     const sources = new Map();
-    for (const r of recordsUsed) for (const [u, d, tp] of sourcesFor(r)) if (!sources.has(u)) sources.set(u, [r.name, d, tp]);
+    for (const r of recordsUsed) for (const [u, d, tp] of sourcesFor(r, usedFacts)) if (!sources.has(u)) sources.set(u, [r.name, d, tp]);
     const appsUsed = page.template === "2d" ? [page.app, ...(page.hub ? spokes.map((sp) => sp.app) : [])] : [];
     for (const slug of appsUsed) {
         const a = musicApp(slug);
@@ -791,13 +808,18 @@ export function render(pageFn, records, others = []) {
     for (const phrase of BANNED) if (lower.includes(phrase)) throw new Error(`${page.slug}: uses "${phrase}"`);
     if (page.description.length > 160) throw new Error(`${page.slug}: description is ${page.description.length} characters, over 160`);
 
-    // Most facts come from each app's own pages. Say so when some don't.
-    const thirdParty = recordsUsed.filter(isThirdParty).map((r) => r.name);
-    const sourcesNote = thirdParty.length
-        ? `Every fact about another app on this page comes from the source listed for it, on the date shown. Some of ${thirdParty.join(" and ")}'s facts come from third-party pages, marked as such below, because its own site could not be read.`
-        : "Every fact about another app on this page comes from that app's own site, store listing or code, on the date shown.";
+    // Most facts come from each app's own pages. Say so when some don't, and
+    // say why: a site that blocks reading is a different thing from a fact
+    // that came from elsewhere to begin with.
+    const blocked = recordsUsed.filter((r) => r.profile && r.profile.via === "third-party").map((r) => r.name);
+    const elsewhere = recordsUsed.filter((r) => isThirdParty(r, usedFacts) && !blocked.includes(r.name)).map((r) => r.name);
+    const sourcesNote = [
+        "Every fact about another app on this page comes from the source listed for it, on the date shown.",
+        blocked.length ? `${blocked.join(" and ")}'s own site could not be read, so ${blocked.length === 1 ? "its" : "their"} facts come from the third-party pages below.` : "",
+        elsewhere.length ? `Some of ${elsewhere.join(" and ")}'s facts come from third-party pages, marked as such below.` : "",
+    ].filter(Boolean).join(" ");
     const sourceItems = [...sources.entries()]
-        .map(([u, [n, d, tp]]) => `<li>${escapeHtml(n)}: <a href="${escapeHtml(u)}">${escapeHtml(u)}</a> (checked ${longDate(d)})${tp ? " &mdash; third-party source" : ""}</li>`)
+        .map(([u, [n, d, tp]]) => `<li>${escapeHtml(n)}: <a href="${escapeHtml(u)}">${escapeHtml(u)}</a> (checked ${longDate(d)}${tp ? ", third-party source" : ""})</li>`)
         .join("\n        ");
     const related = page.related.map((r) => `<li><a href="${r.href}">${escapeHtml(r.text)}</a></li>`).join("\n        ");
     const more = isComparison(page) ? moreComparisonsHtml(page, others) : page.template === "2d" ? moreAppsHtml(page, others) : "";

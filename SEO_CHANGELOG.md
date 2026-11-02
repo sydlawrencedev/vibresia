@@ -19,6 +19,53 @@ Recurring dates:
 - **Eight weeks after launch**: decide which `later` rows in
   `content/url-plan.csv` to build, from impressions.
 
+## 2026-11-02 (not yet deployed): what each app can be wired into
+
+The VJ records were thin on limits and I/O, so the referee pages couldn't
+compare the two apps on the thing that decides a live-show rig: what you can
+connect to it. Resolume, VDMX, TouchDesigner and NestDrop now carry MIDI,
+OSC, Syphon, Spout, NDI, DMX and video, each with its own source and date.
+
+| URL | Change |
+| --- | --- |
+| `/comparison/resolume-vs-vdmx` | A "Control and connections" table. The caveat that used to say our record of Resolume didn't cover its control options or video connections is gone: it does now. |
+| `/comparison/resolume-vs-touchdesigner` | The same table. Arena's show features, and the shared-memory limit on TouchDesigner's Syphon and Spout. |
+| `/comparison/touchdesigner-vs-vdmx` | The same table. Both wire into the same gear; VDMX has no Spout because it is macOS only. |
+
+- Facts came from each product's own documentation, researched by six
+  sub-agents, one per product, and merged by the lead agent. Nothing is
+  stated that isn't on a page we can name.
+- "Not that we could find" is an answer. Where a product's own site doesn't
+  document a protocol, the cell says so rather than implying the product
+  can't do it: VDMX's Spout cell reads that Spout is for Windows and VDMX is
+  macOS only.
+- A limit is now either a sentence or a sentence with its own source, so a
+  limit that came from a manual rather than the profile page says which.
+- A page's source list now names only the pages it actually states facts
+  from. Before, a record carried more facts than any one page repeated and
+  the list named all of them.
+- New `scripts/check-sources.mjs` fetches every source a fact leans on and
+  asks whether it stayed on the site we named and whether the quote we
+  recorded appears on it. It exists because a validator can check a source
+  URL is a URL but not that it is the page the fact came from: research
+  returned `resolution.com` for a Resolume page, which answers 200 and
+  belongs to a different company. All 86 sources pass.
+- Not deployed yet. The deploy is the owner's.
+
+## 2026-11-02 (not yet deployed): one sitemap per template
+
+The question pages were listed in the same sitemap as the best-of lists, so
+Search Console could not report on the two kinds of page apart. The question
+pages now have their own `/sitemaps/questions.xml`, listed in `robots.txt`;
+`blog.xml` carries the best-of lists alone and `comparisons.xml` the
+head-to-heads and the hub.
+
+- Submit `/sitemaps/questions.xml` in Search Console after the deploy, with
+  the other two, so each template's impressions can be read separately. The
+  monthly review reports by template, and it needs the sitemaps to match.
+- The question pages move out of `blog.xml` and into `questions.xml`. The
+  URLs don't change, so nothing needs a redirect.
+
 ## 2026-11-02 (not yet deployed): batch 6, referee pages
 
 Template 2b at `/comparison/{a}-vs-{b}`, from `content/data/competitor-pairs.json`:

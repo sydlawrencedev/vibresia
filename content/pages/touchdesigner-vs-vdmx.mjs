@@ -34,6 +34,7 @@ export default (h) => ({
         { label: "Stand-out strength", value: (h, s) => h.strength(s, 0) },
         { label: "Best for", value: (h, s) => h.rec(s).bestFor },
     ],
+    connections: true,
     verdict: {
         pickA: "you want to build your own interactive installation, live visual system or generative piece from nodes, you need Windows as well as macOS, or you want to learn for free before paying for a Commercial licence.",
         pickB: "you're a VJ on a Mac who wants a finished app for live shows: layers, blend modes, effect chains and MIDI, OSC or DMX control, ready to use rather than built from scratch.",
@@ -50,13 +51,15 @@ export default (h) => ({
             html: `<p>VDMX is ${h.rec("vdmx").tagline.replace(/\.$/, "")}. The live-show tools are already there when you open it, so you spend your time on the show rather than on the system that runs it. Its feature list covers:</p>
     <p><b>Compositing:</b> ${h.strength("vdmx", 0)}.<br><b>Control:</b> ${h.strength("vdmx", 1)}.<br><b>Shaders and plug-ins:</b> ${h.strength("vdmx", 2)}.<br><b>Getting video in and out:</b> ${h.strength("vdmx", 3)}.</p>
     <p>For a VJ, that list is most of a show. Audio analysis, LFOs and step sequencers are built in, and MIDI, OSC and DMX control lets you run the show from hardware or other software.</p>
-    <p>It also asks less of an older Mac. VDMX needs ${h.rec("vdmx").requirements}. TouchDesigner on a Mac needs ${h.rec("touchdesigner").requirements.split(";")[0]}. And the paid version costs less: ${h.cost("vdmx", "VDMX6")} once for VDMX6, against ${h.cost("touchdesigner", "Commercial")} for a TouchDesigner Commercial licence.</p>`,
+    <p>It also asks less of an older Mac. VDMX needs ${h.rec("vdmx").requirements}. TouchDesigner on a Mac needs ${h.rec("touchdesigner").requirements.split(";")[0]}. And the paid version costs less: ${h.cost("vdmx", "VDMX6")} once for VDMX6, against ${h.cost("touchdesigner", "Commercial")} for a TouchDesigner Commercial licence.</p>
+    <p><b>They wire into the same gear.</b> MIDI, OSC, Syphon, NDI, DMX and video all work in both, so either one drops into a rig that already has them. VDMX sends and receives DMX over Art-Net to and from multiple universes, and its Video To DMX plugin turns video pixels into lighting values. VDMX has no Spout, because it is macOS only and Spout is the Windows equivalent of Syphon; TouchDesigner has both, and its Spout needs an Nvidia or AMD GPU.</p>`,
         },
         {
             h2: "Where both fall short",
             html: `<p>Neither is free for paid work. TouchDesigner's free licence rules out paid projects and caps output at 1280x1280, and its Educational licence at ${h.cost("touchdesigner", "Educational")} rules out paid work too. VDMX's trial can't save a project, so you can try it but you can't run a real show from it without buying.</p>
     <p>Neither is a quick start for someone who only wants something to look at. TouchDesigner gives you an environment to build in. VDMX gives you a full VJ rig, which still means loading clips, building layers and mapping controls before a show.</p>
-    <p>And on a Mac, both need macOS 13 or later. If your Mac can't run that, neither is an option.</p>`,
+    <p>And on a Mac, both need macOS 13 or later. If your Mac can't run that, neither is an option.</p>
+    <p>Both also have a ceiling on how much you can drive. TouchDesigner shares textures over shared memory, so its Syphon and Spout work only on the computer it is running on and cannot send a texture to another machine, and its free licence leaves the shared memory operators out altogether. VDMX's outputs are limited by the display ports on the Mac, so extra screens usually need a splitter or a video wall processor, and playback runs through AVFoundation, so AV1 files cannot be played and h.264 stops at 4k.</p>`,
         },
         {
             h2: "What it costs, and using both",

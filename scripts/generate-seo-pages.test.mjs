@@ -66,7 +66,36 @@ test("a page using a banned phrase doesn't build", () => {
 
 test("a page that asks for a connection the record doesn't have doesn't build", () => {
     const { h } = helpers(records);
-    assert.throws(() => h.io("projectm", "midi"), /no io\.midi/);
+    assert.throws(() => h.io("phosphor", "midi"), /no io\.midi/);
+});
+
+test("the connections table compares two apps on what they can be wired into", () => {
+    const pairs = built.filter((b) => b.page.connections);
+    assert.ok(pairs.length, "no page shows the connections table");
+    for (const { page, html } of pairs) {
+        assert.match(html, /<h2>Control and connections<\/h2>/, `${page.slug} has no connections table`);
+        const table = html.slice(html.indexOf("Control and connections"));
+        for (const kind of ["MIDI", "OSC", "Syphon", "Spout", "NDI", "DMX", "Video in and out"]) {
+            assert.match(table, new RegExp(`<th scope="row">${kind}</th>`), `${page.slug} has no ${kind} row`);
+        }
+        // No cell is empty: a row says yes, no, or that it wasn't found.
+        for (const cell of table.matchAll(/<td>([\s\S]*?)<\/td>/g)) {
+            assert.ok(cell[1].trim().length > 0, `${page.slug} has an empty cell`);
+        }
+        // A row neither app documents says nothing and is left out.
+        assert.doesNotMatch(table, /Not that we could find<\/span><\/td><td>Not that we could find/);
+    }
+});
+
+test("a page's source list names the pages it states facts from, and no others", () => {
+    // The TouchDesigner head-to-head doesn't show the connections table, so
+    // it must not list the documentation pages behind it.
+    const head = built.find((b) => b.page.slug === "vibresia-vs-touchdesigner");
+    const headSources = head.html.slice(head.html.indexOf('<section class="sources">'));
+    assert.doesNotMatch(headSources, /Syphon_Spout_Out_TOP/);
+    // The referee page that does show it lists them.
+    const referee = built.find((b) => b.page.slug === "resolume-vs-touchdesigner");
+    assert.match(referee.html, /Syphon_Spout_Out_TOP/);
 });
 
 test("a weakness in the page's own words needs a source", () => {

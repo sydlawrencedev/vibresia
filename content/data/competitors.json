@@ -7,7 +7,9 @@
     "homepage": "https://support.apple.com/guide/music/muse3aa39574/mac",
     "tagline": "The visualiser built into the Music app on the Mac.",
     "bestFor": "Apple Music listeners who want visuals without installing anything.",
-    "platforms": ["macos"],
+    "platforms": [
+      "macos"
+    ],
     "strengths": [
       "Already on every Mac, inside the Music app: Window > Visualizer",
       "Effects change with the type of music and whether it is playing or paused",
@@ -17,11 +19,21 @@
       "A song has to be playing in the Music app; it doesn't visualise Spotify, a browser or other apps"
     ],
     "ourAngle": "Vibresia listens to system audio, so it works with Spotify, a browser or anything else playing, and you can write or AI-generate your own scenes. The built-in visualiser wins if you only use Apple Music and want nothing to install.",
-    "profile": { "sourceUrl": "https://support.apple.com/guide/music/muse3aa39574/mac", "verifiedISO": "2026-11-02" },
+    "profile": {
+      "sourceUrl": "https://support.apple.com/guide/music/muse3aa39574/mac",
+      "verifiedISO": "2026-11-02"
+    },
     "pricing": {
       "model": "free",
       "freeTier": true,
-      "tiers": [{ "name": "Part of the Music app", "price": "0", "currency": "USD", "period": "once" }],
+      "tiers": [
+        {
+          "name": "Part of the Music app",
+          "price": "0",
+          "currency": "USD",
+          "period": "once"
+        }
+      ],
       "sourceUrl": "https://support.apple.com/guide/music/muse3aa39574/mac",
       "verifiedISO": "2026-11-02"
     }
@@ -34,7 +46,10 @@
     "homepage": "https://getphosphor-com.pages.dev/",
     "tagline": "A paid music visualiser for Mac and Apple TV that reacts to any audio the Mac plays.",
     "bestFor": "Mac users who want polished visuals on an Apple TV, as a desktop wallpaper, or recorded to video.",
-    "platforms": ["macos", "tvos"],
+    "platforms": [
+      "macos",
+      "tvos"
+    ],
     "requirements": "macOS 14.4 or later, Apple silicon",
     "strengths": [
       "Captures any audio the Mac plays, including Spotify, Apple Music, Safari and YouTube",
@@ -44,13 +59,36 @@
       "Stackable post-effects (CRT, bloom, grain, kaleidoscope and more) and two-layer compositing"
     ],
     "ourAngle": "Phosphor is a polished paid app with 10 hand-tuned scenes, Apple TV mirroring and a wallpaper mode, none of which Vibresia has. Vibresia is free, has more built-in scenes, and lets you write your own or have an AI assistant write one; Phosphor's site doesn't mention user-made scenes.",
-    "profile": { "sourceUrl": "https://getphosphor-com.pages.dev/", "verifiedISO": "2026-11-02" },
+    "profile": {
+      "sourceUrl": "https://getphosphor-com.pages.dev/",
+      "verifiedISO": "2026-11-02"
+    },
     "pricing": {
       "model": "one-time",
       "freeTier": false,
       "tiers": [
-        { "name": "Phosphor Visualizer (Mac)", "price": "6.99", "currency": "USD", "period": "once", "includes": ["Mac app"], "excludes": ["Apple TV link"] },
-        { "name": "Phosphor Link (in-app purchase)", "price": "9.99", "currency": "USD", "period": "once", "includes": ["Linking the Mac to Apple TV"], "excludes": [] }
+        {
+          "name": "Phosphor Visualizer (Mac)",
+          "price": "6.99",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Mac app"
+          ],
+          "excludes": [
+            "Apple TV link"
+          ]
+        },
+        {
+          "name": "Phosphor Link (in-app purchase)",
+          "price": "9.99",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Linking the Mac to Apple TV"
+          ],
+          "excludes": []
+        }
       ],
       "sourceUrl": "https://apps.apple.com/us/app/id6762527200",
       "verifiedISO": "2026-11-02"
@@ -64,7 +102,11 @@
     "homepage": "https://github.com/projectM-visualizer/projectm",
     "tagline": "An open-source reimplementation of Winamp's MilkDrop, as a cross-platform library with several front-ends.",
     "bestFor": "MilkDrop fans who want the classic presets on Mac, Windows or Linux.",
-    "platforms": ["windows", "macos", "linux"],
+    "platforms": [
+      "windows",
+      "macos",
+      "linux"
+    ],
     "strengths": [
       "Faithful reimplementation of MilkDrop, so it plays the huge library of community .milk presets",
       "Default pack of about 10,000 presets (Cream of the Crop), with larger packs available",
@@ -76,8 +118,16 @@
       "The macOS standalone apps are pre-releases or development previews; the Steam and Homebrew builds are an old 3.1.12 release"
     ],
     "ourAngle": "projectM is the way to get MilkDrop's thousands of presets on a Mac. Vibresia doesn't play .milk presets. Its scenes are its own, it's a signed and notarised app that updates itself, and new scenes are written in GLSL (by you or by an AI assistant) rather than MilkDrop's preset language.",
-    "profile": { "sourceUrl": "https://github.com/projectM-visualizer/projectm", "verifiedISO": "2026-11-02" },
-    "licence": { "name": "LGPL", "openSource": true, "sourceUrl": "https://github.com/projectM-visualizer/projectm", "verifiedISO": "2026-11-02" }
+    "profile": {
+      "sourceUrl": "https://github.com/projectM-visualizer/projectm",
+      "verifiedISO": "2026-11-02"
+    },
+    "licence": {
+      "name": "LGPL",
+      "openSource": true,
+      "sourceUrl": "https://github.com/projectM-visualizer/projectm",
+      "verifiedISO": "2026-11-02"
+    }
   },
   {
     "slug": "milkdrop",
@@ -87,7 +137,9 @@
     "homepage": "https://www.geisswerks.com/milkdrop/",
     "tagline": "Ryan Geiss's classic music visualiser plug-in for Winamp on Windows.",
     "bestFor": "Winamp users on Windows who want the original MilkDrop.",
-    "platforms": ["windows"],
+    "platforms": [
+      "windows"
+    ],
     "strengths": [
       "The original: beat detection drives a huge range of effects",
       "Can be driven by a live feed such as a microphone or line-in, not only Winamp playback",
@@ -97,7 +149,10 @@
       "Windows only, as a Winamp plug-in; its page lists Windows 98 through Windows 7"
     ],
     "ourAngle": "MilkDrop doesn't run on a Mac. For Mac users searching for it, the real options are projectM (MilkDrop presets) or a native Mac visualiser like Vibresia.",
-    "profile": { "sourceUrl": "https://www.geisswerks.com/milkdrop/", "verifiedISO": "2026-11-02" }
+    "profile": {
+      "sourceUrl": "https://www.geisswerks.com/milkdrop/",
+      "verifiedISO": "2026-11-02"
+    }
   },
   {
     "slug": "g-force",
@@ -107,7 +162,10 @@
     "homepage": "https://www.soundspectrum.com/g-force/",
     "tagline": "SoundSpectrum's long-running music visualiser for Windows and macOS.",
     "bestFor": "People who want a large, mature set of effects that works as a player plug-in, screen saver or standalone app.",
-    "platforms": ["windows", "macos"],
+    "platforms": [
+      "windows",
+      "macos"
+    ],
     "strengths": [
       "A math engine with what SoundSpectrum calls millions of visual effects",
       "Works as a plug-in for media players, a screen saver, or standalone with microphone and line-in",
@@ -115,7 +173,10 @@
       "V-Bar lets you watch it while working in other apps"
     ],
     "ourAngle": "G-Force is the veteran, with paid editions and a free trial. Vibresia is free, listens to system audio, and lets you write a scene in GLSL or describe one to an AI assistant.",
-    "profile": { "sourceUrl": "https://www.soundspectrum.com/g-force/", "verifiedISO": "2026-11-02" }
+    "profile": {
+      "sourceUrl": "https://www.soundspectrum.com/g-force/",
+      "verifiedISO": "2026-11-02"
+    }
   },
   {
     "slug": "synesthesia",
@@ -125,7 +186,10 @@
     "homepage": "https://synesthesia.live/",
     "tagline": "Live music-visual software for DJs, VJs and streamers, on macOS and Windows.",
     "bestFor": "DJs, VJs and streamers who perform live and need MIDI, OSC and video outputs.",
-    "platforms": ["macos", "windows"],
+    "platforms": [
+      "macos",
+      "windows"
+    ],
     "strengths": [
       "80 built-in scenes and an in-app marketplace with more",
       "MIDI and OSC mappable controls for live performance",
@@ -133,13 +197,40 @@
       "Write your own scenes in a built-in live-coding environment, or import Shadertoy and ISF shaders"
     ],
     "ourAngle": "Synesthesia is a performance tool, and if you play live it is the better pick: Vibresia has no OSC, no Syphon, Spout or NDI output, and no controls to map for a set. Vibresia is for watching your own music at home for free, with scenes you can describe to an AI assistant.",
-    "profile": { "sourceUrl": "https://synesthesia.live/", "verifiedISO": "2026-11-02" },
+    "profile": {
+      "sourceUrl": "https://synesthesia.live/",
+      "verifiedISO": "2026-11-02"
+    },
     "pricing": {
       "model": "one-time",
       "freeTier": false,
       "tiers": [
-        { "name": "Standard", "price": "199", "currency": "USD", "period": "once", "includes": ["MIDI mappable controls", "One computer at a time"], "excludes": ["Syphon, Spout and NDI", "OSC"] },
-        { "name": "Pro", "price": "399", "currency": "USD", "period": "once", "includes": ["Syphon, Spout and NDI", "OSC input and output", "Two computers at a time"], "excludes": [] }
+        {
+          "name": "Standard",
+          "price": "199",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "MIDI mappable controls",
+            "One computer at a time"
+          ],
+          "excludes": [
+            "Syphon, Spout and NDI",
+            "OSC"
+          ]
+        },
+        {
+          "name": "Pro",
+          "price": "399",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Syphon, Spout and NDI",
+            "OSC input and output",
+            "Two computers at a time"
+          ],
+          "excludes": []
+        }
       ],
       "note": "The page shows $ with no currency code. Licences never expire and include a year of updates; renewal is $60 a year.",
       "sourceUrl": "https://synesthesia.live/pricing",
@@ -159,7 +250,9 @@
     "homepage": "https://vdmx.vidvox.net/",
     "tagline": "Vidvox's modular VJ software for the Mac.",
     "bestFor": "VJs and visual artists building live shows, installations or projection work on a Mac.",
-    "platforms": ["macos"],
+    "platforms": [
+      "macos"
+    ],
     "requirements": "macOS 13 or later, Intel or Apple silicon",
     "strengths": [
       "Layer compositing with blend modes, masks and real-time FX chains",
@@ -168,13 +261,37 @@
       "Inputs and outputs over Syphon and NDI, fullscreen displays and disk recording"
     ],
     "ourAngle": "VDMX is a professional VJ rig and the better tool for a live show. Vibresia is a free, ready-to-watch visualiser for your own listening, with no setup beyond allowing system audio.",
-    "profile": { "sourceUrl": "https://vdmx.vidvox.net/", "verifiedISO": "2026-11-02" },
+    "profile": {
+      "sourceUrl": "https://vdmx.vidvox.net/",
+      "verifiedISO": "2026-11-02"
+    },
     "pricing": {
       "model": "one-time",
       "freeTier": false,
       "tiers": [
-        { "name": "VDMX6", "price": "199.99", "currency": "USD", "period": "once", "includes": ["The full VDMX6 app"], "excludes": ["Vuo and TouchDesigner integration"] },
-        { "name": "VDMX6 Plus", "price": "349.00", "currency": "USD", "period": "once", "includes": ["Everything in VDMX6", "Vuo and TouchDesigner integration (TouchDesigner licensed separately)"], "excludes": [] }
+        {
+          "name": "VDMX6",
+          "price": "199.99",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "The full VDMX6 app"
+          ],
+          "excludes": [
+            "Vuo and TouchDesigner integration"
+          ]
+        },
+        {
+          "name": "VDMX6 Plus",
+          "price": "349.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Everything in VDMX6",
+            "Vuo and TouchDesigner integration (TouchDesigner licensed separately)"
+          ],
+          "excludes": []
+        }
       ],
       "note": "The store shows $199.99; vidvox.net says 199 USD. Educational, hobbyist and upgrade discounts are mentioned without amounts.",
       "sourceUrl": "https://cart.vidvox.net/",
@@ -184,7 +301,88 @@
       "limits": "Fully functional except saving projects.",
       "sourceUrl": "https://vidvox.net/",
       "verifiedISO": "2026-11-02"
-    }
+    },
+    "io": {
+      "sourceUrl": "https://docs.vidvox.net/vdmx/",
+      "verifiedISO": "2026-11-02",
+      "midi": {
+        "status": "yes",
+        "text": "VDMX sends and receives standard MIDI messages with multiple devices and software, and by default enables and receives from every MIDI input the system detects.",
+        "sourceUrl": "https://docs.vidvox.net/vdmx/vdmx_supported_features.html",
+        "quote": "Support for sending and receiving standard MIDI messages with multiple devices and softwares.",
+        "verifiedISO": "2026-11-02"
+      },
+      "osc": {
+        "status": "yes",
+        "text": "VDMX sends and receives OSC to and from multiple network addresses, and adds OSCQuery so it can publish its parameters for remote control and browse other software's address space.",
+        "sourceUrl": "https://docs.vidvox.net/vdmx/vdmx_supported_features.html",
+        "quote": "OSC messages can be sent and received to and from multiple network addresses.",
+        "verifiedISO": "2026-11-02"
+      },
+      "syphon": {
+        "status": "yes",
+        "text": "VDMX can publish and receive any number of video feeds over Syphon.",
+        "sourceUrl": "https://docs.vidvox.net/vdmx/vdmx_supported_features.html",
+        "quote": "Any number of video feeds can be published received over Syphon.",
+        "verifiedISO": "2026-11-02"
+      },
+      "spout": {
+        "status": "no",
+        "text": "Spout is a shared-memory video system for Windows, and VDMX runs only on macOS, so it has no Spout input or output.",
+        "sourceUrl": "https://spout.zeal.co/",
+        "quote": "Ultra-fast, realtime video routing for Windows",
+        "verifiedISO": "2026-11-02",
+        "via": "third-party",
+        "note": "VDMX's own documentation lists only AVFoundation, Blackmagic Design, Syphon, NDI, window capture and screen capture as video sources (https://docs.vidvox.net/vdmx/vdmx_supported_features.html), and its download requirements state macOS 13 or later (https://vidvox.net/)."
+      },
+      "ndi": {
+        "status": "yes",
+        "text": "VDMX can send and receive any number of video feeds over NDI, with the NDI Output plugin publishing streams to the network.",
+        "sourceUrl": "https://docs.vidvox.net/vdmx/vdmx_supported_features.html",
+        "quote": "Any number of video feeds can be sent or received over NDI.",
+        "verifiedISO": "2026-11-02"
+      },
+      "dmx": {
+        "status": "yes",
+        "text": "VDMX sends and receives DMX over Art-Net to and from multiple universes, and its Video To DMX plugin converts video pixels into DMX values.",
+        "sourceUrl": "https://docs.vidvox.net/vdmx/vdmx_supported_features.html",
+        "quote": "DMX messages can be sent and received to and from multiple universes using the ArtNet protocol.",
+        "verifiedISO": "2026-11-02"
+      },
+      "video": {
+        "status": "yes",
+        "text": "VDMX takes video input from cameras, capture cards, Syphon, NDI and window or screen capture, and sends output to connected displays, Blackmagic hardware, Syphon and NDI.",
+        "sourceUrl": "https://vidvox.net/",
+        "quote": "Use any number of A/V streams received from capture hardware, Syphon and NDI sources.",
+        "verifiedISO": "2026-11-02"
+      }
+    },
+    "limits": [
+      {
+        "text": "VDMX6 only runs on macOS 13 or later on an Intel or arm64 Mac, so there is no Windows or Linux version.",
+        "sourceUrl": "https://vidvox.net/",
+        "quote": "macOS 13+ or later",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "The number of video outputs is capped by the display ports of the Mac it runs on, so extra screens normally require an external splitter or video wall processor.",
+        "sourceUrl": "https://vdmx.vidvox.net/tutorials/four-outputs-from-one-mac-using-vdmx-advanced-output-with-an-affordable-video-wall-processor",
+        "quote": "the lack of eGPU support in the Apple ecosystem, Mac users are given a delicate task of balancing performance with ports when driving multiple displays",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "Playback runs through AVFoundation, so AV1 files cannot be played and h.264 playback is limited to a maximum specification resolution of 4k.",
+        "sourceUrl": "https://docs.vidvox.net/vdmx/vdmx_video_codecs.html",
+        "quote": "As of 2023, Apple's AVFoundation currently does not support the playback of AV1 codecs.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "The number of simultaneous NDI streams in each direction is bounded by network bandwidth and system resources, with 10/100 Ethernet workable for a single connection only.",
+        "sourceUrl": "https://docs.vidvox.net/vdmx/vdmx_media_types.html",
+        "quote": "Multiple streams can be used in each direction, within the limitations of your network bandwidth and system resources.",
+        "verifiedISO": "2026-11-02"
+      }
+    ]
   },
   {
     "slug": "resolume",
@@ -194,21 +392,54 @@
     "homepage": "https://resolume.com/",
     "tagline": "VJ and media-server software (Avenue, Arena) and a visual programming tool (Wire), for macOS and Windows.",
     "bestFor": "Working VJs and venues running video on screens and projectors.",
-    "platforms": ["macos", "windows"],
+    "platforms": [
+      "macos",
+      "windows"
+    ],
     "strengths": [
       "An industry-standard pair: Avenue for VJing, Arena adding media-server features",
       "Wire for building your own effects and generators visually",
       "Licences keep working after the 12 months of included updates"
     ],
     "ourAngle": "Resolume is for performing video to a room, and it is priced for that. Vibresia is a free visualiser for your own music on your own Mac.",
-    "profile": { "sourceUrl": "https://resolume.com/", "verifiedISO": "2026-11-02" },
+    "profile": {
+      "sourceUrl": "https://resolume.com/",
+      "verifiedISO": "2026-11-02"
+    },
     "pricing": {
       "model": "one-time",
       "freeTier": false,
       "tiers": [
-        { "name": "Avenue", "price": "299.00", "currency": "EUR", "period": "once", "includes": ["12 months of updates"], "excludes": [] },
-        { "name": "Arena", "price": "799.00", "currency": "EUR", "period": "once", "includes": ["12 months of updates"], "excludes": [] },
-        { "name": "Wire", "price": "399.00", "currency": "EUR", "period": "once", "includes": ["12 months of updates"], "excludes": [] }
+        {
+          "name": "Avenue",
+          "price": "299.00",
+          "currency": "EUR",
+          "period": "once",
+          "includes": [
+            "12 months of updates"
+          ],
+          "excludes": []
+        },
+        {
+          "name": "Arena",
+          "price": "799.00",
+          "currency": "EUR",
+          "period": "once",
+          "includes": [
+            "12 months of updates"
+          ],
+          "excludes": []
+        },
+        {
+          "name": "Wire",
+          "price": "399.00",
+          "currency": "EUR",
+          "period": "once",
+          "includes": [
+            "12 months of updates"
+          ],
+          "excludes": []
+        }
       ],
       "sourceUrl": "https://resolume.com/shop",
       "verifiedISO": "2026-11-02"
@@ -217,7 +448,86 @@
       "limits": "Free to use indefinitely, but video output has a Resolume watermark and audio has a robot voice until a serial number is entered.",
       "sourceUrl": "https://resolume.com/shop",
       "verifiedISO": "2026-11-02"
-    }
+    },
+    "io": {
+      "sourceUrl": "https://resolume.com/support",
+      "verifiedISO": "2026-11-02",
+      "midi": {
+        "status": "yes",
+        "text": "Avenue and Arena take MIDI in and send MIDI out, including pad colour feedback, from multiple enabled devices, and Wire adds MIDI In and MIDI Out nodes for generating and reading MIDI data.",
+        "sourceUrl": "https://resolume.com/support/en/midi-shortcuts",
+        "quote": "For now, all you need to do here is toggle on MIDI Input and MIDI Output for the device you want to use.",
+        "verifiedISO": "2026-11-02"
+      },
+      "osc": {
+        "status": "yes",
+        "text": "Avenue and Arena accept OSC input and can send OSC output to other applications over the network, and Wire adds OSC In and OSC Out nodes for reading and writing OSC inside a patch.",
+        "sourceUrl": "https://resolume.com/support/en/osc",
+        "quote": "Aside from listening to OSC messages, Resolume can also talk back via OSC.",
+        "verifiedISO": "2026-11-02"
+      },
+      "syphon": {
+        "status": "yes",
+        "text": "Avenue and Arena provide Syphon input and output on macOS, and Wire can read and write Syphon textures through its Texture In and Texture Out nodes.",
+        "sourceUrl": "https://resolume.com/support/en/syphonspout",
+        "quote": "Syphon and Spout input are always enabled in Resolume.",
+        "verifiedISO": "2026-11-02"
+      },
+      "spout": {
+        "status": "yes",
+        "text": "Avenue and Arena provide Spout input and output on Windows, and Wire can read and write Spout textures through its Texture In and Texture Out nodes.",
+        "sourceUrl": "https://resolume.com/support/en/syphonspout",
+        "quote": "The moment Syphon, or Spout is enabled via the Output Menu, Resolume will immediately start broadcasting its main output as well.",
+        "verifiedISO": "2026-11-02"
+      },
+      "ndi": {
+        "status": "yes",
+        "text": "NDI input is always enabled in Avenue and Arena, and NDI output can be broadcast from the composition, with Arena additionally treating NDI outputs as separate screens in the Advanced Output.",
+        "sourceUrl": "https://resolume.com/support/en/NDI_inputs_and_outputs",
+        "quote": "NDI inputs are always enabled in Resolume.",
+        "verifiedISO": "2026-11-02"
+      },
+      "dmx": {
+        "status": "yes",
+        "text": "DMX output over Art-Net is available in Arena only, and Arena also accepts Art-Net DMX input from a lighting desk, so Avenue has no DMX support.",
+        "sourceUrl": "https://resolume.com/support/en/dmx",
+        "quote": "DMX Output is only available on Resolume Arena!",
+        "verifiedISO": "2026-11-02"
+      },
+      "video": {
+        "status": "yes",
+        "text": "Video input works from webcams and capture cards, with native low-latency support for Blackmagic, AJA and Datapath devices, and video output goes to the displays connected to the computer.",
+        "sourceUrl": "https://resolume.com/support/en/live-inputs",
+        "quote": "On a Mac, video capture runs via AV Foundation. On a PC, we use DirectShow.",
+        "verifiedISO": "2026-11-02"
+      }
+    },
+    "limits": [
+      {
+        "text": "Avenue lacks the professional-show features that are Arena only: projection mapping, edge blending, SMPTE timecode input, Denon StageLinq, Pioneer Pro DJ Link, DMX control, DMX fixture output, capture card output, groups and slice transforms.",
+        "sourceUrl": "https://resolume.com/support/en/avenue-arena-difference",
+        "quote": "Here's the full list of features that are Arena only:",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "The number of outputs is capped by the graphics card, so a single machine is limited to five outputs plus one control monitor.",
+        "sourceUrl": "https://resolume.com/support/en/lots-of-outputs",
+        "quote": "there is no good GPU on the market that has more than 6 outputs, which limits you to 5 outputs + 1 control monitor",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "From Arena 6 onwards Resolume no longer supports Enttec DMX USB devices, so only Art-Net based DMX hardware works.",
+        "sourceUrl": "https://resolume.com/support/en/dmx",
+        "quote": "Resolume Arena 6 and up do not support Enttec DMX USB devices.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "A registered licence on an offline machine must phone home every 30 days, and Resolume restores the watermark if it cannot reach the Internet for 30 days.",
+        "sourceUrl": "https://resolume.com/support/en/online-verification",
+        "quote": "If Resolume cannot reach the Internet for 30 days, it will assume something is wrong and show the watermark.",
+        "verifiedISO": "2026-11-02"
+      }
+    ]
   },
   {
     "slug": "nestdrop",
@@ -227,7 +537,9 @@
     "homepage": "https://nestimmersion.ca/nestdrop.php",
     "tagline": "A MilkDrop-based visualiser and VJ tool for Windows, with Spout output.",
     "bestFor": "Windows VJs who want MilkDrop presets with live control and video output.",
-    "platforms": ["windows"],
+    "platforms": [
+      "windows"
+    ],
     "strengths": [
       "Built on the MilkDrop engine, with a curated library of 1,900 presets and support for your own",
       "Up to four video decks over Spout, at resolutions above 8K at 60 fps",
@@ -235,18 +547,142 @@
       "A free Classic edition"
     ],
     "ourAngle": "NestDrop is Windows only. For Mac users, Vibresia is a free native option; it doesn't play MilkDrop presets or output over Spout.",
-    "profile": { "sourceUrl": "https://nestimmersion.ca/nestdrop.php", "verifiedISO": "2026-11-02" },
+    "profile": {
+      "sourceUrl": "https://nestimmersion.ca/nestdrop.php",
+      "verifiedISO": "2026-11-02"
+    },
     "pricing": {
       "model": "one-time",
       "freeTier": true,
       "tiers": [
-        { "name": "Classic", "price": "0", "currency": "USD", "period": "once", "includes": ["Four Spout decks", "1,900 presets", "Beat-driven preset changes"], "excludes": ["Strobe/LFO and colour controls", "Multiple MIDI controllers", "Direct fullscreen output"] },
-        { "name": "Midnight", "price": "50", "currency": "USD", "period": "once", "includes": ["Colour, strobe and LFO controls", "Multiple MIDI controllers", "Direct fullscreen output"], "excludes": ["OSC", "ASIO", "Ableton Link", "NDI"] },
-        { "name": "Midnight Pro", "price": "75", "currency": "USD", "period": "once", "includes": ["OSC remote control", "ASIO input", "Ableton Link", "NDI output"], "excludes": [] }
+        {
+          "name": "Classic",
+          "price": "0",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Four Spout decks",
+            "1,900 presets",
+            "Beat-driven preset changes"
+          ],
+          "excludes": [
+            "Strobe/LFO and colour controls",
+            "Multiple MIDI controllers",
+            "Direct fullscreen output"
+          ]
+        },
+        {
+          "name": "Midnight",
+          "price": "50",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Colour, strobe and LFO controls",
+            "Multiple MIDI controllers",
+            "Direct fullscreen output"
+          ],
+          "excludes": [
+            "OSC",
+            "ASIO",
+            "Ableton Link",
+            "NDI"
+          ]
+        },
+        {
+          "name": "Midnight Pro",
+          "price": "75",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "OSC remote control",
+            "ASIO input",
+            "Ableton Link",
+            "NDI output"
+          ],
+          "excludes": []
+        }
       ],
       "sourceUrl": "https://nestimmersion.ca/nestdrop.php",
       "verifiedISO": "2026-11-02"
-    }
+    },
+    "io": {
+      "sourceUrl": "https://nestimmersion.ca/nestdrop.php",
+      "verifiedISO": "2026-11-02",
+      "midi": {
+        "status": "yes",
+        "text": "MIDI input and output are supported in the Midnight and Midnight Pro editions, which accept multiple MIDI controllers and can pass incoming MIDI messages on to a chosen output device.",
+        "sourceUrl": "https://nestimmersion.ca/assets/nestdrop_user_manual_V2x2.pdf",
+        "quote": "If you have MIDI messages routed into NestDrop and you would like to have other software also receive these MIDI messages",
+        "verifiedISO": "2026-11-02"
+      },
+      "osc": {
+        "status": "yes",
+        "text": "OSC input and output are Pro-edition only, with an OSC path exposed for every control so that applications such as TouchOSC or Resolume Wire can drive and mirror NestDrop.",
+        "sourceUrl": "https://nestimmersion.ca/assets/nestdrop_user_manual_V2x2.pdf",
+        "quote": "OSC Options [Pro Edition Only] Enable OSC Input: If enabled, OSC inputs will be processed by NestDrop.",
+        "verifiedISO": "2026-11-02"
+      },
+      "syphon": {
+        "status": "no",
+        "text": "Syphon is a macOS technology and NestDrop is Windows-only, so it cannot support Syphon input or output.",
+        "sourceUrl": "https://nestimmersion.ca/nestdrop.php",
+        "quote": "Run on Microsoft Windows only.",
+        "verifiedISO": "2026-11-02"
+      },
+      "spout": {
+        "status": "yes",
+        "text": "Spout output is supported from up to four video decks at the same time with a claimed resolution above 8k at 60fps, and Spout video input is available through Spout Sprites in the Midnight and Midnight Pro editions.",
+        "sourceUrl": "https://nestimmersion.ca/nestdrop.php",
+        "quote": "Up to 4 video decks with Spout at the same time",
+        "verifiedISO": "2026-11-02"
+      },
+      "ndi": {
+        "status": "yes",
+        "text": "NDI output from each video deck and NDI Sprites for receiving NDI video into a deck are Midnight Pro edition features only.",
+        "sourceUrl": "https://nestimmersion.ca/assets/nestdrop_user_manual_V2x2.pdf",
+        "quote": "NDI Output: When enabled, an NDI video stream will be output for this Video Deck.",
+        "verifiedISO": "2026-11-02"
+      },
+      "dmx": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://nestimmersion.ca/nestdrop.php",
+        "verifiedISO": "2026-11-02"
+      },
+      "video": {
+        "status": "yes",
+        "text": "Video output runs through up to four Spout decks, with direct fullscreen output to a chosen monitor in the Midnight and Pro editions and NDI output in Pro, while video input comes via Spout Sprites and NDI Sprites; the Spout resolution is limited only by GPU VRAM.",
+        "sourceUrl": "https://nestimmersion.ca/assets/nestdrop_user_manual_V2x2.pdf",
+        "quote": "The resolution of the NestDrop Spout video stream is only limited by how much GPU VRAM is available.",
+        "verifiedISO": "2026-11-02"
+      }
+    },
+    "limits": [
+      {
+        "text": "NestDrop runs on Microsoft Windows only, requiring Windows 7, 10 or 11, so there is no macOS or Linux version.",
+        "sourceUrl": "https://nestimmersion.ca/nestdrop.php",
+        "quote": "Requirements: Windows 7, 10 or 11, any GPU can be utilized but Powerful GPU's can achieve higher resolution/fps via Spout",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "Spout and the June 2010 edition of DirectX 9 must be installed separately before NestDrop will run.",
+        "sourceUrl": "https://nestimmersion.ca/assets/nestdrop_user_manual_V2x2.pdf",
+        "quote": "Prior to running NestDrop, two other pieces of software must be installed:",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "The per-deck frame rate setting is limited to 20-60 fps, making 60fps the maximum selectable rate.",
+        "sourceUrl": "https://nestimmersion.ca/assets/nestdrop_user_manual_V2x2.pdf",
+        "quote": "Frame Rate: Determine the frame rate of the Video Deck (20-60 fps).",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "Milkdrop .milk2 and .milk3 double-presets are indexed by NestDrop but do not render correctly, because the Milkdrop3 fork is not implemented.",
+        "sourceUrl": "https://nestimmersion.ca/assets/nestdrop_user_manual_V2x2.pdf",
+        "quote": "the <.milk2> and <.milk3> “double-presets” will not render correctly in NestDrop",
+        "verifiedISO": "2026-11-02"
+      }
+    ]
   },
   {
     "slug": "touchdesigner",
@@ -256,7 +692,10 @@
     "homepage": "https://derivative.ca/",
     "tagline": "Derivative's node-based visual programming environment for real-time interactive media.",
     "bestFor": "Artists and developers building interactive installations, live visuals and generative work.",
-    "platforms": ["windows", "macos"],
+    "platforms": [
+      "windows",
+      "macos"
+    ],
     "requirements": "macOS 13 or later on a 2020-or-later Mac (Apple silicon highly recommended); Windows 10 or 11",
     "strengths": [
       "A free Non-Commercial licence for personal use and learning",
@@ -264,15 +703,62 @@
       "Licences are perpetual, with a year of updates included"
     ],
     "ourAngle": "TouchDesigner can build almost anything, including a music visualiser, but you build it. Vibresia is a finished visualiser: install it and it plays, and a new scene is one GLSL function or a sentence to an AI assistant.",
-    "profile": { "sourceUrl": "https://derivative.ca/download", "verifiedISO": "2026-11-02" },
+    "profile": {
+      "sourceUrl": "https://derivative.ca/download",
+      "verifiedISO": "2026-11-02"
+    },
     "pricing": {
       "model": "one-time",
       "freeTier": true,
       "tiers": [
-        { "name": "Non-Commercial", "price": "0", "currency": "USD", "period": "once", "includes": ["Basic operations", "Personal use and learning"], "excludes": ["Paid work", "Output over 1280x1280"] },
-        { "name": "Educational", "price": "300", "currency": "USD", "period": "once", "includes": ["Commercial features"], "excludes": ["Paid work"] },
-        { "name": "Commercial", "price": "600", "currency": "USD", "period": "once", "includes": ["All features", "Paid projects"], "excludes": [] },
-        { "name": "Pro", "price": "2200", "currency": "USD", "period": "once", "includes": ["Commercial features", "Pro Support (6 hours)"], "excludes": [] }
+        {
+          "name": "Non-Commercial",
+          "price": "0",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Basic operations",
+            "Personal use and learning"
+          ],
+          "excludes": [
+            "Paid work",
+            "Output over 1280x1280"
+          ]
+        },
+        {
+          "name": "Educational",
+          "price": "300",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Commercial features"
+          ],
+          "excludes": [
+            "Paid work"
+          ]
+        },
+        {
+          "name": "Commercial",
+          "price": "600",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "All features",
+            "Paid projects"
+          ],
+          "excludes": []
+        },
+        {
+          "name": "Pro",
+          "price": "2200",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Commercial features",
+            "Pro Support (6 hours)"
+          ],
+          "excludes": []
+        }
       ],
       "note": "Prices are 'from'. Perpetual with one year of updates, per docs.derivative.ca/Updates.",
       "sourceUrl": "https://derivative.ca/download",
@@ -282,7 +768,86 @@
       "limits": "Non-Commercial is free but capped at 1280x1280 output and not for paid work.",
       "sourceUrl": "https://derivative.ca/download",
       "verifiedISO": "2026-11-02"
-    }
+    },
+    "io": {
+      "sourceUrl": "https://docs.derivative.ca/",
+      "verifiedISO": "2026-11-02",
+      "midi": {
+        "status": "yes",
+        "text": "TouchDesigner reads MIDI with the MIDI In CHOP and sends MIDI with the MIDI Out CHOP, which can address any available MIDI device.",
+        "sourceUrl": "https://docs.derivative.ca/MIDI_Out_CHOP",
+        "quote": "The MIDI Out CHOP sends MIDI events to any available MIDI devices when its input channels change.",
+        "verifiedISO": "2026-11-02"
+      },
+      "osc": {
+        "status": "yes",
+        "text": "TouchDesigner supports Open Sound Control through four operators, the OSC In CHOP and OSC Out CHOP for CHOP channels and the OSC In DAT and OSC Out DAT for raw messages, all over UDP.",
+        "sourceUrl": "https://docs.derivative.ca/OSC",
+        "quote": "TouchDesigner supports OSC through four operators: the OSC In CHOP and OSC Out CHOP that receive and send CHOP channels",
+        "verifiedISO": "2026-11-02"
+      },
+      "syphon": {
+        "status": "yes",
+        "text": "Syphon is supported on macOS by the Syphon Spout In TOP and Syphon Spout Out TOP, which share textures with other applications through shared memory, with Syphon restricted to 8-bit RGBA.",
+        "sourceUrl": "https://docs.derivative.ca/Syphon_Spout_Out_TOP",
+        "quote": "The Syphon Spout Out TOP will share its input texture with other applications that support the Spout framework on Windows or Syphon on macOS.",
+        "verifiedISO": "2026-11-02"
+      },
+      "spout": {
+        "status": "yes",
+        "text": "Spout is supported on Windows by the same two operators, and requires an Nvidia or AMD GPU because Intel does not work, with Spout limited by default to 10 active senders per computer.",
+        "sourceUrl": "https://docs.derivative.ca/Syphon_Spout_Out_TOP",
+        "quote": "For Spout on Windows, an Nvidia or AMD GPU is required, Intel does not work.",
+        "verifiedISO": "2026-11-02"
+      },
+      "ndi": {
+        "status": "yes",
+        "text": "NDI is built in as native operators, the NDI In TOP, NDI Out TOP and NDI DAT, using the NDI SDK bundled with each build, with no documented limit on frame rate or resolution beyond the hardware, while multi-cast configuration is done outside TouchDesigner with the separate NDI Access Manager tool.",
+        "sourceUrl": "https://docs.derivative.ca/NDI",
+        "quote": "There are no limits to FPS or resolution, except for what the hardware can handle.",
+        "verifiedISO": "2026-11-02"
+      },
+      "dmx": {
+        "status": "yes",
+        "text": "The DMX Out CHOP sends channels to DMX, Art-Net, sACN, KiNET and FTDI devices, and a DMX In CHOP receives DMX, with DMX512 hardware limited to a 44Hz refresh rate.",
+        "sourceUrl": "https://docs.derivative.ca/DMX_Out_CHOP",
+        "quote": "The DMX Out CHOP sends channels to DMX, Art-Net, sACN, KiNET, or FTDI devices.",
+        "verifiedISO": "2026-11-02"
+      },
+      "video": {
+        "status": "yes",
+        "text": "Video input comes from the Video Device In TOP for external cameras, capture cards, capture dongles, IP cameras and decoders, with several devices able to stream at once, while output goes to the screen, to SDI and HDMI cards via the Video Device Out TOP, or to TouchPlayer for standalone playback; the Non-Commercial licence caps image resolution at 1280x1280.",
+        "sourceUrl": "https://docs.derivative.ca/Video_Device_In_TOP",
+        "quote": "can be used to capture video from an external camera, capture card, capture dongle, IP camera, or video decoder connected to the system.",
+        "verifiedISO": "2026-11-02"
+      }
+    },
+    "limits": [
+      {
+        "text": "Syphon and Spout transfer textures through shared memory, so they work only on the computer TouchDesigner is running on and cannot send textures to another computer.",
+        "sourceUrl": "https://docs.derivative.ca/Syphon_Spout_Out_TOP",
+        "quote": "it only works on the computer it's running on and does not transmit textures across a network to another computer.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "TouchPlayer runs TouchDesigner files in Perform Mode only and has no designer interface, and the Non-Commercial build asks the user to confirm access to cameras, microphones, network and web services.",
+        "sourceUrl": "https://docs.derivative.ca/TouchPlayer",
+        "quote": "TouchPlayer will run files created with TouchDesigner in Perform Mode only.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "The Non-Commercial licence excludes a subset of Pro and Commercial operators, including the Shared Memory OPs and DirectX OPs, and its keys are single use with 10 keys per account.",
+        "sourceUrl": "https://docs.derivative.ca/TouchDesigner_Non-Commercial",
+        "quote": "does not include a subset of Pro/Commercial Operators (such as Shared Memory OPs, DirectX OPs, Leuze ROD4 CHOP etc)",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "On macOS, TouchDesigner requires macOS 13 Ventura or later and a 2020-or-later Mac, with Apple silicon strongly recommended and a discrete AMD GPU required on Intel-based Macs.",
+        "sourceUrl": "https://docs.derivative.ca/System_Requirements",
+        "quote": "We highly recommend a Mac with Apple Silicon for TouchDesigner.",
+        "verifiedISO": "2026-11-02"
+      }
+    ]
   },
   {
     "slug": "kodelife",
@@ -292,7 +857,13 @@
     "homepage": "https://hexler.net/kodelife",
     "tagline": "Hexler's real-time GPU shader editor for desktop and mobile.",
     "bestFor": "Shader programmers who want a live-coding editor on their own machine.",
-    "platforms": ["macos", "windows", "linux", "ios", "android"],
+    "platforms": [
+      "macos",
+      "windows",
+      "linux",
+      "ios",
+      "android"
+    ],
     "strengths": [
       "Edit shaders live and see the result as you type",
       "GLSL, Metal Shading Language and HLSL, with basic compute shaders",
@@ -300,7 +871,10 @@
       "Desktop builds are free to evaluate with no restrictions"
     ],
     "ourAngle": "KodeLife is a general shader editor. Vibresia is narrower: one function, with the music already wired in as uniforms, and an AI assistant can write it, check it compiles and look at the result for you.",
-    "profile": { "sourceUrl": "https://hexler.net/kodelife", "verifiedISO": "2026-11-02" },
+    "profile": {
+      "sourceUrl": "https://hexler.net/kodelife",
+      "verifiedISO": "2026-11-02"
+    },
     "pricing": {
       "model": "one-time",
       "freeTier": false,
@@ -323,7 +897,9 @@
     "homepage": "https://www.plane9.com/",
     "tagline": "A free 3D music visualiser and screensaver for Windows.",
     "bestFor": "Windows users who want a free 3D visualiser or screensaver, including in VR.",
-    "platforms": ["windows"],
+    "platforms": [
+      "windows"
+    ],
     "strengths": [
       "Over 250 scenes that can be combined, with 39 transitions",
       "Works as a screensaver or standalone window, and in Oculus Rift and HTC Vive",
@@ -333,7 +909,10 @@
       "Windows 7 to 10; the latest version listed is 2.5.1.3, from 29 December 2016"
     ],
     "ourAngle": "Plane9 doesn't run on a Mac and hasn't had a release since 2016. Vibresia is the free, maintained option for Mac.",
-    "profile": { "sourceUrl": "https://www.plane9.com/download", "verifiedISO": "2026-11-02" },
+    "profile": {
+      "sourceUrl": "https://www.plane9.com/download",
+      "verifiedISO": "2026-11-02"
+    },
     "pricing": {
       "model": "free",
       "freeTier": true,
@@ -350,7 +929,11 @@
     "homepage": "https://apps.apple.com/us/app/id1582324352",
     "tagline": "A free, open-source music visualiser for Mac, iPhone, iPad and Vision Pro.",
     "bestFor": "Listeners who want to see the notes being played, on Apple devices.",
-    "platforms": ["macos", "ios", "visionos"],
+    "platforms": [
+      "macos",
+      "ios",
+      "visionos"
+    ],
     "requirements": "macOS 14.0, iOS 17.0 or visionOS 1.0 or later",
     "strengths": [
       "34 visualisations, each with 8 options",
@@ -361,11 +944,25 @@
       "Visualises music files it plays or the device microphone"
     ],
     "ourAngle": "MuVis is about seeing the notes; Vibresia is about scenes that move with the music. Vibresia listens to system audio rather than its own player or the microphone, and you can write or AI-generate new scenes. MuVis wins on iPhone and iPad, where Vibresia doesn't run.",
-    "profile": { "sourceUrl": "https://apps.apple.com/us/app/id1582324352", "verifiedISO": "2026-11-02" },
+    "profile": {
+      "sourceUrl": "https://apps.apple.com/us/app/id1582324352",
+      "verifiedISO": "2026-11-02"
+    },
     "pricing": {
       "model": "free",
       "freeTier": true,
-      "tiers": [{ "name": "MuVis", "price": "0", "currency": "USD", "period": "once", "includes": ["Everything"], "excludes": [] }],
+      "tiers": [
+        {
+          "name": "MuVis",
+          "price": "0",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Everything"
+          ],
+          "excludes": []
+        }
+      ],
       "sourceUrl": "https://apps.apple.com/us/app/id1582324352",
       "verifiedISO": "2026-11-02"
     },
@@ -385,7 +982,9 @@
     "homepage": "https://apps.apple.com/us/app/id6759973894",
     "tagline": "A paid real-time spectrum analyser for the Mac, built with Metal.",
     "bestFor": "Mac users who want a clean spectrum display in a window or the menu bar.",
-    "platforms": ["macos"],
+    "platforms": [
+      "macos"
+    ],
     "requirements": "macOS 15.0 or later",
     "strengths": [
       "16 to 128 frequency bands, rendered with Metal",
@@ -394,11 +993,25 @@
       "Says it collects, stores and transmits no data"
     ],
     "ourAngle": "Nyquist does one thing, a spectrum analyser, and does it in the menu bar. Vibresia is free and has a spectrum among 18 scenes, plus the option to write or AI-generate your own.",
-    "profile": { "sourceUrl": "https://apps.apple.com/us/app/id6759973894", "verifiedISO": "2026-11-02" },
+    "profile": {
+      "sourceUrl": "https://apps.apple.com/us/app/id6759973894",
+      "verifiedISO": "2026-11-02"
+    },
     "pricing": {
       "model": "one-time",
       "freeTier": false,
-      "tiers": [{ "name": "Nyquist", "price": "4.99", "currency": "USD", "period": "once", "includes": ["Everything"], "excludes": [] }],
+      "tiers": [
+        {
+          "name": "Nyquist",
+          "price": "4.99",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Everything"
+          ],
+          "excludes": []
+        }
+      ],
       "sourceUrl": "https://apps.apple.com/us/app/id6759973894",
       "verifiedISO": "2026-11-02"
     }
@@ -411,7 +1024,9 @@
     "homepage": "https://docs.vidvox.net/project-milk-syphon/",
     "tagline": "A Mac app from Vidvox that turns live audio into MilkDrop-style visuals and publishes them over Syphon.",
     "bestFor": "Mac VJs who want MilkDrop presets as a source inside VDMX or other Syphon apps.",
-    "platforms": ["macos"],
+    "platforms": [
+      "macos"
+    ],
     "requirements": "macOS 13 or later (a legacy release supports 10.9 to 10.15)",
     "strengths": [
       "Thousands of MilkDrop community presets, and you can drag in your own",
@@ -419,8 +1034,13 @@
       "Always publishes to Syphon, so VJ software can record or remix it, and keeps running in the background"
     ],
     "ourAngle": "ProjectMilkSyphon is a source for a VJ rig. Vibresia is a visualiser to watch, with its own scenes rather than MilkDrop presets.",
-    "profile": { "sourceUrl": "https://docs.vidvox.net/project-milk-syphon/", "verifiedISO": "2026-11-02" },
-    "limits": ["Made as a video source for VJ software: it always publishes its output over Syphon"]
+    "profile": {
+      "sourceUrl": "https://docs.vidvox.net/project-milk-syphon/",
+      "verifiedISO": "2026-11-02"
+    },
+    "limits": [
+      "Made as a video source for VJ software: it always publishes its output over Syphon"
+    ]
   },
   {
     "slug": "butterchurn",
@@ -430,16 +1050,28 @@
     "homepage": "https://butterchurnviz.com",
     "tagline": "MilkDrop reimplemented in WebGL, as an open-source library with a browser demo.",
     "bestFor": "People who want MilkDrop presets in a browser, and developers adding it to a web player.",
-    "platforms": ["web"],
+    "platforms": [
+      "web"
+    ],
     "strengths": [
       "Runs MilkDrop presets in any browser with WebGL 2",
       "MIT-licensed npm package, with presets in a separate package",
       "A live demo at butterchurnviz.com"
     ],
     "ourAngle": "Butterchurn brings MilkDrop to the browser. Vibresia is a native Mac app that hears everything the Mac plays; its shared scenes also play in a browser.",
-    "profile": { "sourceUrl": "https://github.com/jberg/butterchurn", "verifiedISO": "2026-11-02" },
-    "limits": ["A library and a browser demo: audio comes in as a Web Audio node, from an audio source or the microphone"],
-    "licence": { "name": "MIT", "openSource": true, "sourceUrl": "https://github.com/jberg/butterchurn", "verifiedISO": "2026-11-02" }
+    "profile": {
+      "sourceUrl": "https://github.com/jberg/butterchurn",
+      "verifiedISO": "2026-11-02"
+    },
+    "limits": [
+      "A library and a browser demo: audio comes in as a Web Audio node, from an audio source or the microphone"
+    ],
+    "licence": {
+      "name": "MIT",
+      "openSource": true,
+      "sourceUrl": "https://github.com/jberg/butterchurn",
+      "verifiedISO": "2026-11-02"
+    }
   },
   {
     "slug": "magic-music-visuals",
@@ -449,7 +1081,10 @@
     "homepage": "https://magicmusicvisuals.com/",
     "tagline": "A modular music visualiser and VJ application for Windows and macOS.",
     "bestFor": "Musicians and VJs who want to build visuals for live performances or music videos in a modular editor.",
-    "platforms": ["macos", "windows"],
+    "platforms": [
+      "macos",
+      "windows"
+    ],
     "strengths": [
       "A modular interface for manipulating many different types of media",
       "Nearly every editable parameter can be driven by multi-channel audio or MIDI input",
@@ -477,7 +1112,9 @@
     "homepage": "https://www.shadertoy.com/",
     "tagline": "An online community and tool for creating and sharing GLSL shaders in the browser, through WebGL.",
     "bestFor": "Shader programmers who want to write, share and learn from shaders in a browser, on any computer.",
-    "platforms": ["web"],
+    "platforms": [
+      "web"
+    ],
     "strengths": [
       "Runs in a web browser, so it works on any computer with WebGL",
       "Inputs include microphone, webcam, keyboard, mouse, VR headsets, SoundCloud, video and textures",
