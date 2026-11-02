@@ -996,7 +996,7 @@ export function renderHub(comparisons, records) {
         ldJson: graphJson([...graph, faqNode(HUB_FAQ)]),
         main: `<p class="eyebrow">Comparisons</p>
     <h1>Vibresia, compared</h1>
-    <p class="answer">Each page here puts Vibresia next to one other app: what each costs, what each is good at, and who should pick which. We make Vibresia, so every page also says when the other app is the better choice, and every fact about the other app comes from its own site.</p>
+    <p class="answer">Each page here compares two apps: what each costs, what each is good at, and who should pick which. Most put Vibresia next to one other app; the rest are referee pages between two other apps. We make Vibresia, so every page also says when the other app is the better choice, and every fact about another app comes from its own site.</p>
     <p>Vibresia is a free Mac app that turns whatever the Mac is playing into visuals. If you'd rather see every option for the Mac in one list, read <a href="/blog/best-music-visualizer-for-mac-2026">the best music visualizers for Mac</a>.</p>
     ${entries.join("\n    ")}
 

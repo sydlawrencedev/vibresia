@@ -47,19 +47,33 @@ function asText(html) {
         .replace(/&lt;/g, "<")
         .replace(/&gt;/g, ">")
         .replace(/&quot;/g, '"')
-        .replace(/&#39;/g, "'")
+        // Entities a page renders as punctuation: a curly apostrophe is the
+        // same word as a straight one, and a quote copied out of the page
+        // keeps whichever the page used.
+        .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))
         .replace(/&#(\d+);/g, (_, d) => String.fromCharCode(Number(d)))
+        .replace(/&rsquo;/g, "'").replace(/&lsquo;/g, "'")
+        .replace(/&rdquo;/g, '"').replace(/&ldquo;/g, '"')
+        .replace(/&ndash;/g, "-").replace(/&mdash;/g, "-")
+        .replace(/&hellip;/g, "...").replace(/&bull;/g, "-")
+        .replace(/&#39;/g, "'")
         .replace(/\s+/g, " ")
         .trim();
 }
 
 /**
- * A page and a quote, both made comparable: spaces collapsed, and the space
- * a link leaves before a comma taken out. "DMX , Art-Net" and "DMX, Art-Net"
- * are the same sentence, and only one of them is what the HTML renders.
+ * A page and a quote, both made comparable: spaces collapsed, the space a
+ * link leaves before a comma taken out, and the typographic punctuation a
+ * page renders normalised. "DMX , Art-Net" and "DMX, Art-Net" are the same
+ * sentence, and only one of them is what the HTML renders. A page that
+ * renders "you'll" with a curly apostrophe and a record that writes it
+ * straight are also the same words.
  */
 function comparable(s) {
     return String(s)
+        .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
+        .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
+        .replace(/[\u2010-\u2015]/g, "-")
         .replace(/\s+/g, " ")
         .replace(/\s+([,.;:!?])/g, "$1")
         .trim()

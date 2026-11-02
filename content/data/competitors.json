@@ -2118,5 +2118,1111 @@
         "verifiedISO": "2026-11-02"
       }
     ]
+  },
+  {
+    "slug": "propresenter",
+    "name": "ProPresenter",
+    "category": "vj",
+    "audience": "vj_pro",
+    "homepage": "https://www.renewedvision.com/propresenter",
+    "tagline": "Presentation and live production software for showing lyrics, slides and media, and for driving screens and video outputs.",
+    "bestFor": "Churches and their volunteer or staff media teams running weekly services and live events, plus the live production and broadcast teams the maker also lists. It suits operators who build a planned show of lyrics, slides and media in advance and drive several screens from it.",
+    "platforms": [
+      "macos",
+      "windows"
+    ],
+    "requirements": "macOS 13.5 Ventura or later, or Windows 10 version 1903 or later, with macOS 15 or Windows 11 recommended",
+    "requirementsSource": {
+      "sourceUrl": "https://support.renewedvision.com/hc/en-us/articles/360042186713-What-are-the-minimum-system-requirements-for-ProPresenter",
+      "verifiedISO": "2026-11-02"
+    },
+    "strengths": [
+      "Worship tooling is built in, with automatic lyric and copyright integration and access to 125 Bible translations",
+      "Multi-screen management sends different layouts to each screen and supports up to 8 unique outputs, with separate stage display layouts for confidence monitors",
+      "Broadcast outputs cover SDI with separate key and fill channels, NDI, Syphon and Resi streaming",
+      "Automation covers macros, MIDI, DMX, timecode and Elgato Stream Deck, so one operator can run a show",
+      "Support runs seven days a week with a stated average chat wait of under 90 seconds"
+    ],
+    "ourAngle": "ProPresenter is a production show tool and Vibresia is a reactive audio visualiser, so they sit in different places. ProPresenter wins where a live production needs a show built in advance with lyric arrangements, scripture and copyright lookup, key and fill feeds to a switcher, MIDI, DMX and timecode control, a Windows build for the booth and many screens from one machine. Vibresia needs no show, no slides and no lyrics: it draws live visuals from whatever the Mac is already playing, with no plug-in and nothing to prepare. Vibresia has no video output and no MIDI, OSC, NDI, Syphon or Spout output, and it runs on Mac only, so a team that needs SDI, NDI or a Windows machine should use ProPresenter.",
+    "profile": {
+      "sourceUrl": "https://www.renewedvision.com/propresenter",
+      "verifiedISO": "2026-11-02"
+    },
+    "pricing": {
+      "model": "subscription",
+      "freeTier": true,
+      "tiers": [
+        {
+          "name": "Free",
+          "price": "0.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Run the app and edit presentations on one computer",
+            "Edit and build shows without a paid seat"
+          ],
+          "excludes": [
+            "Watermark-free output",
+            "Cloud workspace sync on Local Editor seats",
+            "ProContent library access",
+            "Customer support access"
+          ]
+        },
+        {
+          "name": "Standard, one seat, billed annually",
+          "price": "289.00",
+          "currency": "USD",
+          "period": "year",
+          "includes": [
+            "All ProPresenter releases from version 17",
+            "Customer support access seven days a week",
+            "Device activation and seat management for teams",
+            "Limited access to the ProContent Library"
+          ],
+          "excludes": [
+            "Volume pricing, which the maker lists separately per seat for 2 to 10 seats",
+            "Enterprise terms for 11 or more seats"
+          ]
+        },
+        {
+          "name": "Standard, one seat, billed monthly",
+          "price": "29.00",
+          "currency": "USD",
+          "period": "month",
+          "includes": [
+            "All ProPresenter releases from version 17",
+            "Customer support access seven days a week",
+            "Limited access to the ProContent Library"
+          ],
+          "excludes": [
+            "Volume discounts, which the maker does not apply to monthly subscriptions"
+          ]
+        }
+      ],
+      "note": "ProPresenter is sold to new users as a subscription only. Annual per-seat prices are tiered: 289 dollars for one seat, 189 per seat for 2 to 4 seats and 149 per seat for 5 to 10 seats, while 11 or more seats are quoted by sales with no published price. Monthly subscriptions get no volume discount. The free mode is an unregistered download or a free Local Editor seat that puts a watermark on every output, and it is not a published pricing tier, so the period shown against it does not apply.",
+      "sourceUrl": "https://support.renewedvision.com/hc/en-us/articles/35579747176083-Renewed-Vision-Pricing-and-Renewal-Process",
+      "verifiedISO": "2026-11-02"
+    },
+    "trial": {
+      "limits": "The trial runs 14 days, starts as soon as the request is completed, requires a credit card at sign-up and converts automatically to a monthly or annual subscription. One trial is allowed per organisation. Unlike the free version the trial is a fully registered copy, so there is no watermark and it can be used in front of a live audience.",
+      "sourceUrl": "https://support.renewedvision.com/hc/en-us/articles/4412269910419-How-to-Request-a-Two-Week-Trial-for-ProPresenter",
+      "verifiedISO": "2026-11-02"
+    },
+    "io": {
+      "sourceUrl": "https://support.renewedvision.com/hc/en-us/articles/360041879993-What-s-the-Difference-Between-Screens-and-Outputs",
+      "verifiedISO": "2026-11-02",
+      "midi": {
+        "status": "yes",
+        "text": "ProPresenter sends and receives MIDI, and can use incoming notes to trigger slides, media and macros.",
+        "sourceUrl": "https://support.renewedvision.com/hc/en-us/articles/1500000020301-Devices-MIDI-ProPresenter-Setup",
+        "quote": "ProPresenter can send and receive MIDI simultaneously.",
+        "verifiedISO": "2026-11-02"
+      },
+      "osc": {
+        "status": "no",
+        "text": "No OSC support was found; the maker documents HTTP and TCP/IP control, MIDI, DMX and timecode, and its own help centre search returns no OSC article.",
+        "sourceUrl": "https://support.renewedvision.com/hc/en-us/search?query=OSC",
+        "quote": "No results for \"OSC\"",
+        "verifiedISO": "2026-11-02",
+        "note": "The maker's own knowledge base search returns no results for OSC, and OSC appears in none of its articles, nor in its feature list or release notes, so support appears to be absent rather than explicitly denied."
+      },
+      "syphon": {
+        "status": "yes",
+        "text": "ProPresenter can send its output to other applications on the same Mac over Syphon, and Syphon is a macOS-only output type.",
+        "sourceUrl": "https://support.renewedvision.com/hc/en-us/articles/360041879993-What-s-the-Difference-Between-Screens-and-Outputs",
+        "quote": "Syphon -- this is a Mac-only option that allows you to output on the same computer to a program",
+        "verifiedISO": "2026-11-02"
+      },
+      "spout": {
+        "status": "no",
+        "text": "No Spout support was found; the maker lists Syphon as the Mac-only shared output and names no Windows equivalent.",
+        "sourceUrl": "https://support.renewedvision.com/hc/en-us/articles/360041879993-What-s-the-Difference-Between-Screens-and-Outputs",
+        "quote": "There are five different Output types that you can enable in the software.",
+        "verifiedISO": "2026-11-02",
+        "note": "The five output types listed are System, Blackmagic SDI, NDI, Syphon and Placeholder. The maker's knowledge base contains no article mentioning Spout, and Syphon is described as a Mac-only option."
+      },
+      "ndi": {
+        "status": "yes",
+        "text": "ProPresenter can create a virtual NDI output that shows over the network to any software or hardware that receives NDI.",
+        "sourceUrl": "https://support.renewedvision.com/hc/en-us/articles/360041879993-What-s-the-Difference-Between-Screens-and-Outputs",
+        "quote": "NDI -- this option will create a virtual output that shows over the network on any software programs",
+        "verifiedISO": "2026-11-02"
+      },
+      "dmx": {
+        "status": "yes",
+        "text": "ProPresenter can be controlled by a lighting console over DMX or Art-Net, but this is macOS only.",
+        "sourceUrl": "https://support.renewedvision.com/hc/en-us/articles/360059980973-Devices-DMX",
+        "quote": "Please note that DMX connections are only available on macOS. Windows only supports MIDI devices at this time.",
+        "verifiedISO": "2026-11-02"
+      },
+      "video": {
+        "status": "yes",
+        "text": "ProPresenter outputs video to broadcast hardware, including separate key and fill channels for broadcast graphics applications.",
+        "sourceUrl": "https://www.renewedvision.com/propresenter",
+        "quote": "Easily output to any display connected to your computer or to broadcast quality video hardware outputs (including separate key/fill outputs for broadcast CG applications).",
+        "verifiedISO": "2026-11-02"
+      }
+    },
+    "limits": [
+      {
+        "text": "The free mode is a watermarked Local Editor seat: it edits on one computer only, does not sync to the cloud, and puts a ProPresenter watermark on outputs.",
+        "sourceUrl": "https://support.renewedvision.com/hc/en-us/articles/56274782609427-ProPresenter-Seat-Types",
+        "quote": "Local Editor. Edit on this computer only. Workspaces don't sync to Cloud, and outputs show a ProPresenter watermark.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "DMX and Art-Net control is macOS only, and on Windows ProPresenter supports MIDI devices only.",
+        "sourceUrl": "https://support.renewedvision.com/hc/en-us/articles/360059980973-Devices-DMX",
+        "quote": "Please note that DMX connections are only available on macOS. Windows only supports MIDI devices at this time.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "H.264 recording and RTMP streaming need a graphics card with NVENC, AMF or QSV support, and are not offered on machines that lack it.",
+        "sourceUrl": "https://support.renewedvision.com/hc/en-us/articles/360052024413-Why-can-t-I-record-to-H-264-or-use-RTMP-Live-Stream",
+        "quote": "H.264 won't be shown in the list of codecs for recording, and RTMP (live streaming) will not be available under Destination.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "Installing, registering and verifying the subscription need a working internet connection, though running the software does not.",
+        "sourceUrl": "https://support.renewedvision.com/hc/en-us/articles/360042186713-What-are-the-minimum-system-requirements-for-ProPresenter",
+        "quote": "ProPresenter requires a working Internet connection in order to be able to install the software, register, verify subscription, and receive updates.",
+        "verifiedISO": "2026-11-02"
+      }
+    ]
+  },
+  {
+    "slug": "watchout",
+    "name": "WATCHOUT",
+    "category": "vj",
+    "audience": "vj_pro",
+    "homepage": "https://www.dataton.com/watchout",
+    "tagline": "Windows multi-display production and playback software for building shows and playing them in sync across multiple displays.",
+    "bestFor": "Show producers, projection mappers and AV integrators who need one set of timelines driving many synchronised projectors, LED walls and screens from a network of Windows machines, with live control from lighting desks, show controllers and MIDI gear.",
+    "platforms": [
+      "windows"
+    ],
+    "requirements": "Windows 10 or later, 64-bit, with a Vulkan 1.3 GPU for the Producer and OpenGL 4.4 or DirectX 11 on a media server",
+    "requirementsSource": {
+      "sourceUrl": "https://www.dataton.com/downloads/watchout7",
+      "verifiedISO": "2026-11-02"
+    },
+    "strengths": [
+      "Composes and plays back video, still images, animations, graphics, live streams and sound across many displays from one set of timelines",
+      "Scales to any number of display devices, with each licensed media server covering up to 8x DCI 4K of output and further servers added for larger pixel counts",
+      "Plays uncompressed 4K video and images at up to 120Hz with up to 16-bit colour, REC.2020 and HDR across GPU, SDI, ST 2110 and NDI outputs",
+      "Accepts live control from Art-Net and DMX, OSC, MIDI, MIDI Show Control, LTC, PosiStageNet and an HTTP REST API",
+      "Takes live capture from capture cards, USB capture, network streams, VNC and NDI, and from local Spout textures published by other applications"
+    ],
+    "ourAngle": "WATCHOUT wins where a show is specified and installed: synchronised multi-display playback, frame-accurate cueing, projection mapping and broadcast-grade output via GPU, SDI, ST 2110 and NDI, with input from Art-Net, OSC, MIDI, LTC and live capture, running unattended on locked-down media servers. Vibresia is a Mac-only app that visualises whatever the Mac is playing in the Mac's own windows: it has no video output, no MIDI, OSC, NDI, Syphon or Spout output, is not a media server, cannot drive projectors or LED walls, cannot pre-cue or synchronise separate displays, and cannot run unattended on a media server. Vibresia is free, needs no licence, no registration form and no media server hardware, and it suits someone who wants live visuals within minutes rather than a specified show system.",
+    "profile": {
+      "sourceUrl": "https://www.dataton.com/watchout",
+      "verifiedISO": "2026-11-02"
+    },
+    "pricing": {
+      "model": "one-time",
+      "freeTier": true,
+      "tiers": [
+        {
+          "name": "WATCHOUT Producer",
+          "price": "0.00",
+          "currency": "EUR",
+          "period": "once",
+          "includes": [
+            "Download and install without a licence key",
+            "Author shows on a production computer with no licence required",
+            "Asset Manager free for basic use with the HAP codec and still images"
+          ],
+          "excludes": [
+            "Output to displays such as projectors",
+            "Playback from a media server",
+            "Optimisation of advanced codecs, image sequences, 3D models and audio"
+          ]
+        },
+        {
+          "name": "WATCHOUT 7 licence",
+          "price": "3200.00",
+          "currency": "EUR",
+          "period": "once",
+          "includes": [
+            "One media server licence, one per media server",
+            "Up to 8x DCI 4K across physical GPU or SDI outputs or virtual NDI outputs",
+            "Asset Manager optimisation of advanced codecs on the licensed node"
+          ],
+          "excludes": [
+            "Import taxes, local VAT and freight",
+            "Additional media servers"
+          ]
+        }
+      ],
+      "note": "Dataton publishes a single recommended retail price rather than a tier list: 3200 euros per WATCHOUT 7 licence, bought through a local Dataton partner or a price request form. The same FAQ lists 1950 euros per licence for an electronic upgrade from version 6, and educational licences are discounted, restricted to teaching institutions and require annual renewal.",
+      "sourceUrl": "https://www.dataton.com/downloads/faq-watchout-7/what-does-watchout-7-cost",
+      "verifiedISO": "2026-11-02"
+    },
+    "trial": {
+      "limits": "There is no time-limited trial: WATCHOUT downloads and runs without a licence key so you can get a feel for the software, but producing a show with output devices such as projectors needs licence keys, and connecting a media server and starting one or more displays needs a licence as well.",
+      "sourceUrl": "https://www.dataton.com/downloads/watchout7",
+      "verifiedISO": "2026-11-02"
+    },
+    "io": {
+      "sourceUrl": "https://docs.dataton.com/guide/watchout/external-control/external-control-overview.html",
+      "verifiedISO": "2026-11-02",
+      "midi": {
+        "status": "yes",
+        "text": "WATCHOUT ships a standalone MIDI Bridge service that forwards Control Change, Note and Pitch Wheel messages from a MIDI device or virtual port to the Director as variable updates, and it also handles MIDI Show Control.",
+        "sourceUrl": "https://docs.dataton.com/guide/watchout/external-control/midi-bridge.html",
+        "quote": "The MIDI Bridge is a standalone service. It receives MIDI messages from a connected MIDI device and forwards them to the Director.",
+        "verifiedISO": "2026-11-02"
+      },
+      "osc": {
+        "status": "yes",
+        "text": "WATCHOUT 7 receives OSC natively over UDP port 8000 and TCP port 8001, mapping incoming messages to show variables and controlling timeline playback.",
+        "sourceUrl": "https://docs.dataton.com/guide/watchout/external-control/osc-protocol.html",
+        "quote": "WATCHOUT listens for OSC on two ports at the same time, over both UDP and TCP",
+        "verifiedISO": "2026-11-02"
+      },
+      "syphon": {
+        "status": "no",
+        "text": "WATCHOUT is Windows-only software and offers no Syphon support, since Syphon is a macOS technology.",
+        "sourceUrl": "https://www.dataton.com/downloads/watchout7",
+        "quote": "WATCHOUT is Windows-based software and not available on Mac.",
+        "verifiedISO": "2026-11-02"
+      },
+      "spout": {
+        "status": "yes",
+        "text": "WATCHOUT can act as a Spout receiver, taking a Spout texture published by an application on the same node and the same GPU as a live capture source.",
+        "sourceUrl": "https://docs.dataton.com/guide/watchout/devices/spout-capture.html",
+        "quote": "WATCHOUT can act as a Spout receiver: a Spout-capable application on the same node and the same GPU publishes a texture",
+        "verifiedISO": "2026-11-02"
+      },
+      "ndi": {
+        "status": "yes",
+        "text": "WATCHOUT supports NDI in both directions, publishing rendered display output as an NDI stream and receiving NDI streams as capture sources.",
+        "sourceUrl": "https://www.dataton.com/watchout",
+        "quote": "Full NDI capture and distribution. NDI support for multiple video streams on a shared connection reducing costs and deployment time.",
+        "verifiedISO": "2026-11-02"
+      },
+      "dmx": {
+        "status": "yes",
+        "text": "WATCHOUT maps incoming Art-Net DMX values to show variables and sends DMX over Art-Net from timeline fixture cues, but it does not accept physical DMX input directly.",
+        "sourceUrl": "https://docs.dataton.com/guide/watchout/external-control/art-net-input.html",
+        "quote": "WATCHOUT does not accept physical DMX input directly.",
+        "verifiedISO": "2026-11-02"
+      },
+      "video": {
+        "status": "yes",
+        "text": "WATCHOUT plays video, stills and live sources on multiple displays, with output routings for GPU, SDI, ST 2110, NDI and virtual displays.",
+        "sourceUrl": "https://docs.dataton.com/guide/watchout/devices/ndi-output.html",
+        "quote": "In WATCHOUT, NDI is one of the five output devices alongside GPU, SDI, ST 2110, and Virtual.",
+        "verifiedISO": "2026-11-02"
+      }
+    },
+    "limits": [
+      {
+        "text": "The free Producer cannot drive output devices: showing a show on projectors or other displays needs licence keys, and connecting a media server needs a licence for both the production computer and the server.",
+        "sourceUrl": "https://www.dataton.com/downloads/watchout7",
+        "quote": "When you want to start making a show with output devices, such as projectors, you'll need license key/s.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "Without a licence the Asset Manager runs in Demo Mode, which can optimise only HAP and HAP Alpha video, 8-bit images, WAV and MP3 audio, SVG shapes, fonts, EDID, Art-Net fixtures and 3D models.",
+        "sourceUrl": "https://docs.dataton.com/guide/watchout/assets-asset-manager/asset-manager.html",
+        "quote": "Without a license, the Asset Manager runs in Demo Mode.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "Each licensed media server drives up to 70,778,880 pixels across its physical outputs, equal to 8x DCI 4K, and a display that would push a node over that budget is rejected.",
+        "sourceUrl": "https://docs.dataton.com/guide/watchout/getting-started/welcome-to-watchout-7.html",
+        "quote": "Each Runner node can drive up to 70,778,880 pixels across its physical outputs",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "NDI output is fixed at 8 bits per component and carries no HDR colour space, so HDR delivery has to use a GPU, SDI or ST 2110 output.",
+        "sourceUrl": "https://docs.dataton.com/guide/watchout/devices/ndi-output.html",
+        "quote": "NDI output is fixed at 8 bits per component.",
+        "verifiedISO": "2026-11-02"
+      }
+    ]
+  },
+  {
+    "slug": "houdini",
+    "name": "Houdini",
+    "category": "creative-coding",
+    "audience": "creative_coder",
+    "homepage": "https://www.sidefx.com/",
+    "tagline": "A node-based procedural 3D system for modelling, simulation, look development and rendering, made by SideFX.",
+    "bestFor": "Studios and technical artists who need procedural geometry, simulation and USD pipelines for film, TV and games, and independent developers, schools or students who qualify for the Indie, Education or Apprentice licences.",
+    "platforms": [
+      "macos",
+      "windows",
+      "linux"
+    ],
+    "requirements": "A 64-bit Apple silicon Mac running macOS 11 or later, with Intel Macs not supported, a GL4.0 graphics card with 12GB of VRAM and 16GB of memory",
+    "requirementsSource": {
+      "sourceUrl": "https://www.sidefx.com/products/houdini/",
+      "verifiedISO": "2026-11-02"
+    },
+    "strengths": [
+      "Everything is node-based, so creative decisions can be made deep into production and changes cascade through the network to produce a new result",
+      "It ships with solvers for fluids, destruction, pyro, grains and cloth, plus terrain, ocean, cloud and crowd tools for world building",
+      "Node networks can be wrapped into shareable digital assets, and those assets can be opened in host applications such as Maya, 3ds Max, Unreal and Unity with the asset's procedural controls",
+      "Look development and lighting run on USD-based Solaris tools, with Copernicus for textures and the Karma renderer for output, all inside the same scene",
+      "PDG can distribute tasks, manage dependencies and create datasets for machine learning and AI applications"
+    ],
+    "ourAngle": "Houdini wins where a full procedural 3D pipeline is needed: geometry, simulation, USD and Solaris look development, offline rendering, shared digital assets and studio-scale pipelines. It needs a paid licence, an Apple silicon Mac and a production pipeline, and it reads MIDI through the MIDI In CHOP but writes video only as files through the FFmpeg Encode Video TOP, with no OSC, Syphon, Spout, NDI or DMX output of its own. Vibresia is a free Mac app that turns whatever the Mac is playing into live visuals with no plug-in and no 3D system, and it has no video output and no MIDI, OSC, NDI, Syphon or Spout output, so a Houdini artist who needs shared textures in Resolume or TouchDesigner has to build a bridge, while a Vibresia user has no such step to take.",
+    "profile": {
+      "sourceUrl": "https://www.sidefx.com/products/houdini/",
+      "verifiedISO": "2026-11-02"
+    },
+    "pricing": {
+      "model": "one-time",
+      "freeTier": true,
+      "tiers": [
+        {
+          "name": "Houdini Apprentice",
+          "price": "0.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "A free build of Houdini FX for personal non-commercial projects",
+            "Can save to disk and render out with a watermark",
+            "Works with Houdini Education .hipnc files"
+          ],
+          "excludes": [
+            "Commercial use",
+            "Renders restricted to 1920x1080",
+            "Output watermarked except for .picnc renders",
+            "Third-party renderers",
+            "Houdini Engine plug-ins and Houdini Engine Indie"
+          ]
+        },
+        {
+          "name": "Houdini Core, perpetual workstation licence",
+          "price": "1995.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Commercial use",
+            "Modelling, character rigging, animation, Solaris layout, look development and lighting",
+            "Five workstation licences allowed per facility"
+          ],
+          "excludes": [
+            "DOP level fluid, destruction, pyro, cloth and crowd simulation, which needs Houdini FX"
+          ]
+        },
+        {
+          "name": "Houdini FX, perpetual workstation licence",
+          "price": "4495.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Commercial use",
+            "Fluids, destruction, pyro, grains and cloth simulation",
+            "Houdini Engine plug-ins and shareable Houdini Digital Assets",
+            "Five workstation licences allowed per facility"
+          ],
+          "excludes": [
+            "Karma tokens bundled with perpetual licences, which are only available while the annual upgrade plan is active"
+          ]
+        },
+        {
+          "name": "Houdini Indie, annual subscription",
+          "price": "299.00",
+          "currency": "USD",
+          "period": "year",
+          "includes": [
+            "All of Houdini FX's animation and VFX tools under an indie licence",
+            "Houdini Engine Indie for batch processing and plug-ins"
+          ],
+          "excludes": [
+            "Users making more than 100,000 US dollars a year",
+            "More than three licences per studio",
+            "Network or cloud licence servers"
+          ]
+        },
+        {
+          "name": "Houdini Education, annual global access",
+          "price": "95.00",
+          "currency": "USD",
+          "period": "year",
+          "includes": [
+            "Full-featured Houdini FX for students, schools and training centres",
+            "Opens files created with Houdini Apprentice",
+            "Houdini Engine Education included"
+          ],
+          "excludes": [
+            "Commercial use"
+          ]
+        }
+      ],
+      "note": "SideFX prints these prices in US dollars on its compare page and sells three ways: a perpetual licence with an annual upgrade plan, an annual or monthly rental, and a subscription for Indie. The same page also lists a Houdini Core annual workstation rental at 1,475 dollars, monthly local access rentals from 370 dollars for Core and 910 dollars for FX, a two-year Indie workstation subscription at 449 dollars, and Houdini Engine licences from 525 dollars a year. Prices vary by currency and region.",
+      "sourceUrl": "https://www.sidefx.com/products/compare/",
+      "verifiedISO": "2026-11-02"
+    },
+    "trial": {
+      "limits": "There is no time-limited trial. Houdini Apprentice is a free Houdini FX build for personal non-commercial projects, restricted to 1920x1080 renders and watermarked outside .picnc, and it runs on a licence that renews every thirty days and needs an internet connection once a month.",
+      "sourceUrl": "https://www.sidefx.com/get/try-houdini/",
+      "verifiedISO": "2026-11-02"
+    },
+    "io": {
+      "sourceUrl": "https://www.sidefx.com/docs/houdini/nodes/chop/index.html",
+      "verifiedISO": "2026-11-02",
+      "midi": {
+        "status": "yes",
+        "text": "Houdini reads MIDI from devices and files with the MIDI In CHOP and sends events with the MIDI Out CHOP.",
+        "sourceUrl": "https://www.sidefx.com/docs/houdini/nodes/chop/midiin.html",
+        "quote": "The MIDI In CHOP reads Note events, Controller events, Program Change events, and Timing events from both midi devices and files.",
+        "verifiedISO": "2026-11-02"
+      },
+      "osc": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://www.sidefx.com/docs/houdini/nodes/index.html",
+        "verifiedISO": "2026-11-02",
+        "note": "Houdini 22's node index lists no OSC node in any context, and a SideFX staff reply in January 2019 said Houdini just supports MIDI, so OSC data has to come in through a custom channel importer."
+      },
+      "syphon": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://www.sidefx.com/docs/houdini/nodes/index.html",
+        "verifiedISO": "2026-11-02",
+        "note": "Houdini 22's node index lists no Syphon node in any context, and the SideFX forum thread on Syphon output from Houdini has no official answer."
+      },
+      "spout": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://www.sidefx.com/docs/houdini/nodes/index.html",
+        "verifiedISO": "2026-11-02",
+        "note": "Houdini 22's node index lists no Spout node in any context, and no SideFX page documents a Spout output."
+      },
+      "ndi": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://www.sidefx.com/docs/houdini/nodes/index.html",
+        "verifiedISO": "2026-11-02",
+        "note": "Houdini 22's node index lists no NDI node in any context, and the SideFX forum thread asking for NDI output from Houdini has no official answer."
+      },
+      "dmx": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://www.sidefx.com/docs/houdini/nodes/index.html",
+        "verifiedISO": "2026-11-02",
+        "note": "Houdini 22's node index lists no DMX node in any context, and no SideFX page documents a DMX output."
+      },
+      "video": {
+        "status": "yes",
+        "text": "Houdini writes video files with the FFmpeg Encode Video TOP node, which encodes a sequence of still images as a video file, rather than sending a live video feed out.",
+        "sourceUrl": "https://www.sidefx.com/docs/houdini/nodes/top/ffmpegencodevideo.html",
+        "quote": "Encodes a sequence of still images as a video file.",
+        "verifiedISO": "2026-11-02"
+      }
+    },
+    "limits": [
+      {
+        "text": "Houdini Apprentice must be used on non-commercial projects, and cannot be used in the same pipeline as commercial or indie versions of Houdini.",
+        "sourceUrl": "https://www.sidefx.com/get/try-houdini/",
+        "quote": "It must be used on Non-commercial projects",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "Apprentice renders are restricted to 1920x1080, output is watermarked in every format except .picnc, and third-party renderers cannot be used with it.",
+        "sourceUrl": "https://www.sidefx.com/get/try-houdini/",
+        "quote": "It is restricted to 1920x1080 when rendering",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "Houdini Digital Assets created in Apprentice cannot be used with Houdini Engine or Houdini Engine Indie.",
+        "sourceUrl": "https://www.sidefx.com/get/try-houdini/",
+        "quote": "Houdini Digital Assets created in Apprentice can not be used with Houdini Engine or Houdini Engine Indie",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "Houdini Indie is a limited commercial licence for people making less than 100,000 US dollars a year, and it is limited to three licences per studio.",
+        "sourceUrl": "https://www.sidefx.com/buy/",
+        "quote": "These Limited Commercial licenses are designed for people making less than $100K USD per year.",
+        "verifiedISO": "2026-11-02"
+      }
+    ]
+  },
+  {
+    "slug": "vmix",
+    "name": "vMix",
+    "category": "vj",
+    "audience": "vj_pro",
+    "homepage": "https://www.vmix.com/",
+    "tagline": "A live video production and streaming switcher for Windows that mixes cameras, network sources and media, then records and streams the result.",
+    "bestFor": "Operators of live multi-camera productions on a Windows PC who need switching, recording and streaming in one application, from churches and sport to esports, podcasts and conference streams.",
+    "platforms": [
+      "windows"
+    ],
+    "requirements": "Windows 10 or 11, 64-bit only, with a 2GHz quad-core processor and 4GB of memory, and a dedicated NVIDIA card with 2GB or more recommended for 4K",
+    "requirementsSource": {
+      "sourceUrl": "https://www.vmix.com/software/download.aspx",
+      "verifiedISO": "2026-11-02"
+    },
+    "strengths": [
+      "Mixes cameras, capture cards, NDI, OMT and SRT sources with transitions, overlays and titles, and records and streams the same production at the same time",
+      "Sends program output to other machines over NDI, with up to four independently configurable NDI outputs in the 4K, Pro and Max editions",
+      "Handles remote guests with vMix Call for up to eight callers, and slow-motion instant replay for up to eight cameras",
+      "Offers a fully functional 60-day trial of the Pro edition, including 4K, MultiCorder and full Instant Replay",
+      "Can be scripted, driven from a web controller, or controlled from MIDI devices and PTZ cameras from the 4K edition upwards"
+    ],
+    "ourAngle": "vMix is a production switcher: it ingests cameras, NDI, OMT and SRT sources, records them, streams to up to five destinations and sends program output to monitors and other machines, so it wins whenever a multi-camera show needs switching, recording, streaming and replay on screen. Vibresia is a free Mac app that draws live visuals for whatever the Mac is already playing, with no capture, no switching, no recording and no streaming; it has no video output and no MIDI, OSC, NDI, Syphon or Spout output, and it runs on macOS only, where vMix has no build at all.",
+    "profile": {
+      "sourceUrl": "https://www.vmix.com/",
+      "verifiedISO": "2026-11-02"
+    },
+    "pricing": {
+      "model": "subscription",
+      "freeTier": false,
+      "tiers": [
+        {
+          "name": "Basic HD, one-off licence",
+          "price": "60.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Four inputs in total, three of them cameras or NDI",
+            "1920 by 1080 output",
+            "One overlay channel",
+            "Twelve months of free version updates"
+          ],
+          "excludes": [
+            "vMix Call, MultiCorder, Instant Replay, scripting and PTZ control",
+            "The Mix input and the extra outputs"
+          ]
+        },
+        {
+          "name": "HD, one-off licence",
+          "price": "350.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "More inputs and outputs than Basic HD",
+            "Twelve months of free version updates"
+          ],
+          "excludes": []
+        },
+        {
+          "name": "4K, one-off licence",
+          "price": "700.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "4K output and the full set of external, fullscreen and virtual outputs",
+            "Twelve months of free version updates"
+          ],
+          "excludes": []
+        },
+        {
+          "name": "Pro, one-off licence",
+          "price": "1200.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Everything in 4K, with the full feature set",
+            "Twelve months of free version updates"
+          ],
+          "excludes": []
+        },
+        {
+          "name": "vMix Max, monthly subscription",
+          "price": "50.00",
+          "currency": "USD",
+          "period": "month",
+          "includes": [
+            "Equivalent to the Pro edition in all its features",
+            "1000 total inputs, and a maximum resolution of 4096 by 2160",
+            "Streaming to five destinations at once",
+            "vMix Call for up to eight callers, and Instant Replay for up to eight cameras",
+            "Free version updates while subscribed"
+          ],
+          "excludes": [
+            "Free version updates only for as long as the subscription is paid"
+          ]
+        }
+      ],
+      "note": "vMix Max is the only subscription edition, and the purchase page shows it at 50 dollars a month. The same page lists the one-off licences above, each including twelve months of free version updates. The knowledge base states that all payments are charged in US dollars.",
+      "sourceUrl": "https://www.vmix.com/purchase/",
+      "verifiedISO": "2026-11-02"
+    },
+    "trial": {
+      "limits": "The trial lasts 60 days and runs vMix Pro with all its features, including 4K, MultiCorder and full Instant Replay. A paid licence is needed after the 60 days.",
+      "sourceUrl": "https://www.vmix.com/knowledgebase/article.aspx/59/which-edition-is-the-trial",
+      "verifiedISO": "2026-11-02"
+    },
+    "io": {
+      "sourceUrl": "https://www.vmix.com/software/features.aspx",
+      "verifiedISO": "2026-11-02",
+      "midi": {
+        "status": "yes",
+        "text": "vMix accepts MIDI from controllers for shortcuts, and can send MIDI out to lights and faders through its Activators feature.",
+        "sourceUrl": "https://www.vmix.com/help29/Activators.html",
+        "quote": "Activators can be used to activate lights, button LEDs and motorised faders in response to changes in vMix.",
+        "verifiedISO": "2026-11-02",
+        "note": "The input side is documented at https://www.vmix.com/help29/ControllerOptions.html, which says shortcuts can be assigned to buttons, faders and knobs on any MIDI compatible device."
+      },
+      "osc": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://www.vmix.com/help29/TCPAPI.html",
+        "verifiedISO": "2026-11-02",
+        "note": "The documented control interfaces are the HTTP web API and the TCP API on port 8099, and no OSC reference appears in the vMix 29 user guide."
+      },
+      "syphon": {
+        "status": "no",
+        "text": "vMix has no Syphon input or output, because there is no macOS version of vMix, and Mac sources reach vMix through NDI or OMT scan converters instead.",
+        "sourceUrl": "https://www.vmix.com/knowledgebase/article.aspx/7/can-vmix-run-on-a-mac",
+        "quote": "Direct3D is exclusively available for Windows and as a result an OSX version of vMix is not being developed.",
+        "verifiedISO": "2026-11-02"
+      },
+      "spout": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://www.vmix.com/help29/ExternalOutput1.html",
+        "verifiedISO": "2026-11-02",
+        "note": "The documented ways to send video out are HDMI, SDI or analogue through AJA, Blackmagic Design and Bluefish hardware, other applications on the same PC, and NDI. Spout appears on the vMix forums as an open feature request with no vMix announcement."
+      },
+      "ndi": {
+        "status": "yes",
+        "text": "vMix receives NDI sources from the network and sends its output over NDI, with up to four independently configurable NDI outputs in the 4K, Pro and Max editions.",
+        "sourceUrl": "https://www.vmix.com/ndi/",
+        "quote": "In vMix 4K, Pro and Max you also have the ability to send up to 4 NDI Outputs which can be individually configured",
+        "verifiedISO": "2026-11-02"
+      },
+      "dmx": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://www.vmix.com/software/features.aspx",
+        "verifiedISO": "2026-11-02",
+        "note": "Neither the vMix feature list nor the vMix 29 user guide mentions DMX or lighting control, and the documented way to drive lights is MIDI output through Activators."
+      },
+      "video": {
+        "status": "yes",
+        "text": "vMix ingests video from cameras, capture cards, video files, NDI, OMT and SRT, and outputs it by recording, streaming and sending it to monitors and other machines.",
+        "sourceUrl": "https://www.vmix.com/help29/ExternalOutput1.html",
+        "quote": "External Output allows you to send audio and video out of vMix in a number of different ways:",
+        "verifiedISO": "2026-11-02"
+      }
+    },
+    "limits": [
+      {
+        "text": "The cheapest edition, Basic HD at 60 dollars, is limited to four total inputs, three of them cameras or NDI, 1920 by 1080 output and one overlay channel, and it leaves out vMix Call, MultiCorder, Instant Replay, scripting, PTZ control, the Mix input and the extra outputs.",
+        "sourceUrl": "https://www.vmix.com/knowledgebase/article.aspx/48/which-edition-of-vmix-do-i-need",
+        "quote": "Do you need to connect more than 3 cameras to vMix at the same time?",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "There is no macOS version of vMix, as it cannot be installed directly on OSX and can only be installed on Windows via Boot Camp on older Intel Macs.",
+        "sourceUrl": "https://www.vmix.com/knowledgebase/article.aspx/7/can-vmix-run-on-a-mac",
+        "quote": "vMix cannot be installed directly on OSX and can only be installed on Windows via Boot Camp when using a Mac.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "Recording is capped at two recorders, and four external outputs, two fullscreen outputs and four virtual outputs come only with the 4K, Pro and Max editions.",
+        "sourceUrl": "https://www.vmix.com/purchase/",
+        "quote": "Four External Outputs Two Fullscreen Outputs Four Virtual Outputs",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "Streaming is limited to five destinations at the same time, and the knowledge base recommends a restreaming service for more than that.",
+        "sourceUrl": "https://www.vmix.com/knowledgebase/article.aspx/229/can-i-stream-to-more-than-one-streaming-provider-at-a-time",
+        "quote": "As of vMix 28 and above, vMix supports live streaming to up to 5 streaming destinations at the same time.",
+        "verifiedISO": "2026-11-02"
+      }
+    ]
+  },
+  {
+    "slug": "qlab",
+    "name": "QLab",
+    "category": "vj",
+    "audience": "vj_pro",
+    "homepage": "https://qlab.app/",
+    "tagline": "Show control and media playback software for macOS that cues sound, video, lighting and show control from one workspace.",
+    "bestFor": "People who build and run live shows on a Mac and need audio, video, lighting and show control cues fired from a single workspace, in theatres, concerts and live events.",
+    "platforms": [
+      "macos"
+    ],
+    "requirements": "macOS Big Sur, which is macOS 11, or later, on any Mac that can run it, with 4GB of memory treated as a minimum and an internal SSD recommended",
+    "requirementsSource": {
+      "sourceUrl": "https://qlab.app/docs/v5/general/system-recommendations/",
+      "verifiedISO": "2026-11-02"
+    },
+    "strengths": [
+      "One central place to build sound, video, lighting and show control cues, with a timeline view for arranging cues and a workflow system for finding and editing them",
+      "Multi-user collaboration, so several people can edit one workspace at once and a stage manager can follow along with read-only access",
+      "A video engine rebuilt on Apple's Metal framework, with multi-screen output, masking, edge blending, per-cue blend modes, text cues and Syphon and NDI input and output",
+      "Lighting patched over Art-Net or USB with unlimited patchable DMX addresses, and QLab 5 ships with instrument definitions for over 1400 types of lighting fixture from over 60 manufacturers",
+      "A free tier that already runs audio, video and lighting cues with unlimited cue lists, plus a 60-minute demo of every paid feature"
+    ],
+    "ourAngle": "QLab is a show control system: it runs a designed show from a workspace of cues and sends output to projectors, lighting and control hardware, which is a different job from the one Vibresia does. Vibresia is a free Mac app that turns whatever the Mac is playing into live visuals, so it suits a musician, DJ or VJ who wants images on their own screen with no licence and no show file, while QLab suits a designer building a multi-department show with a technical director pressing GO. QLab wins clearly on output and control, with multi-screen video, masking and edge blending, unlimited DMX over Art-Net, MIDI, MSC and OSC remote control, NDI and Syphon video input and output, timecode, and a demo of every paid feature for 60 minutes. Vibresia has no video output, no MIDI, OSC, NDI, Syphon or Spout output, and is Mac only, so it cannot drive lights or projectors from a timeline and cannot stand in for a lighting or projection cue system. QLab is Mac only as well, so neither runs on Windows, and QLab's paid licences are perpetual one-time purchases rather than a monthly subscription.",
+    "profile": {
+      "sourceUrl": "https://qlab.app/",
+      "verifiedISO": "2026-11-02"
+    },
+    "pricing": {
+      "model": "one-time",
+      "freeTier": true,
+      "tiers": [
+        {
+          "name": "Free Features",
+          "price": "0.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Audio, video and lighting cues",
+            "Workflow tools",
+            "Unlimited cue lists",
+            "Unlimited cue carts"
+          ],
+          "excludes": [
+            "Paid pro features such as network cues, MIDI cues, script cues and timecode cues",
+            "More than two channels of audio output",
+            "Multi-screen video output",
+            "More than 16 patchable DMX addresses"
+          ]
+        },
+        {
+          "name": "One Feature Set, Audio or Video or Lighting",
+          "price": "599.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "One of the audio, video or lighting licences",
+            "MIDI, networking, show control, scripting and workflow features",
+            "Installation on two computers"
+          ],
+          "excludes": [
+            "The other two feature sets",
+            "Multi-screen video output, video effects, NDI and Syphon",
+            "More than 16 patchable DMX addresses"
+          ]
+        },
+        {
+          "name": "Two Feature Sets",
+          "price": "1099.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Any two of the audio, video and lighting licences",
+            "MIDI, networking, show control, scripting and workflow features",
+            "Installation on two computers"
+          ],
+          "excludes": [
+            "The remaining feature set"
+          ]
+        },
+        {
+          "name": "Full-Featured, Audio and Video and Lighting",
+          "price": "1399.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Audio, video and lighting licences",
+            "MIDI, networking, show control, scripting and workflow features",
+            "Installation on two computers"
+          ],
+          "excludes": [
+            "Site licences, which are sold separately"
+          ]
+        },
+        {
+          "name": "Site Licence, per activation",
+          "price": "299.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "One audio, video or lighting activation across several computers at one location",
+            "One unlicensed machine able to log in remotely with full edit access"
+          ],
+          "excludes": [
+            "The Pick Two and Pick Three bundle options",
+            "Sharing between organisations",
+            "Purchase through the online store"
+          ]
+        }
+      ],
+      "note": "QLab 5 licences are perpetual one-time purchases rather than a subscription. The shop quotes Full-Featured at 1399 dollars one time or 15 dollars a day, Two Feature Sets at 1099 one time or 12 a day, and One Feature Set at 599 one time or 8 a day. Rent-to-own licences are one-time purchases priced per day, and every dollar spent on them becomes store credit. Educational users get a discount, and site licences cost 299 dollars per activation with a minimum of ten activations. The shop page loads its prices with JavaScript, so they are not in the page's HTML.",
+      "sourceUrl": "https://qlab.app/shop/",
+      "verifiedISO": "2026-11-02"
+    },
+    "trial": {
+      "limits": "Demo Mode unlocks all of QLab's licensed features for up to 60 minutes in a separate workspace, and copying cues and settings into the demo workspace is disabled. After that the licensed features need a licence again.",
+      "sourceUrl": "https://qlab.app/faq/",
+      "verifiedISO": "2026-11-02"
+    },
+    "io": {
+      "sourceUrl": "https://qlab.app/docs/v5/",
+      "verifiedISO": "2026-11-02",
+      "midi": {
+        "status": "yes",
+        "text": "QLab sends and receives MIDI, including MIDI Show Control, and MIDI cues are a paid feature unlocked by any licence.",
+        "sourceUrl": "https://qlab.app/docs/v5/networking/using-midi-and-msc/",
+        "quote": "QLab can be controlled from another program or device using MIDI.",
+        "verifiedISO": "2026-11-02"
+      },
+      "osc": {
+        "status": "yes",
+        "text": "QLab accepts incoming OSC over TCP and UDP and sends OSC messages out, with an OSC dictionary of workspace and application level commands.",
+        "sourceUrl": "https://qlab.app/docs/v5/networking/using-osc/",
+        "quote": "QLab has extensive support for the Open Sound Control protocol, a network communication standard for computers and multimedia devices.",
+        "verifiedISO": "2026-11-02"
+      },
+      "syphon": {
+        "status": "yes",
+        "text": "With a video licence, QLab can send Syphon outputs and receive Syphon input, and masks and geometry apply before the Syphon output.",
+        "sourceUrl": "https://qlab.app/docs/v5/video/video-output/",
+        "quote": "A device can also be an NDI output or a Syphon output, since these have the same function as a physical video display.",
+        "verifiedISO": "2026-11-02"
+      },
+      "spout": {
+        "status": "no",
+        "text": "QLab has no Spout output, because Spout is a Windows-only protocol and QLab runs on macOS only.",
+        "sourceUrl": "https://qlab.app/faq/",
+        "quote": "QLab 5 is a Mac-only program. It requires macOS Big Sur (macOS 11) or higher, and can run on any Mac that can run macOS Big Sur or higher.",
+        "verifiedISO": "2026-11-02",
+        "note": "The word Spout does not appear anywhere in the QLab documentation for any version, and the FAQ states QLab is a Mac-only program."
+      },
+      "ndi": {
+        "status": "yes",
+        "text": "QLab can receive NDI video as a camera cue source and publish video stages as NDI streams, with NDI audio input and output.",
+        "sourceUrl": "https://qlab.app/docs/v5/video/using-ndi/",
+        "quote": "you can use incoming NDI streams as sources for Camera cues, and publish Stages as NDI streams for other devices to receive.",
+        "verifiedISO": "2026-11-02"
+      },
+      "dmx": {
+        "status": "yes",
+        "text": "QLab patches and controls lighting over DMX using Art-Net version 3 nodes or the listed USB-DMX interfaces.",
+        "sourceUrl": "https://qlab.app/docs/v5/lighting/introduction-to-lighting/",
+        "quote": "QLab is compatible with any Art-net interface that uses ethernet or WiFi.",
+        "verifiedISO": "2026-11-02"
+      },
+      "video": {
+        "status": "yes",
+        "text": "QLab plays video cues to screens and projectors and, with a video licence, outputs video via Blackmagic Design devices, Syphon and NDI.",
+        "sourceUrl": "https://qlab.app/docs/v5/general/system-recommendations/",
+        "quote": "QLab can also output video via Blackmagic Design's UltraStudio, DeckLink, and Intensity capture and playback devices; via Syphon; and over a network using NDI.",
+        "verifiedISO": "2026-11-02"
+      }
+    },
+    "limits": [
+      {
+        "text": "More than two channels of audio output needs an audio licence, so the free tier is limited to two channels.",
+        "sourceUrl": "https://qlab.app/docs/v5/general/system-recommendations/",
+        "quote": "The use of more than two channels of audio output requires an audio license.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "A lighting licence is needed to patch more than 16 DMX addresses, and the free tier stops at 16.",
+        "sourceUrl": "https://qlab.app/docs/v5/general/licenses/",
+        "quote": "A lighting license unlocks the ability to patch more than 16 DMX addresses.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "QLab produces Art-Net for lighting but not sACN, so sACN-only fixtures need another path into the show.",
+        "sourceUrl": "https://qlab.app/cookbook/a-vlan-with-a-plan",
+        "quote": "Lighting control using Art-Net or sACN (which QLab doesn't produce, we know, we know...)",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "Demo mode expires after 60 minutes, and cues and settings cannot be copied into the demo workspace.",
+        "sourceUrl": "https://qlab.app/docs/v5/general/features/",
+        "quote": "While demo mode is active, all of QLab's licensed features are available, but copying cues and settings into the demo workspace is disabled.",
+        "verifiedISO": "2026-11-02"
+      }
+    ]
+  },
+  {
+    "slug": "wirecast",
+    "name": "Wirecast",
+    "category": "vj",
+    "audience": "vj_pro",
+    "homepage": "https://www.wirecast.io/",
+    "tagline": "Live video production software for Mac and Windows that switches cameras, mixes sources and streams or records the result.",
+    "bestFor": "Broadcasters, churches, sports producers and corporate teams who need to switch several cameras, host remote guests and record or stream the result from one application on either Windows or Mac.",
+    "platforms": [
+      "windows",
+      "macos"
+    ],
+    "requirements": "Windows 10 version 1809 or later, or macOS 15 Sequoia, with an Apple M1 or newer processor and 8GB of RAM as the minimum",
+    "requirementsSource": {
+      "sourceUrl": "https://www.wirecast.io/features/hardware-specs/",
+      "verifiedISO": "2026-11-02"
+    },
+    "strengths": [
+      "Wirecast accepts an unlimited number of camera inputs, from USB webcams and SDI or HDMI capture cards to NDI sources and iOS devices through the Wirecast Go app",
+      "Rendezvous brings remote guests into the production as browser-based calls, so Studio supports 2 guests and Pro supports 7, with no software download needed on the guest side",
+      "NDI input works in every version and on both platforms, and Wirecast Pro can also broadcast its programme feed back out over NDI",
+      "Both tiers stream to native destinations such as YouTube, Facebook Live, Twitch, Vimeo, LinkedIn or any custom RTMP or SRT endpoint, and Pro adds Cloud Multistreaming",
+      "Wirecast records the programme mix to disk while streaming, and Pro adds ISO recording that saves each camera feed as its own file plus multi-track audio recording"
+    ],
+    "ourAngle": "Wirecast is a production switcher and Vibresia is a reactive audio visualiser, so the two sit in different categories. Wirecast wins wherever Vibresia does not compete at all: it captures multiple cameras, switches shots, chroma keys, hosts remote guests over Rendezvous, records ISO feeds and multistreams to YouTube, Twitch or any RTMP endpoint, and it runs on Windows as well as Mac. Vibresia wins on cost and setup, being free with no capture hardware, no per-seat subscription and no plug-in, reacting to the audio the machine is already playing. Vibresia has no video output, no MIDI, OSC, NDI, Syphon or Spout output, and is Mac only, so it cannot feed a Wirecast programme output or sit as a source inside a larger production chain.",
+    "profile": {
+      "sourceUrl": "https://www.wirecast.io/",
+      "verifiedISO": "2026-11-02"
+    },
+    "pricing": {
+      "model": "subscription",
+      "freeTier": false,
+      "tiers": [
+        {
+          "name": "Wirecast Studio, billed monthly",
+          "price": "59.00",
+          "currency": "USD",
+          "period": "month",
+          "includes": [
+            "Mac and Windows",
+            "Unlimited live camera sources, NDI input, screen capture, IP cameras and web stream input",
+            "Two Rendezvous remote guests",
+            "Virtual camera and virtual microphone outputs",
+            "Chroma key, animated titles, clocks and scoreboards",
+            "Unlimited simultaneous broadcasts and local hard drive recordings"
+          ],
+          "excludes": [
+            "NDI programme output",
+            "Cloud Multistreaming",
+            "ISO recording of individual sources and multi-track audio recording",
+            "PTZ camera control and sports production tools including instant replay",
+            "Secondary display output and baseband SDI or HDMI output",
+            "A multi-viewer beyond four slots"
+          ]
+        },
+        {
+          "name": "Wirecast Studio, billed annually",
+          "price": "34.00",
+          "currency": "USD",
+          "period": "month",
+          "includes": [
+            "Everything in the monthly Studio plan, bought as an annual plan",
+            "Mac and Windows",
+            "Unlimited live camera sources, NDI input, screen capture, IP cameras and web stream input",
+            "Two Rendezvous remote guests"
+          ],
+          "excludes": [
+            "NDI programme output",
+            "Cloud Multistreaming",
+            "ISO recording of individual sources and multi-track audio recording",
+            "PTZ camera control and sports production tools including instant replay",
+            "Secondary display output and baseband SDI or HDMI output"
+          ]
+        },
+        {
+          "name": "Wirecast Pro, billed monthly",
+          "price": "79.00",
+          "currency": "USD",
+          "period": "month",
+          "includes": [
+            "Everything in Wirecast Studio",
+            "NDI programme output and Cloud Multistreaming",
+            "Seven Rendezvous remote guests",
+            "ISO recording of individual sources, and multi-track audio recording of up to 8 stereo tracks",
+            "PTZ camera control, sports production tools including instant replay, and virtual sets",
+            "Secondary display output and baseband SDI or HDMI output",
+            "A multi-viewer of up to 17 slots"
+          ],
+          "excludes": []
+        },
+        {
+          "name": "Wirecast Pro, billed annually",
+          "price": "42.00",
+          "currency": "USD",
+          "period": "month",
+          "includes": [
+            "Everything in Wirecast Pro, bought as an annual plan",
+            "NDI programme output and Cloud Multistreaming",
+            "Seven Rendezvous remote guests",
+            "ISO recording of individual sources, and multi-track audio recording of up to 8 stereo tracks"
+          ],
+          "excludes": []
+        }
+      ],
+      "note": "Both products are sold as subscriptions and the pricing page lists no one-time or perpetual purchase option, only monthly and annual billing. The annual plans are billed yearly at a monthly rate: 34 dollars a month for Studio, which the page says saves 300 dollars a year against the monthly price, and 42 dollars a month for Pro, saving 444 dollars a year. There is no free tier in the pricing table; the only free download is the watermarked trial. The Stock Media Library subscription is included for the first year only.",
+      "sourceUrl": "https://www.wirecast.io/pricing/",
+      "verifiedISO": "2026-11-02"
+    },
+    "trial": {
+      "limits": "The free download is a fully functional trial of Studio and Pro with no time limit and no credit card needed, but every output and recording carries a visual and audio watermark until a valid licence is purchased and activated, and the user guide adds that a Studio licence used with a Pro feature watermarks just that Pro output.",
+      "sourceUrl": "https://www.wirecast.io/wirecast-free-trial/",
+      "verifiedISO": "2026-11-02"
+    },
+    "io": {
+      "sourceUrl": "https://www.wirecast.io/features/hardware-specs/",
+      "verifiedISO": "2026-11-02",
+      "midi": {
+        "status": "yes",
+        "text": "Wirecast reads MIDI control surface input from named controllers rather than sending MIDI out, with the user guide listing APC MINI, APC40mk2, Launchpad MK2 and XKeys 128.",
+        "sourceUrl": "https://www.telestream.net/pdfs/user-guides/wirecast/Wirecast_16-3_Users_Guide_Mac_1009241016.pdf",
+        "quote": "Wirecast provides control to these MIDI controllers",
+        "verifiedISO": "2026-11-02",
+        "note": "The user guide lists APC MINI, APC40mk2, Launchpad MK2 and the X-keys 128 as separate bullets, and covers control surface input rather than MIDI output."
+      },
+      "osc": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://www.telestream.net/pdfs/user-guides/wirecast/Wirecast_16-3_Users_Guide_Mac_1009241016.pdf",
+        "verifiedISO": "2026-11-02",
+        "note": "Searched the Wirecast 16.3 user guides for macOS and Windows and the full release history list, and found no mention of OSC or Open Sound Control."
+      },
+      "syphon": {
+        "status": "no",
+        "text": "Wirecast removed Syphon as a source option in version 14.0 because it moved to the Metal rendering framework, and the current user guide lists no Syphon source or output.",
+        "sourceUrl": "https://www.telestream.net/download-files/wirecast/14-0/rel-Wirecast-14.0.1.pdf",
+        "quote": "We've removed Syphon Frame as a Source Option. Syphon depends on the OpenGL framework",
+        "verifiedISO": "2026-11-02"
+      },
+      "spout": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://www.telestream.net/pdfs/user-guides/wirecast/Wirecast_16-3_Users_Guide_Mac_1009241016.pdf",
+        "verifiedISO": "2026-11-02",
+        "note": "Searched the Wirecast 16.3 user guides for macOS and Windows and the full release history list, and found no mention of Spout input or output."
+      },
+      "ndi": {
+        "status": "yes",
+        "text": "NDI input works on both Mac and Windows in every version, and Wirecast Pro can additionally send its programme feed out over NDI.",
+        "sourceUrl": "https://www.wirecast.io/features/ndi/",
+        "quote": "However, sending your Wirecast Program Output via NDI to other devices on your network is a Wirecast Pro exclusive feature.",
+        "verifiedISO": "2026-11-02"
+      },
+      "dmx": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://www.wirecast.io/pricing/",
+        "verifiedISO": "2026-11-02",
+        "note": "Searched the Wirecast 16.3 user guides for macOS and Windows and the full release history list, and found no mention of DMX. The documented camera control path is VISCA over IP."
+      },
+      "video": {
+        "status": "yes",
+        "text": "Wirecast sends video out through a virtual camera, streaming destinations, NDI programme output, baseband SDI or HDMI cards, secondary display, and records to disk.",
+        "sourceUrl": "https://www.telestream.net/pdfs/user-guides/wirecast/Wirecast_16-3_Users_Guide_Mac_1009241016.pdf",
+        "quote": "Enables you to present the output of Wirecast as if it were a camera (a virtual camera)",
+        "verifiedISO": "2026-11-02"
+      }
+    },
+    "limits": [
+      {
+        "text": "The free trial is unlimited in time but watermarks every output and recording, with a periodic Wirecast logo overlay on the video and a periodic voice-over on the audio.",
+        "sourceUrl": "https://www.wirecast.io/wirecast-free-trial/",
+        "quote": "A visual and audio watermark will be present on all outputs and recordings until a valid license is purchased and activated.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "The cheapest tier, Wirecast Studio, leaves out NDI programme output, Cloud Multistreaming, ISO recording, multi-track audio recording, PTZ camera control, sports production tools including instant replay, secondary display output and baseband SDI or HDMI output, and allows only 2 Rendezvous guests and a four-slot multi-viewer against 7 guests and 17 slots in Pro.",
+        "sourceUrl": "https://www.telestream.net/pdfs/user-guides/wirecast/Wirecast_16-3_Users_Guide_Mac_1009241016.pdf",
+        "quote": "Wirecast Pro includes all the features of Wirecast Studio, plus the following",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "On a Mac, Wirecast cannot map ASIO or WASAPI multi-channel audio capture devices the way the Windows build does, so professional multi-channel interfaces are a Windows-only path.",
+        "sourceUrl": "https://www.wirecast.io/pricing/",
+        "quote": "ASIO and WASAPI professional multi-channel audio capture device mapping (Windows Only)",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "Even in Wirecast Pro, the video output carries only two audio channels, so a baseband SDI connection cannot deliver the 16 channels the SDI standard supports.",
+        "sourceUrl": "https://www.telestream.net/pdfs/user-guides/wirecast/Wirecast_16-3_Users_Guide_Mac_1009241016.pdf",
+        "quote": "Although SDI supports 16 discrete audio channels, Wirecast Pro video out currently only supports two channels.",
+        "verifiedISO": "2026-11-02"
+      }
+    ]
   }
 ]

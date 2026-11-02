@@ -11,7 +11,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { DATA } from "./check-competitors.mjs";
-import { render, renderHub, loadPages, helpers, money, longDate, pathOf, HUB, MIN_WORDS } from "./generate-seo-pages.mjs";
+import { render, renderHub, loadPages, helpers, money, longDate, pathOf, HUB, MIN_WORDS, PAIRS } from "./generate-seo-pages.mjs";
 import { check as checkLinks, crawl, linksIn } from "./check-links.mjs";
 
 const records = JSON.parse(fs.readFileSync(DATA, "utf8"));
@@ -86,20 +86,35 @@ test("a page that asks for a connection the record doesn't have doesn't build", 
 test("the connections table compares two apps on what they can be wired into", () => {
     const pairs = built.filter((b) => b.page.connections);
     assert.ok(pairs.length, "no page shows the connections table");
+    const KINDS = ["MIDI", "OSC", "Syphon", "Spout", "NDI", "DMX", "Video in and out"];
     for (const { page, html } of pairs) {
         assert.match(html, /<h2>Control and connections<\/h2>/, `${page.slug} has no connections table`);
         const table = html.slice(html.indexOf("Control and connections"));
-        for (const kind of ["MIDI", "OSC", "Syphon", "Spout", "NDI", "DMX", "Video in and out"]) {
-            assert.match(table, new RegExp(`<th scope="row">${kind}</th>`), `${page.slug} has no ${kind} row`);
+        // A row appears when at least one of the two apps documents it, and
+        // is left out when neither does: there is nothing to compare.
+        for (const kind of KINDS) {
+            const key = kind === "Video in and out" ? "video" : kind.toLowerCase();
+            const [a, b] = sidesOf(page);
+            const documented = [a, b].some((s) => {
+                const rec = records.find((r) => r.slug === s);
+                return rec && rec.io && rec.io[key] && rec.io[key].status !== "unknown";
+            });
+            const row = new RegExp(`<th scope="row">${kind}</th>`);
+            if (documented) assert.match(table, row, `${page.slug} has no ${kind} row`);
+            else assert.doesNotMatch(table, row, `${page.slug} has a ${kind} row neither app documents`);
         }
         // No cell is empty: a row says yes, no, or that it wasn't found.
         for (const cell of table.matchAll(/<td>([\s\S]*?)<\/td>/g)) {
             assert.ok(cell[1].trim().length > 0, `${page.slug} has an empty cell`);
         }
-        // A row neither app documents says nothing and is left out.
-        assert.doesNotMatch(table, /Not that we could find<\/span><\/td><td>Not that we could find/);
     }
 });
+
+/** The two apps a referee page compares. */
+function sidesOf(page) {
+    const pair = PAIRS.find((p) => p.slug === page.slug);
+    return [pair.a, pair.b];
+}
 
 test("a page's source list names the pages it states facts from, and no others", () => {
     // The TouchDesigner head-to-head doesn't show the connections table, so

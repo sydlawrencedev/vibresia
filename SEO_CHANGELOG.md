@@ -19,6 +19,48 @@ Recurring dates:
 - **Eight weeks after launch**: decide which `later` rows in
   `content/url-plan.csv` to build, from impressions.
 
+## 2026-11-02 (not yet deployed): batch 9, eleven more referee pairs
+
+The URL plan's rows were used up, so this wave came from a wider autocomplete
+sweep on 2026-11-02. The playbook's own evidence says third-party X vs Y
+pages are the biggest traffic engine, and this is the wave it points at.
+
+| URL | Target query |
+| --- | --- |
+| `/comparison/vmix-vs-obs` | vmix vs obs |
+| `/comparison/vmix-vs-resolume` | vmix vs resolume |
+| `/comparison/vmix-vs-wirecast` | vmix vs wirecast |
+| `/comparison/watchout-vs-resolume` | watchout vs resolume |
+| `/comparison/qlab-vs-resolume` | qlab vs resolume |
+| `/comparison/propresenter-vs-resolume` | propresenter vs resolume |
+| `/comparison/propresenter-vs-obs` | propresenter vs obs |
+| `/comparison/propresenter-vs-vmix` | propresenter vs vmix |
+| `/comparison/houdini-vs-touchdesigner` | houdini vs touchdesigner |
+| `/comparison/madmapper-vs-touchdesigner` | madmapper vs touchdesigner |
+| `/comparison/madmapper-vs-millumin` | madmapper vs millumin |
+
+- Six new records, each researched from the maker's own pages: vMix
+  (StudioCoast), ProPresenter (Renewed Vision), WATCHOUT (Dataton), QLab
+  (Figure 53), Houdini (SideFX) and Wirecast (Telestream). Every fact
+  carries a source and a date; `scripts/check-sources.mjs` fetched 270
+  sources and confirmed 170 of them by quote.
+- Four of the six homepages in the brief were wrong, and the research caught
+  all four: ProPresenter is Renewed Vision, not Renewed Media; WATCHOUT's
+  product page has moved; vMix is documented at vmix.com, because vmix.tv
+  is now a different business; and QLab's site redirects to qlab.app. Each
+  record carries the URL that resolves.
+- One note in the plan was wrong and was dropped rather than built:
+  "synesthesia vs mobius" is not the VJ software. The suggestions around
+  it are the Mobius strip and the Strymon pedal.
+- Vibresia is the third option on none of them, and that is deliberate:
+  these are show, production and creative tools, and Vibresia neither
+  performs video nor sequences a show. A page claiming otherwise would be
+  wrong for the people reading it.
+- Each pair has one canonical order, the order people type, and the reverse
+  301s to it. The redirects are now generated from the pairs file, so a new
+  pair cannot be forgotten.
+- 39 search pages now, and 29 competitor records.
+
 ## 2026-11-02 (deployed 2026-11-02): batch 8, more referee pairs
 
 The URL plan's "later" rows were used up, so this wave came from fresh

@@ -13,6 +13,10 @@ Start a session with:
 > and push when every check passes; deploying is mine. End each step with
 > five qualifying questions.
 
+Before that, check the tools are there: `docs/seo-skills-required.md` lists the
+agent skills the playbook needs, by phase, and the last section of it is a
+command that prints `MISSING` for any skill that is not installed.
+
 Working rules the owner has set:
 - Commit, fast-forward main and push when the checks pass, without asking.
   Deploying (`npx wrangler deploy` from the main checkout) is the owner's.
@@ -48,7 +52,12 @@ until then.
 | 2d spokes, batch 5 | amazon-music, deezer, vlc; footer link to the app hub | live |
 | 2b referee pairs (`/comparison/{a}-vs-{b}`) | projectm-vs-milkdrop (third option on), nestdrop-vs-milkdrop, resolume-vs-vdmx, resolume-vs-touchdesigner, touchdesigner-vs-vdmx | live |
 | 2b referee pairs, batch 8 | resolume-vs-madmapper, resolume-vs-obs, resolume-vs-millumin, touchdesigner-vs-blender, touchdesigner-vs-vvvv | live |
-| "Control and connections" table | on the VJ pairs, and the batch 8 pairs | live |
+| 2b referee pairs, batch 9 | vmix-vs-obs, vmix-vs-resolume, vmix-vs-wirecast, watchout-vs-resolume, qlab-vs-resolume, propresenter-vs-resolume, propresenter-vs-obs, propresenter-vs-vmix, houdini-vs-touchdesigner, madmapper-vs-touchdesigner, madmapper-vs-millumin | merged, deploy pending |
+| "Control and connections" table | on the VJ pairs, and the batch 8 and 9 pairs | live except batch 9 |
+
+39 search pages and 29 competitor records. 21 referee pairs in total, all
+from the "third-party X vs Y" template, which the playbook's evidence says
+is the biggest traffic engine.
 
 Everything is deployed and checked live on 2026-11-02: 28 search pages and
 the author page return 200, the five new reverse orders 301 to the canonical
@@ -124,18 +133,24 @@ on search pages, `/ingest` analytics proxy in the Worker.
    review reports by template and needs the sitemaps to match.
 2. Stats page (2e) from anonymous usage in PostHog project Shareware. It
    needs read access to that project: this session had only the public
-   ingest key, which cannot read. Ask for a personal API key, or for the
-   PostHog MCP to be connected.
+   ingest key, which cannot read, and there is no personal key on this
+   machine. Ask for a personal API key (phx_...) or for the PostHog MCP to
+   be connected to OpenCode, which is where it has to be configured.
 3. Resolume alternatives referee list (2a) if the owner wants it.
-4. The wave after this one. The pairs with real demand that are still
-   unbuilt: resolume-vs-propresenter, resolume-vs-vmix, resolume-vs-watchout,
-   resolume-vs-qlab, touchdesigner-vs-after-effects, touchdesigner-vs-houdini,
-   touchdesigner-vs-madmapper, touchdesigner-vs-notch, synesthesia-vs-mobius.
-   Each needs its own sourced record first.
-5. The 2d cluster has demand for pages Vibresia cannot serve: "visualizer for
+4. Owner tries one free tier and says what they saw, so a page can say
+   "we tried it" instead of "not confirmed". OBS Studio, Blender, projectM
+   and MilkDrop all have a free version that needs no card, and those four
+   records are the ones whose first-hand claim a reader would most believe.
+5. The wave after this one, if the numbers say so. The pairs with real
+   demand still unbuilt: touchdesigner-vs-after-effects, touchdesigner-vs-notch,
+   propresenter-vs-easyworship, propresenter-vs-proclaim, vmix-vs-tricaster,
+   vmix-vs-atem, watchout-vs-disguise, watchout-vs-pixera, qlab-vs-propresenter.
+   Each needs its own sourced record first. Adobe and church-software
+   competitors may not be worth it: their searchers want a different tool.
+6. The 2d cluster has demand for pages Vibresia cannot serve: "visualizer for
    pc", "audio visualizer for rainmeter", "music visualizer for android",
-   "music visualizer for car", "music visualizer for tv". Each is a page
-   saying Vibresia is Mac only, so they bring little and cost a record each.
-   Say whether to build them.
-6. After 8 weeks (from early January 2027): decide what to build more of
+   "music visualizer for car", "music visualizer for tv". Decided on
+   2026-11-02: skipped, because each is a page saying Vibresia is Mac only
+   and it costs a record each.
+7. After 8 weeks (from early January 2027): decide what to build more of
    from the monthly review's per-template numbers.
