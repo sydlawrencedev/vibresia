@@ -1,0 +1,411 @@
+[
+  {
+    "slug": "apple-music-visualizer",
+    "name": "Apple Music Visualizer",
+    "category": "visualiser",
+    "audience": "mac_consumer",
+    "homepage": "https://support.apple.com/guide/music/muse3aa39574/mac",
+    "tagline": "The visualiser built into the Music app on the Mac.",
+    "bestFor": "Apple Music listeners who want visuals without installing anything.",
+    "platforms": ["macos"],
+    "strengths": [
+      "Already on every Mac, inside the Music app: Window > Visualizer",
+      "Effects change with the type of music and whether it is playing or paused",
+      "Can show music videos in place of effects (Visualizer Settings > Play Videos)"
+    ],
+    "limits": [
+      "A song has to be playing in the Music app; it doesn't visualise Spotify, a browser or other apps"
+    ],
+    "ourAngle": "Vibresia listens to system audio, so it works with Spotify, a browser or anything else playing, and you can write or AI-generate your own scenes. The built-in visualiser wins if you only use Apple Music and want nothing to install.",
+    "profile": { "sourceUrl": "https://support.apple.com/guide/music/muse3aa39574/mac", "verifiedISO": "2026-11-02" }
+  },
+  {
+    "slug": "phosphor",
+    "name": "Phosphor",
+    "category": "visualiser",
+    "audience": "mac_consumer",
+    "homepage": "https://getphosphor-com.pages.dev/",
+    "tagline": "A paid music visualiser for Mac and Apple TV that reacts to any audio the Mac plays.",
+    "bestFor": "Mac users who want polished visuals on an Apple TV, as a desktop wallpaper, or recorded to video.",
+    "platforms": ["macos", "tvos"],
+    "requirements": "macOS 14.4 or later, Apple silicon",
+    "strengths": [
+      "Captures any audio the Mac plays, including Spotify, Apple Music, Safari and YouTube",
+      "Three display modes: floating always-on-top window, fullscreen, and desktop wallpaper",
+      "Records to H.264 MP4 or ProRes with the system audio",
+      "Mirrors to Apple TV, synced to the beat, with the free Phosphor Stage app",
+      "Stackable post-effects (CRT, bloom, grain, kaleidoscope and more) and two-layer compositing"
+    ],
+    "ourAngle": "Phosphor is a polished paid app with 10 hand-tuned scenes, Apple TV mirroring and a wallpaper mode, none of which Vibresia has. Vibresia is free, has more built-in scenes, and lets you write your own or have an AI assistant write one; Phosphor's site doesn't mention user-made scenes.",
+    "profile": { "sourceUrl": "https://getphosphor-com.pages.dev/", "verifiedISO": "2026-11-02" },
+    "pricing": {
+      "model": "one-time",
+      "freeTier": false,
+      "tiers": [
+        { "name": "Phosphor Visualizer (Mac)", "price": "6.99", "currency": "USD", "period": "once", "includes": ["Mac app"], "excludes": ["Apple TV link"] },
+        { "name": "Phosphor Link (in-app purchase)", "price": "9.99", "currency": "USD", "period": "once", "includes": ["Linking the Mac to Apple TV"], "excludes": [] }
+      ],
+      "sourceUrl": "https://apps.apple.com/us/app/id6762527200",
+      "verifiedISO": "2026-11-02"
+    }
+  },
+  {
+    "slug": "projectm",
+    "name": "projectM",
+    "category": "visualiser",
+    "audience": "mac_consumer",
+    "homepage": "https://github.com/projectM-visualizer/projectm",
+    "tagline": "An open-source reimplementation of Winamp's MilkDrop, as a cross-platform library with several front-ends.",
+    "bestFor": "MilkDrop fans who want the classic presets on Mac, Windows or Linux.",
+    "platforms": ["windows", "macos", "linux"],
+    "strengths": [
+      "Faithful reimplementation of MilkDrop, so it plays the huge library of community .milk presets",
+      "Default pack of about 10,000 presets (Cream of the Crop), with larger packs available",
+      "LGPL library that other apps build on, with front-ends for Windows, macOS and Linux",
+      "Detects tempo and renders equation-based visuals from audio input"
+    ],
+    "limits": [
+      "The Apple Music plug-in for macOS is an unsigned development preview",
+      "The macOS standalone apps are pre-releases or development previews; the Steam and Homebrew builds are an old 3.1.12 release"
+    ],
+    "ourAngle": "projectM is the way to get MilkDrop's thousands of presets on a Mac. Vibresia doesn't play .milk presets. Its scenes are its own, it's a signed and notarised app that updates itself, and new scenes are written in GLSL (by you or by an AI assistant) rather than MilkDrop's preset language.",
+    "profile": { "sourceUrl": "https://github.com/projectM-visualizer/projectm", "verifiedISO": "2026-11-02" }
+  },
+  {
+    "slug": "milkdrop",
+    "name": "MilkDrop",
+    "category": "visualiser",
+    "audience": "windows_consumer",
+    "homepage": "https://www.geisswerks.com/milkdrop/",
+    "tagline": "Ryan Geiss's classic music visualiser plug-in for Winamp on Windows.",
+    "bestFor": "Winamp users on Windows who want the original MilkDrop.",
+    "platforms": ["windows"],
+    "strengths": [
+      "The original: beat detection drives a huge range of effects",
+      "Can be driven by a live feed such as a microphone or line-in, not only Winamp playback",
+      "Source code for several versions is published by its author"
+    ],
+    "limits": [
+      "Windows only, as a Winamp plug-in; its page lists Windows 98 through Windows 7"
+    ],
+    "ourAngle": "MilkDrop doesn't run on a Mac. For Mac users searching for it, the real options are projectM (MilkDrop presets) or a native Mac visualiser like Vibresia.",
+    "profile": { "sourceUrl": "https://www.geisswerks.com/milkdrop/", "verifiedISO": "2026-11-02" }
+  },
+  {
+    "slug": "g-force",
+    "name": "G-Force",
+    "category": "visualiser",
+    "audience": "mac_consumer",
+    "homepage": "https://www.soundspectrum.com/g-force/",
+    "tagline": "SoundSpectrum's long-running music visualiser for Windows and macOS.",
+    "bestFor": "People who want a large, mature set of effects that works as a player plug-in, screen saver or standalone app.",
+    "platforms": ["windows", "macos"],
+    "strengths": [
+      "A math engine with what SoundSpectrum calls millions of visual effects",
+      "Works as a plug-in for media players, a screen saver, or standalone with microphone and line-in",
+      "Expandable: you can add your own visuals",
+      "V-Bar lets you watch it while working in other apps"
+    ],
+    "ourAngle": "G-Force is the veteran, with paid editions and a free trial. Vibresia is free, listens to system audio, and lets you write a scene in GLSL or describe one to an AI assistant.",
+    "profile": { "sourceUrl": "https://www.soundspectrum.com/g-force/", "verifiedISO": "2026-11-02" }
+  },
+  {
+    "slug": "synesthesia",
+    "name": "Synesthesia",
+    "category": "vj",
+    "audience": "vj_pro",
+    "homepage": "https://synesthesia.live/",
+    "tagline": "Live music-visual software for DJs, VJs and streamers, on macOS and Windows.",
+    "bestFor": "DJs, VJs and streamers who perform live and need MIDI, OSC and video outputs.",
+    "platforms": ["macos", "windows"],
+    "strengths": [
+      "80 built-in scenes and an in-app marketplace with more",
+      "MIDI and OSC mappable controls for live performance",
+      "Syphon, Spout and NDI to work alongside other VJ software, and output to projectors or livestreams",
+      "Write your own scenes in a built-in live-coding environment, or import Shadertoy and ISF shaders"
+    ],
+    "ourAngle": "Synesthesia is a performance tool, and if you play live it is the better pick: Vibresia has no OSC, no Syphon, Spout or NDI output, and no controls to map for a set. Vibresia is for watching your own music at home for free, with scenes you can describe to an AI assistant.",
+    "profile": { "sourceUrl": "https://synesthesia.live/", "verifiedISO": "2026-11-02" },
+    "trial": {
+      "limits": "Free and unlimited, no sign-up; video output carries a Synesthesia watermark.",
+      "sourceUrl": "https://synesthesia.live/pricing",
+      "verifiedISO": "2026-11-02"
+    }
+  },
+  {
+    "slug": "vdmx",
+    "name": "VDMX",
+    "category": "vj",
+    "audience": "vj_pro",
+    "homepage": "https://vdmx.vidvox.net/",
+    "tagline": "Vidvox's modular VJ software for the Mac.",
+    "bestFor": "VJs and visual artists building live shows, installations or projection work on a Mac.",
+    "platforms": ["macos"],
+    "requirements": "macOS 13 or later, Intel or Apple silicon",
+    "strengths": [
+      "Layer compositing with blend modes, masks and real-time FX chains",
+      "Control by MIDI, OSC and DMX, plus audio analysis, LFOs and step sequencers",
+      "ISF (GLSL) generators and effects, alongside FFGL and Vuo",
+      "Inputs and outputs over Syphon and NDI, fullscreen displays and disk recording"
+    ],
+    "ourAngle": "VDMX is a professional VJ rig and the better tool for a live show. Vibresia is a free, ready-to-watch visualiser for your own listening, with no setup beyond allowing system audio.",
+    "profile": { "sourceUrl": "https://vdmx.vidvox.net/", "verifiedISO": "2026-11-02" },
+    "trial": {
+      "limits": "Fully functional except saving projects.",
+      "sourceUrl": "https://vidvox.net/",
+      "verifiedISO": "2026-11-02"
+    }
+  },
+  {
+    "slug": "resolume",
+    "name": "Resolume",
+    "category": "vj",
+    "audience": "vj_pro",
+    "homepage": "https://resolume.com/",
+    "tagline": "VJ and media-server software (Avenue, Arena) and a visual programming tool (Wire), for macOS and Windows.",
+    "bestFor": "Working VJs and venues running video on screens and projectors.",
+    "platforms": ["macos", "windows"],
+    "strengths": [
+      "An industry-standard pair: Avenue for VJing, Arena adding media-server features",
+      "Wire for building your own effects and generators visually",
+      "Licences keep working after the 12 months of included updates"
+    ],
+    "ourAngle": "Resolume is for performing video to a room, and it is priced for that. Vibresia is a free visualiser for your own music on your own Mac.",
+    "profile": { "sourceUrl": "https://resolume.com/", "verifiedISO": "2026-11-02" },
+    "pricing": {
+      "model": "one-time",
+      "freeTier": false,
+      "tiers": [
+        { "name": "Avenue", "price": "299.00", "currency": "EUR", "period": "once", "includes": ["12 months of updates"], "excludes": [] },
+        { "name": "Arena", "price": "799.00", "currency": "EUR", "period": "once", "includes": ["12 months of updates"], "excludes": [] },
+        { "name": "Wire", "price": "399.00", "currency": "EUR", "period": "once", "includes": ["12 months of updates"], "excludes": [] }
+      ],
+      "sourceUrl": "https://resolume.com/shop",
+      "verifiedISO": "2026-11-02"
+    },
+    "trial": {
+      "limits": "Free to use indefinitely, but video output has a Resolume watermark and audio has a robot voice until a serial number is entered.",
+      "sourceUrl": "https://resolume.com/shop",
+      "verifiedISO": "2026-11-02"
+    }
+  },
+  {
+    "slug": "nestdrop",
+    "name": "NestDrop",
+    "category": "vj",
+    "audience": "windows_consumer",
+    "homepage": "https://nestimmersion.ca/nestdrop.php",
+    "tagline": "A MilkDrop-based visualiser and VJ tool for Windows, with Spout output.",
+    "bestFor": "Windows VJs who want MilkDrop presets with live control and video output.",
+    "platforms": ["windows"],
+    "strengths": [
+      "Built on the MilkDrop engine, with a curated library of 1,900 presets and support for your own",
+      "Up to four video decks over Spout, at resolutions above 8K at 60 fps",
+      "Automatic preset changes on the beat, hotkeys, favourites and queues",
+      "A free Classic edition"
+    ],
+    "ourAngle": "NestDrop is Windows only. For Mac users, Vibresia is a free native option; it doesn't play MilkDrop presets or output over Spout.",
+    "profile": { "sourceUrl": "https://nestimmersion.ca/nestdrop.php", "verifiedISO": "2026-11-02" },
+    "pricing": {
+      "model": "one-time",
+      "freeTier": true,
+      "tiers": [
+        { "name": "Classic", "price": "0", "currency": "USD", "period": "once", "includes": ["Four Spout decks", "1,900 presets", "Beat-driven preset changes"], "excludes": ["Strobe/LFO and colour controls", "Multiple MIDI controllers", "Direct fullscreen output"] },
+        { "name": "Midnight", "price": "50", "currency": "USD", "period": "once", "includes": ["Colour, strobe and LFO controls", "Multiple MIDI controllers", "Direct fullscreen output"], "excludes": ["OSC", "ASIO", "Ableton Link", "NDI"] },
+        { "name": "Midnight Pro", "price": "75", "currency": "USD", "period": "once", "includes": ["OSC remote control", "ASIO input", "Ableton Link", "NDI output"], "excludes": [] }
+      ],
+      "sourceUrl": "https://nestimmersion.ca/nestdrop.php",
+      "verifiedISO": "2026-11-02"
+    }
+  },
+  {
+    "slug": "touchdesigner",
+    "name": "TouchDesigner",
+    "category": "creative-coding",
+    "audience": "creative_coder",
+    "homepage": "https://derivative.ca/",
+    "tagline": "Derivative's node-based visual programming environment for real-time interactive media.",
+    "bestFor": "Artists and developers building interactive installations, live visuals and generative work.",
+    "platforms": ["windows", "macos"],
+    "requirements": "macOS 13 or later on a 2020-or-later Mac (Apple silicon highly recommended); Windows 10 or 11",
+    "strengths": [
+      "A free Non-Commercial licence for personal use and learning",
+      "Fully featured Commercial and Pro licences for paid work",
+      "Licences are perpetual, with a year of updates included"
+    ],
+    "ourAngle": "TouchDesigner can build almost anything, including a music visualiser, but you build it. Vibresia is a finished visualiser: install it and it plays, and a new scene is one GLSL function or a sentence to an AI assistant.",
+    "profile": { "sourceUrl": "https://derivative.ca/download", "verifiedISO": "2026-11-02" },
+    "pricing": {
+      "model": "one-time",
+      "freeTier": true,
+      "tiers": [
+        { "name": "Non-Commercial", "price": "0", "currency": "USD", "period": "once", "includes": ["Basic operations", "Personal use and learning"], "excludes": ["Paid work", "Output over 1280x1280"] },
+        { "name": "Educational", "price": "300", "currency": "USD", "period": "once", "includes": ["Commercial features"], "excludes": ["Paid work"] },
+        { "name": "Commercial", "price": "600", "currency": "USD", "period": "once", "includes": ["All features", "Paid projects"], "excludes": [] },
+        { "name": "Pro", "price": "2200", "currency": "USD", "period": "once", "includes": ["Commercial features", "Pro Support (6 hours)"], "excludes": [] }
+      ],
+      "note": "Prices are 'from'. Perpetual with one year of updates, per docs.derivative.ca/Updates.",
+      "sourceUrl": "https://derivative.ca/download",
+      "verifiedISO": "2026-11-02"
+    },
+    "trial": {
+      "limits": "Non-Commercial is free but capped at 1280x1280 output and not for paid work.",
+      "sourceUrl": "https://derivative.ca/download",
+      "verifiedISO": "2026-11-02"
+    }
+  },
+  {
+    "slug": "kodelife",
+    "name": "KodeLife",
+    "category": "creative-coding",
+    "audience": "creative_coder",
+    "homepage": "https://hexler.net/kodelife",
+    "tagline": "Hexler's real-time GPU shader editor for desktop and mobile.",
+    "bestFor": "Shader programmers who want a live-coding editor on their own machine.",
+    "platforms": ["macos", "windows", "linux", "ios", "android"],
+    "strengths": [
+      "Edit shaders live and see the result as you type",
+      "GLSL, Metal Shading Language and HLSL, with basic compute shaders",
+      "Runs on macOS, Windows, Linux (including Raspberry Pi), iOS and Android",
+      "Desktop builds are free to evaluate with no restrictions"
+    ],
+    "ourAngle": "KodeLife is a general shader editor. Vibresia is narrower: one function, with the music already wired in as uniforms, and an AI assistant can write it, check it compiles and look at the result for you.",
+    "profile": { "sourceUrl": "https://hexler.net/kodelife", "verifiedISO": "2026-11-02" },
+    "pricing": {
+      "model": "one-time",
+      "freeTier": false,
+      "tiers": [],
+      "note": "Licence price not shown on the product page; one licence covers one user on all desktop platforms.",
+      "sourceUrl": "https://hexler.net/kodelife",
+      "verifiedISO": "2026-11-02"
+    },
+    "trial": {
+      "limits": "Desktop builds are free to try with no restrictions.",
+      "sourceUrl": "https://hexler.net/kodelife",
+      "verifiedISO": "2026-11-02"
+    }
+  },
+  {
+    "slug": "plane9",
+    "name": "Plane9",
+    "category": "visualiser",
+    "audience": "windows_consumer",
+    "homepage": "https://www.plane9.com/",
+    "tagline": "A free 3D music visualiser and screensaver for Windows.",
+    "bestFor": "Windows users who want a free 3D visualiser or screensaver, including in VR.",
+    "platforms": ["windows"],
+    "strengths": [
+      "Over 250 scenes that can be combined, with 39 transitions",
+      "Works as a screensaver or standalone window, and in Oculus Rift and HTC Vive",
+      "Free and ad-free"
+    ],
+    "limits": [
+      "Windows 7 to 10; the latest version listed is 2.5.1.3, from 29 December 2016"
+    ],
+    "ourAngle": "Plane9 doesn't run on a Mac and hasn't had a release since 2016. Vibresia is the free, maintained option for Mac.",
+    "profile": { "sourceUrl": "https://www.plane9.com/download", "verifiedISO": "2026-11-02" },
+    "pricing": {
+      "model": "free",
+      "freeTier": true,
+      "tiers": [],
+      "sourceUrl": "https://www.plane9.com/download",
+      "verifiedISO": "2026-11-02"
+    }
+  },
+  {
+    "slug": "muvis",
+    "name": "MuVis",
+    "category": "visualiser",
+    "audience": "mac_consumer",
+    "homepage": "https://apps.apple.com/us/app/id1582324352",
+    "tagline": "A free, open-source music visualiser for Mac, iPhone, iPad and Vision Pro.",
+    "bestFor": "Listeners who want to see the notes being played, on Apple devices.",
+    "platforms": ["macos", "ios", "visionos"],
+    "requirements": "macOS 14.0, iOS 17.0 or visionOS 1.0 or later",
+    "strengths": [
+      "34 visualisations, each with 8 options",
+      "A spectral enhancer that reduces percussive noise to bring out harmonic lines",
+      "Free and open source, on Mac, iPhone, iPad and Vision Pro"
+    ],
+    "limits": [
+      "Visualises music files it plays or the device microphone"
+    ],
+    "ourAngle": "MuVis is about seeing the notes; Vibresia is about scenes that move with the music. Vibresia listens to system audio rather than its own player or the microphone, and you can write or AI-generate new scenes. MuVis wins on iPhone and iPad, where Vibresia doesn't run.",
+    "profile": { "sourceUrl": "https://apps.apple.com/us/app/id1582324352", "verifiedISO": "2026-11-02" },
+    "pricing": {
+      "model": "free",
+      "freeTier": true,
+      "tiers": [{ "name": "MuVis", "price": "0", "currency": "USD", "period": "once", "includes": ["Everything"], "excludes": [] }],
+      "sourceUrl": "https://apps.apple.com/us/app/id1582324352",
+      "verifiedISO": "2026-11-02"
+    },
+    "reviews": {
+      "score": 5.0,
+      "count": 8,
+      "platform": "App Store (US)",
+      "sourceUrl": "https://apps.apple.com/us/app/id1582324352",
+      "verifiedISO": "2026-11-02"
+    }
+  },
+  {
+    "slug": "nyquist",
+    "name": "Nyquist",
+    "category": "visualiser",
+    "audience": "mac_consumer",
+    "homepage": "https://apps.apple.com/us/app/id6759973894",
+    "tagline": "A paid real-time spectrum analyser for the Mac, built with Metal.",
+    "bestFor": "Mac users who want a clean spectrum display in a window or the menu bar.",
+    "platforms": ["macos"],
+    "requirements": "macOS 15.0 or later",
+    "strengths": [
+      "16 to 128 frequency bands, rendered with Metal",
+      "Captures system audio or the microphone",
+      "Now Playing info, transport controls, a mini player and a menu bar viewer",
+      "Says it collects, stores and transmits no data"
+    ],
+    "ourAngle": "Nyquist does one thing, a spectrum analyser, and does it in the menu bar. Vibresia is free and has a spectrum among 18 scenes, plus the option to write or AI-generate your own.",
+    "profile": { "sourceUrl": "https://apps.apple.com/us/app/id6759973894", "verifiedISO": "2026-11-02" },
+    "pricing": {
+      "model": "one-time",
+      "freeTier": false,
+      "tiers": [{ "name": "Nyquist", "price": "4.99", "currency": "USD", "period": "once", "includes": ["Everything"], "excludes": [] }],
+      "sourceUrl": "https://apps.apple.com/us/app/id6759973894",
+      "verifiedISO": "2026-11-02"
+    }
+  },
+  {
+    "slug": "projectmilksyphon",
+    "name": "ProjectMilkSyphon",
+    "category": "vj",
+    "audience": "vj_pro",
+    "homepage": "https://docs.vidvox.net/project-milk-syphon/",
+    "tagline": "A Mac app from Vidvox that turns live audio into MilkDrop-style visuals and publishes them over Syphon.",
+    "bestFor": "Mac VJs who want MilkDrop presets as a source inside VDMX or other Syphon apps.",
+    "platforms": ["macos"],
+    "requirements": "macOS 13 or later (a legacy release supports 10.9 to 10.15)",
+    "strengths": [
+      "Thousands of MilkDrop community presets, and you can drag in your own",
+      "Listens to any input device, or captures audio straight from an app such as Safari or Music",
+      "Always publishes to Syphon, so VJ software can record or remix it, and keeps running in the background"
+    ],
+    "ourAngle": "ProjectMilkSyphon is a source for a VJ rig. Vibresia is a visualiser to watch, with its own scenes rather than MilkDrop presets.",
+    "profile": { "sourceUrl": "https://docs.vidvox.net/project-milk-syphon/", "verifiedISO": "2026-11-02" }
+  },
+  {
+    "slug": "butterchurn",
+    "name": "Butterchurn",
+    "category": "visualiser",
+    "audience": "web_consumer",
+    "homepage": "https://butterchurnviz.com",
+    "tagline": "MilkDrop reimplemented in WebGL, as an open-source library with a browser demo.",
+    "bestFor": "People who want MilkDrop presets in a browser, and developers adding it to a web player.",
+    "platforms": ["web"],
+    "strengths": [
+      "Runs MilkDrop presets in any browser with WebGL 2",
+      "MIT-licensed npm package, with presets in a separate package",
+      "A live demo at butterchurnviz.com"
+    ],
+    "ourAngle": "Butterchurn brings MilkDrop to the browser. Vibresia is a native Mac app that hears everything the Mac plays; its shared scenes also play in a browser.",
+    "profile": { "sourceUrl": "https://github.com/jberg/butterchurn", "verifiedISO": "2026-11-02" }
+  }
+]
