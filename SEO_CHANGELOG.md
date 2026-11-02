@@ -19,7 +19,7 @@ Recurring dates:
 - **Eight weeks after launch**: decide which `later` rows in
   `content/url-plan.csv` to build, from impressions.
 
-## 2026-11-02 (on the branch, awaiting review): batch 4, question pages
+## 2026-11-02 (merged 2026-11-02, not yet deployed): batch 4, question pages
 
 Template 2d, the first of its kind, so it waits for Syd's approval before it
 merges. Hub `/blog/apple-music-visualizer` ("does apple music have a
