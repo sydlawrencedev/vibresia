@@ -391,8 +391,8 @@ void main() {
   function easePointer(now) {
     var dt = pointerLast ? Math.min(0.1, Math.max(0, now - pointerLast)) : 0;
     pointerLast = now;
-    // A time constant of about 45 milliseconds.
-    var k = dt > 0 ? 1 - Math.exp(-dt / 0.045) : 0;
+    // A time constant of about 150 milliseconds, the same as the app's.
+    var k = dt > 0 ? 1 - Math.exp(-dt / 0.15) : 0;
     pointer.x += (pointerTarget.x - pointer.x) * k;
     pointer.y += (pointerTarget.y - pointer.y) * k;
   }

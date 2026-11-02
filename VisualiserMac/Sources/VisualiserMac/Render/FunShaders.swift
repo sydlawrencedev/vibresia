@@ -505,7 +505,7 @@ enum FunShaders {
         float bob = (mod(step8, 2.0) < 1.0 ? 0.0 : PIX) + floor(uBeatStrength * 3.0) * PIX;
         // The cat flies at the height you point at, in whole pixels so the
         // picture stays pixel art.
-        float cy = bob + floor(pointerAt().y * 0.55 / PIX) * PIX * uMouseHere;
+        float cy = bob + floor(pointerAt().y * 0.25 / PIX) * PIX * uMouseHere;
 
         // rainbow trail: six stripes, stepping up and down in 8-pixel segments
         float stripeH = PIX * (3.0 + floor(uBass * 3.0));
@@ -628,7 +628,7 @@ extension FunShaders {
         p *= 1.15 - uBass * 0.3 - uBeatStrength * 0.15;     // punch in on the bass
         // The centre of the folds follows the pointer: the kaleidoscope is
         // pointed at whatever you are pointing at.
-        vec2 pc = p - pointerAt() * 0.45 * uMouseHere;
+        vec2 pc = p - pointerAt() * 0.12 * uMouseHere;
         float r = length(pc);
         float a = atan(pc.y, pc.x) + uTime * 0.12;
         float segs = 8.0;
@@ -663,7 +663,7 @@ extension FunShaders {
     void main() {
         // The stars flow toward the pointer: the centre of the field moves
         // to it, so the streaks run where you are looking.
-        vec2 p = screenP() - pointerAt() * 0.40 * uMouseHere;
+        vec2 p = screenP() - pointerAt() * 0.12 * uMouseHere;
         float r = length(p);
         float a = atan(p.y, p.x);
         vec3 col = vec3(0.01, 0.0, 0.03);
@@ -1724,7 +1724,7 @@ extension FunShaders {
         for (int i = 0; i < 7; i++) {
             // The pointer drags the trace up and down, the way you would
             // with a scope's position control.
-            float y = wave(p.x, aspect, i) + pointerAt().y * 0.34 * uMouseHere;
+            float y = wave(p.x, aspect, i) + pointerAt().y * 0.10 * uMouseHere;
             float slope = (wave(p.x + eps, aspect, i) - y) / eps;
             float d = abs(p.y - y) / sqrt(1.0 + slope * slope);   // distance to the curve, not just vertical
             float w = 0.0012 + 0.0006 * float(i);
@@ -1765,7 +1765,7 @@ extension FunShaders {
         // The floor slides with the pointer, so moving the mouse walks you
         // across the dance floor.
         float look = sin(uBeats * 0.125) * 0.30 * uActive
-                   + pointerAt().x * 0.32 * uMouseHere;                        // which way we face
+                   + pointerAt().x * 0.10 * uMouseHere;                        // which way we face
         float horizon = 0.10 - kick * 0.035 - uBass * 0.02 * uActive;            // dips on the kick
 
         vec3 col = vec3(0.015, 0.012, 0.03);         // the room is nearly dark
@@ -1888,7 +1888,7 @@ extension FunShaders {
         vec3 col = vec3(0.0);
         // The tunnel steers: its vanishing point moves to the pointer, so the
         // grid converges where you are looking.
-        vortexAt(col, screenP() - pointerAt() * 0.55 * uMouseHere, uTime);
+        vortexAt(col, screenP() - pointerAt() * 0.14 * uMouseHere, uTime);
         fragColor = vec4(min(col * uActive, vec3(1.0)), 1.0);
     }
     """
@@ -2424,14 +2424,14 @@ extension FunShaders {
         // The camera turns toward the pointer, so moving the mouse looks
         // around the room the ribbons are flying through. It is a small
         // turn: the ribbons are the subject, not the camera.
-        float yaw = 0.12 * sin(uTime * 0.07) * gPlay + pointerAt().x * 0.22 * uMouseHere;
+        float yaw = 0.12 * sin(uTime * 0.07) * gPlay + pointerAt().x * 0.08 * uMouseHere;
         // The lens is shifted up rather than tilted, so the horizon sits low and
         // the glass stays upright.
         vec3 ro = vec3(0.0, -0.40, -3.3 + 0.06 * gSwell);
         ro.xz = rot(yaw) * ro.xz;
         vec3 fw = vec3(-sin(yaw), 0.0, cos(yaw));
         vec3 rt = vec3(cos(yaw), 0.0, sin(yaw));
-        vec3 rd = normalize(p.x * rt + vec3(0.0, p.y + 0.24 + pointerAt().y * 0.10 * uMouseHere, 0.0) + 1.3 * fw);
+        vec3 rd = normalize(p.x * rt + vec3(0.0, p.y + 0.24 + pointerAt().y * 0.04 * uMouseHere, 0.0) + 1.3 * fw);
 
         float tFloor = rd.y < 0.0 ? (kFloorY - ro.y) / rd.y : 1e5;
         vec3 sky = skyColour(rd);
@@ -2941,7 +2941,7 @@ extension FunShaders {
         float travel = silkTravel();
         // The flight steers: the corridor leans toward the pointer.
         vec2 rd = p * 1.25 + vec2(0.04 * sin(uTime * 0.11), 0.03 * sin(uTime * 0.083 + 1.0))
-                 + pointerAt() * 0.26 * uMouseHere;
+                 + pointerAt() * 0.08 * uMouseHere;
 
         vec4 sc0 = silkScene(p, rd, travel);
         vec3 col = sc0.rgb;
@@ -3138,7 +3138,7 @@ extension FunShaders {
         // reverses), and the camera leans in as the flight eases up
         // The eye of the storm follows the pointer.
         vec2 v = vec2(-0.05, 0.03) + vec2(0.09 * cos(clk * 0.12), 0.055 * sin(clk * 0.12))
-               + pointerAt() * 0.32 * uMouseHere;
+               + pointerAt() * 0.10 * uMouseHere;
         vec2 q = (p - v) / (1.0 + 0.06 * uActive * gPlay);
         float r = max(length(q), 1e-4);
         float lr = log(r);

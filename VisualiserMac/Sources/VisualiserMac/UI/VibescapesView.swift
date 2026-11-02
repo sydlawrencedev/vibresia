@@ -301,39 +301,81 @@ struct VibescapesView: View {
         return result
     }
 
+    /// The vibescape on this Mac that a gallery item is, if it is here.
+    /// Searched only when a card is pressed, so it doesn't need `Installed`.
+    private func installedID(_ item: GalleryModel.Item) -> VibescapeID? {
+        if item.isBuiltIn {
+            guard let mode = Vibescape(rawValue: item.id) else { return nil }
+            return app.enabledVibescapes.contains { $0.id == .builtin(mode) } ? .builtin(mode) : nil
+        }
+        for entry in app.allVibescapes {
+            guard case .custom(let id) = entry.id,
+                  let mode = app.customVibescape(id: id) else { continue }
+            // A shared vibescape is matched by the share it came from.
+            if let shareID = mode.shareID, shareID == item.id { return entry.id }
+            // A copy that arrived on the long link has no share id of its
+            // own, so the name and the author are matched as well.
+            if mode.name == item.name, mode.author == item.author { return entry.id }
+        }
+        return nil
+    }
+
+    /// Runs a gallery vibescape in the app, adding it first if it is not
+    /// here yet, and closes the panel so it can be seen.
+    ///
+    /// This is what pressing the card does. The card used to open the
+    /// share's page on the website, which is the one place the person
+    /// pressing it did not want to go: they are in the app.
+    private func use(_ item: GalleryModel.Item) {
+        if let id = installedID(item) {
+            if !(app.allVibescapes.first { $0.id == id }?.isEnabled ?? true) {
+                app.setVibescapeEnabled(id, enabled: true)
+            }
+            app.viaPicker = true
+            app.activeVibescape = id
+            app.showVibescapesSheet = false
+            return
+        }
+        install(item, thenClose: true)
+    }
+
     /// Adds a gallery vibescape to Installed and runs it.
     ///
     /// The same path as opening the share link: the contents come from the
     /// site, the vibescape is made and compiled before it is kept, and then
     /// it is selected — which also turns Auto Scan off, because the app is
     /// now in one vibescape rather than scanning.
-    private func install(_ item: GalleryModel.Item) {
+    private func install(_ item: GalleryModel.Item, thenClose: Bool = false) {
         guard !installing.contains(item.id) else { return }
         installing.insert(item.id)
         installError = nil
         Task { @MainActor in
             defer { installing.remove(item.id) }
-            await installNow(item)
+            if await installNow(item), thenClose {
+                app.viaPicker = true
+                app.showVibescapesSheet = false
+            }
         }
     }
 
-    private func installNow(_ item: GalleryModel.Item) async {
+    /// Adds it and selects it. False when it could not be added.
+    private func installNow(_ item: GalleryModel.Item) async -> Bool {
         // A built-in is already here: it needs switching on and running.
         if item.isBuiltIn {
-            guard let mode = Vibescape(rawValue: item.id) else { return }
+            guard let mode = Vibescape(rawValue: item.id) else { return false }
             app.setVibescapeEnabled(.builtin(mode), enabled: true)
             app.setVibescape(.builtin(mode))
-            return
+            return true
         }
 
         guard let details = await ShareLinkStore().details(shareID: item.id) else {
             installError = "Couldn't reach the site."
-            return
+            return false
         }
         guard case .custom(let mode) = ShareImporter.decodePayload(details.payload,
                                                                     shareID: item.id) else {
             installError = "That share couldn't be read."
-            return
+            return false
         }
         let author = ShareIdentity.shownAuthor(mode.author)
         let key = ShareIdentity.key(name: mode.name, author: author,
@@ -342,9 +384,10 @@ struct VibescapesView: View {
         switch app.addCustomVibescape(name: mode.name, author: author, url: mode.url,
                                        shader: mode.shader, shareID: item.id, shareKey: key) {
         case .success:
-            break
+            return true
         case .failure(let problem):
             installError = problem.message
+            return false
         }
     }
 
@@ -386,6 +429,7 @@ struct VibescapesView: View {
                         GalleryCard(item: item,
                                     isInstalled: isInstalled(item, in: installed),
                                     isBusy: installing.contains(item.id),
+                                    onUse: { use(item) },
                                     onAdd: { install(item) })
                     }
                     if row.count < columnsPerRow {
@@ -415,7 +459,7 @@ struct VibescapesView: View {
                 .foregroundStyle(Color(white: 0.4))
             Text(tab == .installed
                  ? "Your own vibescapes are marked ★, and ones somebody sent you are marked ↘. Add another with the card at the end."
-                 : "The same list the website has. Press + to add one to your own list and run it.")
+                 : "The same list the website has. Press one to run it here, or + to add it to your own list.")
                 .font(.system(size: 10))
                 .foregroundStyle(Color(white: 0.45))
             Spacer()
@@ -432,10 +476,11 @@ struct VibescapesView: View {
 
 /// A card for a vibescape in the gallery.
 ///
-/// The card is a link to the share's page, which is where the vibescape
-/// can be seen and shared on. The tick and the plus sit on top of it, so
-/// that pressing the plus adds the vibescape rather than opening the page
-/// as well.
+/// Pressing the card runs the vibescape here in the app, adding it first
+/// if it is not on this Mac yet. The share's page on the website is still
+/// there, on the card's right-click menu. The tick and the plus sit on top
+/// of the card, so that pressing the plus adds the vibescape without
+/// closing the panel.
 ///
 /// A tick means it is on this Mac already. A plus means it is not, and
 /// pressing it adds it to Installed and runs it.
@@ -445,12 +490,16 @@ private struct GalleryCard: View {
     let isInstalled: Bool
     /// Whether it is being added right now.
     let isBusy: Bool
+    /// Runs it in the app, adding it first if it is not here.
+    let onUse: () -> Void
     /// Adds it to Installed and runs it.
     let onAdd: () -> Void
 
+    @Environment(\.openURL) private var openURL
+
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            Link(destination: item.url) {
+            Button(action: onUse) {
                 VStack(alignment: .leading, spacing: 0) {
                     RemoteImage(url: item.imageURL)
                     .frame(height: 108)
@@ -485,7 +534,11 @@ private struct GalleryCard: View {
             }
             .buttonStyle(.plain)
             .pointingHand()
-            .help("Open \(item.name)'s page")
+            .disabled(isBusy)
+            .help(isInstalled ? "Run \(item.name)" : "Add \(item.name) and run it")
+            .contextMenu {
+                Button("Open Its Page on the Website") { openURL(item.url) }
+            }
 
             if isInstalled {
                 Image(systemName: "checkmark")

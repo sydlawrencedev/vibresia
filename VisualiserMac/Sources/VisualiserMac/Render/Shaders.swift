@@ -90,8 +90,8 @@ enum Shaders {
         float lean = (1.0 - invZ) * uMouseHere;
 
         vec3 worldPos = vec3(
-            aPos.x * invZ * ringExpand * scale + uMouse.x * lean * 0.35,
-            aPos.y * invZ * ringExpand * scale + uMouse.y * lean * 0.35,
+            aPos.x * invZ * ringExpand * scale + uMouse.x * lean * 0.12,
+            aPos.y * invZ * ringExpand * scale + uMouse.y * lean * 0.12,
             z
         );
 
@@ -188,12 +188,12 @@ enum Shaders {
 
         // The swarm turns to face the pointer, the way a shoal turns when
         // something moves past it: the pointer leads it round and tips it.
-        float groupRot = uTime * 0.05 + uMouse.x * 0.85 * uMouseHere;
+        float groupRot = uTime * 0.05 + uMouse.x * 0.25 * uMouseHere;
         float cg = cos(groupRot);
         float sg = sin(groupRot);
         vec3 r1 = vec3(worldPos.x * cg - worldPos.z * sg, worldPos.y, worldPos.x * sg + worldPos.z * cg);
 
-        float tilt = sin(uTime * 0.13) * 0.18 + 0.5 + uMouse.y * 0.42 * uMouseHere;
+        float tilt = sin(uTime * 0.13) * 0.18 + 0.5 + uMouse.y * 0.12 * uMouseHere;
         float ct = cos(tilt);
         float st = sin(tilt);
         vec3 r2 = vec3(r1.x, r1.y * ct - r1.z * st, r1.y * st + r1.z * ct);
@@ -305,7 +305,7 @@ enum Shaders {
         // on the way.
         vec2 mp = vec2(uMouse.x * res.y / min(res.x, res.y), uMouse.y * res.y / min(res.x, res.y));
         float md = length(p - mp);
-        vec2 swirl = normalize(p - mp + vec2(1e-5, 0.0)) * uMouseHere * 0.35 * exp(-md * 1.5);
+        vec2 swirl = normalize(p - mp + vec2(1e-5, 0.0)) * uMouseHere * 0.12 * exp(-md * 1.5);
         p += swirl;
 
         float t = uTime * 0.16;
