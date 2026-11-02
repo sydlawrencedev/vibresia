@@ -19,7 +19,7 @@ Recurring dates:
 - **Eight weeks after launch**: decide which `later` rows in
   `content/url-plan.csv` to build, from impressions.
 
-## 2026-11-02 (not yet deployed): batch 8, more referee pairs
+## 2026-11-02 (deployed 2026-11-02): batch 8, more referee pairs
 
 The URL plan's "later" rows were used up, so this wave came from fresh
 demand research: Google autocomplete on 2026-11-02. The playbook's own
@@ -60,7 +60,12 @@ this batch has the pairs people actually type.
   limits and I/O, so a page can say what a MilkDrop preset engine can and
   cannot be wired into.
 
-## 2026-11-02 (not yet deployed): what each app can be wired into
+Checked live on 2026-11-02: all 28 search pages and the author page return
+200 with their own canonical and JSON-LD; the five new reverse orders 301 to
+the canonical one; `/sitemaps/comparisons.xml` lists 17 URLs, `blog.xml` 3
+and `questions.xml` 9; and `robots.txt` lists all three sitemaps.
+
+## 2026-11-02 (deployed 2026-11-02): what each app can be wired into
 
 The VJ records were thin on limits and I/O, so the referee pages couldn't
 compare the two apps on the thing that decides a live-show rig: what you can
@@ -93,7 +98,7 @@ OSC, Syphon, Spout, NDI, DMX and video, each with its own source and date.
   belongs to a different company. All 86 sources pass.
 - Not deployed yet. The deploy is the owner's.
 
-## 2026-11-02 (not yet deployed): one sitemap per template
+## 2026-11-02 (deployed 2026-11-02): one sitemap per template
 
 The question pages were listed in the same sitemap as the best-of lists, so
 Search Console could not report on the two kinds of page apart. The question
@@ -107,7 +112,7 @@ head-to-heads and the hub.
 - The question pages move out of `blog.xml` and into `questions.xml`. The
   URLs don't change, so nothing needs a redirect.
 
-## 2026-11-02 (not yet deployed): batch 6, referee pages
+## 2026-11-02 (deployed 2026-11-02): batch 6, referee pages
 
 Template 2b at `/comparison/{a}-vs-{b}`, from `content/data/competitor-pairs.json`:
 projectM vs MilkDrop (third option on), NestDrop vs MilkDrop, Resolume vs
@@ -127,7 +132,7 @@ a pair that didn't opt in. Reverse orders 301 to the canonical one
 - `docs/seo.md` gained section 7 (lessons from this run), and
   `seo-playbook-status.md` records where the work stands.
 
-## 2026-11-02 (not yet deployed): batch 5, three more spokes, footer, routines
+## 2026-11-02 (deployed 2026-11-02): batch 5, three more spokes, footer, routines
 
 - Spokes for Amazon Music, Deezer and VLC, researched by three sub-agents.
   VLC is the one app with its own visualiser (Audio, then Visualizations;
@@ -141,7 +146,7 @@ a pair that didn't opt in. Reverse orders 301 to the canonical one
   template past 1,000 visits a month; a new quarterly routine re-checks
   competitor prices (1 Feb, May, Aug, Nov) and opens an issue.
 
-## 2026-11-02 (merged 2026-11-02, not yet deployed): batch 4, question pages
+## 2026-11-02 (deployed 2026-11-02): batch 4, question pages
 
 Template 2d, the first of its kind, so it waits for Syd's approval before it
 merges. Hub `/blog/apple-music-visualizer` ("does apple music have a
@@ -164,7 +169,7 @@ TIDAL and Mixcloud, each with a verdict table computed from
 - Spokes need 300 words plus the computed table (Phase 5); hubs and
   comparisons stay at 600.
 
-## 2026-11-02 (not yet deployed): schema, author and reel
+## 2026-11-02 (deployed 2026-11-02): schema, author and reel
 
 - Every indexable page now carries one shared `Organization` (Minith Labs,
   `https://minithlabs.com/#org`) and `WebSite` node from

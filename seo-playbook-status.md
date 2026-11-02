@@ -44,11 +44,15 @@ until then.
 | --- | --- | --- |
 | 2a best-of / alternatives | best-music-visualizer-for-mac-2026, milkdrop-alternatives-mac-2026, does-milkdrop-work-on-mac | live |
 | 2c head-to-heads (`/comparison/vibresia-vs-*`) | synesthesia, touchdesigner, projectm, plane9, magic-music-visuals, shadertoy; hub `/comparison` | live |
-| 2d question pages (`/blog/*-visualizer-mac`) | hub apple-music-visualizer (live mic scene); spotify, youtube-music, soundcloud, tidal, mixcloud | merged, deploy pending |
-| 2d spokes, batch 5 | amazon-music, deezer, vlc; footer link to the app hub | merged (465e1c4), deploy pending |
-| 2b referee pairs (`/comparison/{a}-vs-{b}`) | projectm-vs-milkdrop (third option on), nestdrop-vs-milkdrop, resolume-vs-vdmx, resolume-vs-touchdesigner, touchdesigner-vs-vdmx | merged, deploy pending |
-| 2b referee pairs, batch 8 | resolume-vs-madmapper, resolume-vs-obs, resolume-vs-millumin, touchdesigner-vs-blender, touchdesigner-vs-vvvv | merged, deploy pending |
-| "Control and connections" table | on the VJ pairs, and the new batch 8 pairs | merged, deploy pending |
+| 2d question pages (`/blog/*-visualizer-mac`) | hub apple-music-visualizer (live mic scene); spotify, youtube-music, soundcloud, tidal, mixcloud | live |
+| 2d spokes, batch 5 | amazon-music, deezer, vlc; footer link to the app hub | live |
+| 2b referee pairs (`/comparison/{a}-vs-{b}`) | projectm-vs-milkdrop (third option on), nestdrop-vs-milkdrop, resolume-vs-vdmx, resolume-vs-touchdesigner, touchdesigner-vs-vdmx | live |
+| 2b referee pairs, batch 8 | resolume-vs-madmapper, resolume-vs-obs, resolume-vs-millumin, touchdesigner-vs-blender, touchdesigner-vs-vvvv | live |
+| "Control and connections" table | on the VJ pairs, and the batch 8 pairs | live |
+
+Everything is deployed and checked live on 2026-11-02: 28 search pages and
+the author page return 200, the five new reverse orders 301 to the canonical
+one, and the three sitemaps list 17, 3 and 9 URLs.
 
 Also: author page `/author/syd-lawrence` (from `content/data/author.json`),
 FAQs and the shared Organization node on every indexable page, the demo reel
@@ -115,11 +119,9 @@ on search pages, `/ingest` analytics proxy in the Worker.
 
 ## Next
 
-1. Owner deploys batches 4-8 (question pages, spokes, referee pages, the
-   connections tables, the new questions.xml sitemap and three more referee
-   pairs); then check the new pages live and fill in deploy dates in
-   `SEO_CHANGELOG.md`. Submit `/sitemaps/questions.xml` in Search Console
-   with the other two.
+1. Owner submits `/sitemaps/questions.xml` in Search Console with the
+   other two, so each template's impressions can be read apart. The monthly
+   review reports by template and needs the sitemaps to match.
 2. Stats page (2e) from anonymous usage in PostHog project Shareware. It
    needs read access to that project: this session had only the public
    ingest key, which cannot read. Ask for a personal API key, or for the
