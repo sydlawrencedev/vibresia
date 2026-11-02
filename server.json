@@ -1,0 +1,25 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.sydlawrencedev/vibresia",
+  "title": "Vibresia",
+  "description": "Write live music visualisations in GLSL and share them as links that play in any browser.",
+  "version": "1.0.0",
+  "websiteUrl": "https://vibresia.com/agents",
+  "repository": {
+    "url": "https://github.com/sydlawrencedev/vibresia",
+    "source": "github"
+  },
+  "icons": [
+    {
+      "src": "https://vibresia.com/favicon.svg",
+      "mimeType": "image/svg+xml",
+      "sizes": ["any"]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://vibresia.com/mcp"
+    }
+  ]
+}

@@ -268,7 +268,8 @@ test("the registry's discovery file points at this server", async () => {
         new Request("https://vibresia.com/.well-known/mcp.json"), env, { waitUntil: () => {} });
     assert.equal(response.status, 200);
     const body = await response.json();
-    assert.equal(body.packages[0].remote.url, "https://vibresia.com/mcp");
-    assert.equal(body.packages[0].transport.type, "streamable-http");
-    assert.equal(body.status, "active");
+    assert.equal(body.remotes[0].url, "https://vibresia.com/mcp");
+    assert.equal(body.remotes[0].type, "streamable-http");
+    assert.match(body.name, /^[a-zA-Z0-9.-]+\/[a-zA-Z0-9._-]+$/);
+    assert.ok(body.description.length <= 100, "the registry refuses a description over 100 characters");
 });

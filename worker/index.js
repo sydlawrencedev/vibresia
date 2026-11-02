@@ -17,6 +17,10 @@
 // `ctx.waitUntil` so Discord can never delay a download.
 
 import { handleMcp } from "./mcp.js";
+// The official MCP Registry's entry for this server. mcp-publisher reads the
+// same file from the repository root, so what is published and what is served
+// here cannot drift apart.
+import SERVER_JSON from "../server.json" with { type: "json" };
 
 const CANONICAL_HOST = "vibresia.com";
 const CANONICAL_SITE = `https://${CANONICAL_HOST}/`;
@@ -1682,31 +1686,10 @@ export default {
     if (url.pathname === "/api/health") return handleHealth(env);
     if (url.pathname === "/api/share") return handleShareCreate(request, env, ctx);
     if (url.pathname === "/mcp") return handleMcp(request, env);
-    // The MCP registry's discovery file. It is also how the domain is proved
-    // to own the server it claims to.
+    // The discovery file: the same entry the MCP Registry holds, so a
+    // directory that crawls the domain finds what the registry lists.
     if (url.pathname === "/.well-known/mcp.json") {
-      return Response.json({
-        $schema: "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
-        name: "com.minithlabs.vibresia",
-        description: "Write music visualisations — GLSL vibescapes that draw themselves from the music — and share them as links that play in a browser.",
-        status: "active",
-        version: "1.0.0",
-        repository: {
-          url: "https://github.com/sydlawrencedev/vibresia",
-          source: "github",
-          id: "sydlawrencedev/vibresia",
-        },
-        websiteUrl: "https://vibresia.com",
-        packages: [
-          {
-            registryType: "remote",
-            version: "1.0.0",
-            transport: { type: "streamable-http" },
-            remote: { url: `${CANONICAL_SITE}mcp` },
-            runtimeHint: "node",
-          },
-        ],
-      }, {
+      return Response.json(SERVER_JSON, {
         headers: { "cache-control": "public, max-age=3600" },
       });
     }
