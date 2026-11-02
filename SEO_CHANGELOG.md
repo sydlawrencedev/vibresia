@@ -31,19 +31,28 @@ this batch has the pairs people actually type.
 | `/comparison/resolume-vs-madmapper` | resolume vs madmapper | autocomplete: "resolume vs madmapper", "madmapper alternative" |
 | `/comparison/resolume-vs-obs` | resolume vs obs | autocomplete: "resolume vs obs", "obs alternative for mac" |
 | `/comparison/resolume-vs-millumin` | resolume vs millumin | autocomplete: "resolume vs millumin", "millumin alternative" |
+| `/comparison/touchdesigner-vs-blender` | touchdesigner vs blender | autocomplete: "touchdesigner vs blender", "blender vs touchdesigner" |
+| `/comparison/touchdesigner-vs-vvvv` | touchdesigner vs vvvv | autocomplete: "touchdesigner vs vvvv", "vvvv alternatives" |
 
-- Three new records, each researched from the maker's own pages: MadMapper
-  (Digidance), OBS Studio (OBS Project) and Millumin. Every fact carries a
-  source and a date, and `scripts/check-sources.mjs` fetched all 152
-  sources and confirmed 93 of them by quote.
+- Five new records, each researched from the maker's own pages: MadMapper
+  (Digidance), OBS Studio (OBS Project), Millumin, Blender (Blender
+  Foundation) and vvvv. Every fact carries a source and a date, and
+  `scripts/check-sources.mjs` fetched 177 sources and confirmed 115 of
+  them by quote.
 - Vibresia is the third option on none of them, and that is deliberate:
-  Resolume, MadMapper and Millumin are show tools, and Vibresia neither
-  performs video nor sequences a show. A page claiming otherwise would be
-  wrong for the people reading it.
+  Resolume, MadMapper, Millumin, Blender and vvvv are show or production
+  tools, and Vibresia neither performs video nor sequences a show. A page
+  claiming otherwise would be wrong for the people reading it.
 - The comparison that matters on `/comparison/resolume-vs-obs` is not the
   price. OBS Studio has no built-in MIDI, OSC, NDI, Spout or DMX at all, and
   each comes from a community plug-in; Resolume has all of them, with DMX in
   Arena.
+- `/comparison/touchdesigner-vs-blender` turns on one fact: Blender cannot
+  drive visuals from live system audio, because its frequency analysis node
+  samples a sound held in the file rather than an incoming signal.
+- `/comparison/touchdesigner-vs-vvvv` turns on the platform: vvvv has no
+  native macOS version, so on a Mac TouchDesigner is the one that runs on
+  your own hardware.
 - Each pair has one canonical order, the one people search, and the reverse
   301s to it. A test now fails if a pair has no redirect.
 - The three referee pairs from batch 6 got the same "Control and

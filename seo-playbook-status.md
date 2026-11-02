@@ -47,7 +47,7 @@ until then.
 | 2d question pages (`/blog/*-visualizer-mac`) | hub apple-music-visualizer (live mic scene); spotify, youtube-music, soundcloud, tidal, mixcloud | merged, deploy pending |
 | 2d spokes, batch 5 | amazon-music, deezer, vlc; footer link to the app hub | merged (465e1c4), deploy pending |
 | 2b referee pairs (`/comparison/{a}-vs-{b}`) | projectm-vs-milkdrop (third option on), nestdrop-vs-milkdrop, resolume-vs-vdmx, resolume-vs-touchdesigner, touchdesigner-vs-vdmx | merged, deploy pending |
-| 2b referee pairs, batch 8 | resolume-vs-madmapper, resolume-vs-obs, resolume-vs-millumin; touchdesigner-vs-blender and touchdesigner-vs-vvvv researched, pages to write | merged (3 pages), deploy pending |
+| 2b referee pairs, batch 8 | resolume-vs-madmapper, resolume-vs-obs, resolume-vs-millumin, touchdesigner-vs-blender, touchdesigner-vs-vvvv | merged, deploy pending |
 | "Control and connections" table | on the VJ pairs, and the new batch 8 pairs | merged, deploy pending |
 
 Also: author page `/author/syd-lawrence` (from `content/data/author.json`),
@@ -120,23 +120,20 @@ on search pages, `/ingest` analytics proxy in the Worker.
    pairs); then check the new pages live and fill in deploy dates in
    `SEO_CHANGELOG.md`. Submit `/sitemaps/questions.xml` in Search Console
    with the other two.
-2. Write the two pages whose records are ready: `/comparison/touchdesigner-vs-blender`
-   and `/comparison/touchdesigner-vs-vvvv`. Both pairs, both records and
-   both URL plan rows are in place; only the page files are missing.
-3. Stats page (2e) from anonymous usage in PostHog project Shareware. It
+2. Stats page (2e) from anonymous usage in PostHog project Shareware. It
    needs read access to that project: this session had only the public
    ingest key, which cannot read. Ask for a personal API key, or for the
    PostHog MCP to be connected.
-4. Resolume alternatives referee list (2a) if the owner wants it.
-5. The wave after this one. The pairs with real demand that are still
+3. Resolume alternatives referee list (2a) if the owner wants it.
+4. The wave after this one. The pairs with real demand that are still
    unbuilt: resolume-vs-propresenter, resolume-vs-vmix, resolume-vs-watchout,
    resolume-vs-qlab, touchdesigner-vs-after-effects, touchdesigner-vs-houdini,
    touchdesigner-vs-madmapper, touchdesigner-vs-notch, synesthesia-vs-mobius.
    Each needs its own sourced record first.
-6. The 2d cluster has demand for pages Vibresia cannot serve: "visualizer for
+5. The 2d cluster has demand for pages Vibresia cannot serve: "visualizer for
    pc", "audio visualizer for rainmeter", "music visualizer for android",
    "music visualizer for car", "music visualizer for tv". Each is a page
    saying Vibresia is Mac only, so they bring little and cost a record each.
    Say whether to build them.
-7. After 8 weeks (from early January 2027): decide what to build more of
+6. After 8 weeks (from early January 2027): decide what to build more of
    from the monthly review's per-template numbers.

@@ -1757,5 +1757,366 @@
         "verifiedISO": "2026-11-02"
       }
     ]
+  },
+  {
+    "slug": "vvvv",
+    "name": "vvvv",
+    "category": "creative-coding",
+    "audience": "creative_coder",
+    "homepage": "https://vvvv.org/",
+    "tagline": "A visual live-programming environment for .NET that takes you from rapid prototyping to final production.",
+    "bestFor": "Creative coders and installation teams building live visual systems on Windows who need wide hardware and protocol support and the ability to export a standalone application.",
+    "platforms": [
+      "windows"
+    ],
+    "requirements": "Windows x64 and Windows ARM builds; there is no native macOS version, so Mac users run the Windows ARM build in a virtual machine",
+    "requirementsSource": {
+      "sourceUrl": "https://vvvv.org/download/",
+      "verifiedISO": "2026-11-02"
+    },
+    "strengths": [
+      "Patches run live: any change to a patch, or to C# code inside it, is applied without restarting the program",
+      "It covers a wide range of protocols and devices through installable packs, including MIDI, OSC, DMX, Art-Net, Spout, NDI and TUIO",
+      "A patch can be exported as a standalone application and deployed without vvvv on the target machine",
+      "Several PCs can be orchestrated from one primary machine to drive large-scale installations",
+      "There is no copy protection, no feature limitations and no mandatory registration"
+    ],
+    "ourAngle": "vvvv is a patch-based development environment for building whole applications, and it wins on breadth: it ships MIDI, OSC, DMX and Art-Net, Spout and NDI support, camera and depth sensor input, export to a standalone Windows application, multi-PC distributed rendering and live patching with state hot-reload. Vibresia wins on the Mac, because vvvv has no native macOS build at all, so it needs Windows or a virtual machine, and vvvv asks you to wire MIDI, OSC or lighting protocols into a graph yourself where Vibresia reacts to the system audio. Vibresia has no video output, no MIDI, OSC, NDI, Syphon or Spout output, and runs on macOS only, so anyone who needs to send video to a media server, drive lights or control a patch from hardware should choose vvvv.",
+    "profile": {
+      "sourceUrl": "https://vvvv.org/",
+      "verifiedISO": "2026-11-02"
+    },
+    "pricing": {
+      "model": "one-time",
+      "freeTier": true,
+      "tiers": [
+        {
+          "name": "Free for non-commercial use",
+          "price": "0",
+          "currency": "EUR",
+          "period": "once",
+          "includes": [
+            "No feature limitations",
+            "No copy protection",
+            "No mandatory registration",
+            "Evaluation, non-commercial use, teaching and learning"
+          ],
+          "excludes": [
+            "Any commercial use, which needs a per-developer licence",
+            "Academic research and use by NPOs and NFT artists, which count as commercial use"
+          ]
+        },
+        {
+          "name": "Developer licence, annual, individual",
+          "price": "540",
+          "currency": "EUR",
+          "period": "once",
+          "includes": [
+            "Required for each developer on a commercial project",
+            "Valid forever",
+            "Updates for a year from the date of purchase",
+            "Unlimited application exports"
+          ],
+          "excludes": [
+            "Updates after the first year",
+            "A second developer"
+          ]
+        },
+        {
+          "name": "Developer licence, annual, freelancer, SME or NPO",
+          "price": "1080",
+          "currency": "EUR",
+          "period": "once",
+          "includes": [
+            "Required for each developer on a commercial project",
+            "Valid forever",
+            "Updates for a year from the date of purchase"
+          ],
+          "excludes": [
+            "Updates after the first year",
+            "A second developer"
+          ]
+        },
+        {
+          "name": "Developer licence, annual, NFT artists and larger enterprises",
+          "price": "2160",
+          "currency": "EUR",
+          "period": "once",
+          "includes": [
+            "Required for each developer on a commercial project",
+            "Valid forever",
+            "Updates for a year from the date of purchase"
+          ],
+          "excludes": [
+            "Updates after the first year",
+            "A second developer"
+          ]
+        },
+        {
+          "name": "Device licence, annual, individual",
+          "price": "222",
+          "currency": "EUR",
+          "period": "once",
+          "includes": [
+            "Running vvvv on devices other than a developer's own computer",
+            "Valid forever",
+            "Updates within the first year"
+          ],
+          "excludes": [
+            "Development rights, which need a developer licence"
+          ]
+        },
+        {
+          "name": "Educational licence",
+          "price": "270",
+          "currency": "EUR",
+          "period": "once",
+          "includes": [
+            "A voluntary purchase to support the development of vvvv",
+            "Educational use of vvvv is free of charge"
+          ],
+          "excludes": [
+            "Commercial use"
+          ]
+        },
+        {
+          "name": "beta permanent licence",
+          "price": "500",
+          "currency": "EUR",
+          "period": "once",
+          "includes": [
+            "Required for each computer in a commercial project",
+            "Valid forever",
+            "Updates within the first year"
+          ],
+          "excludes": [
+            "Further update years, sold separately"
+          ]
+        }
+      ],
+      "note": "Prices are in euros excluding VAT, and are listed on the vvvv store. The annual prices vary by the size of the buyer: 540 euros for an individual developer, 1080 for a freelancer, small or medium business or non-profit, and 2160 for NFT artists and larger enterprises. Licences stay valid once bought and only the updates expire. vvvv calls its free terms a T.R.U.S.T model with no copy protection, no feature limitations and no mandatory registration, and any commercial use needs a licence.",
+      "sourceUrl": "https://store.vvvv.org/",
+      "verifiedISO": "2026-11-02"
+    },
+    "io": {
+      "sourceUrl": "https://vvvv.org/features/",
+      "verifiedISO": "2026-11-02",
+      "midi": {
+        "status": "yes",
+        "text": "MIDI nodes ship with vvvv in the VL.IO.Midi package, and MIDI is listed among the protocols vvvv talks to.",
+        "sourceUrl": "https://thegraybook.vvvv.org/reference/libraries/audio.html",
+        "quote": "Midi nodes are shipping with vvvv via the VL.IO.Midi package.",
+        "verifiedISO": "2026-11-02"
+      },
+      "osc": {
+        "status": "yes",
+        "text": "OSC support is available through the VL.IO.OSC pack, and OSC is listed among the protocols vvvv talks to.",
+        "sourceUrl": "https://vvvv.org/packs/",
+        "quote": "Support for the OSC (OpenSoundControl) protocol",
+        "verifiedISO": "2026-11-02"
+      },
+      "syphon": {
+        "status": "no",
+        "text": "vvvv has no native macOS build and no Syphon pack; its documentation covers Spout, the Windows route for sharing textures.",
+        "sourceUrl": "https://vvvv.org/download/",
+        "quote": "vvvv does not have a native version for macOS!",
+        "verifiedISO": "2026-11-02"
+      },
+      "spout": {
+        "status": "yes",
+        "text": "Spout is supported and ships with vvvv through the VL.Stride pack, for sharing realtime video with other Windows applications.",
+        "sourceUrl": "https://thegraybook.vvvv.org/reference/libraries/video.html",
+        "quote": "Spout allows you to send realtime video between Windows applications with near-zero latency or overhead.",
+        "verifiedISO": "2026-11-02"
+      },
+      "ndi": {
+        "status": "yes",
+        "text": "NDI is supported through the VL.IO.NDI pack, for streaming video and textures over the network.",
+        "sourceUrl": "https://thegraybook.vvvv.org/reference/libraries/video.html",
+        "quote": "Network Device Interface ( NDI ) is a high performance standard that allows anyone to use real time, ultra low latency video",
+        "verifiedISO": "2026-11-02"
+      },
+      "dmx": {
+        "status": "yes",
+        "text": "DMX output is supported through an Enttec DMXUsbPro sender node, and Art-Net nodes ship with vvvv.",
+        "sourceUrl": "https://thegraybook.vvvv.org/reference/libraries/lightsandlasers.html",
+        "quote": "An Enttec DMXUsbPro sender node.",
+        "verifiedISO": "2026-11-02"
+      },
+      "video": {
+        "status": "yes",
+        "text": "Video playback and capture are supported, including image sequence playback, shader based image effects and camera capture.",
+        "sourceUrl": "https://vvvv.org/packs/",
+        "quote": "Video player and capture nodes based on the Windows MediaFoundation API",
+        "verifiedISO": "2026-11-02"
+      }
+    },
+    "limits": [
+      {
+        "text": "The free edition excludes commercial use, and academic research, use by non-profits and NFT artists are counted as commercial use.",
+        "sourceUrl": "https://store.vvvv.org/",
+        "quote": "Any commercial use requires a per-developer license. Commercial use includes academic research and usage by NPOs and NFT artists.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "There is no native macOS version of vvvv, so Mac users have to run the Windows ARM build in a virtual machine.",
+        "sourceUrl": "https://vvvv.org/download/",
+        "quote": "vvvv does not have a native version for macOS!",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "On Arm builds some libraries do not work, and VL.OpenCV and VL.IO.NDI do not yet have Arm support in vvvv.",
+        "sourceUrl": "https://thegraybook.vvvv.org/reference/best-practice/vvvv-on-arm.html",
+        "quote": "The following libraries do not yet have Arm support in vvvv, but it seems the underlying libraries do.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "Exports to macOS and Linux are limited to console applications, while Windows exports can be desktop applications.",
+        "sourceUrl": "https://vvvv.org/features/",
+        "quote": "As of vvvv 7.x the following exports are supported: - Windows: Desktop and Console apps - Linux, MacOS: Console apps",
+        "verifiedISO": "2026-11-02"
+      }
+    ]
+  },
+  {
+    "slug": "blender",
+    "name": "Blender",
+    "category": "creative-coding",
+    "audience": "creative_coder",
+    "homepage": "https://www.blender.org/",
+    "tagline": "The free and open source 3D creation suite, covering modelling, rigging, animation, simulation, rendering, compositing, motion tracking and video editing.",
+    "bestFor": "Artists, animators and technical directors who want one application covering the whole 3D pipeline, who want to script it, and who are content to build a scene before anything appears on screen.",
+    "platforms": [
+      "macos",
+      "windows",
+      "linux"
+    ],
+    "requirements": "Apple silicon with macOS 13 Ventura or later and 8GB of RAM, or Windows 8.1 or later; Blender 4.5 LTS is the last release to support Intel Macs",
+    "requirementsSource": {
+      "sourceUrl": "https://www.blender.org/download/requirements/",
+      "verifiedISO": "2026-11-02"
+    },
+    "strengths": [
+      "It covers the entire 3D pipeline in one application, from modelling and rigging through animation, simulation, rendering, compositing and motion tracking, and it includes video editing and game asset creation",
+      "Its Python API is the documented route for scripting the application and writing specialised tools and add-ons, and the official Extensions platform hosts a catalogue of community add-ons",
+      "It ships a realtime render engine in EEVEE, a fast preview engine in Workbench and a path tracer in Cycles, so the same scene can be previewed live and rendered at high quality",
+      "It includes a video sequencer and a compositor, so video editing and finishing sit in the same file as the 3D work",
+      "It runs on macOS, Windows and Linux, and the official requirements page describes it as cross-platform with a portable install that needs no internet connection"
+    ],
+    "ourAngle": "Blender is a general 3D application where you build a scene and then render, and its realtime path is the EEVEE viewport, because viewport rendering supports Workbench and EEVEE but not Cycles. Vibresia is a Mac-only app that turns whatever the Mac is playing into live visuals with no plug-in, no 3D scene and no node graph, so it reacts to the music itself rather than to your inputs. Blender wins on scene control, final image quality, cross-platform use, video and animation output, and on cost, since it is free and open source. Vibresia wins on immediacy, on working with whatever is playing without routing audio into the app at all, and on being a small Mac app rather than a suite that wants a workstation.",
+    "profile": {
+      "sourceUrl": "https://www.blender.org/features/",
+      "verifiedISO": "2026-11-02"
+    },
+    "pricing": {
+      "model": "free",
+      "freeTier": true,
+      "tiers": [
+        {
+          "name": "Blender",
+          "price": "0",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "The full 3D creation suite: modelling, rigging, animation, simulation, rendering, compositing and motion tracking",
+            "Video editing through the Video Sequencer and Compositor",
+            "Python API for scripting and custom add-ons",
+            "The official Extensions platform for community add-ons and themes"
+          ],
+          "excludes": [
+            "Paid training, production assets and support, sold separately by Blender Studio as a subscription"
+          ]
+        }
+      ],
+      "note": "Blender is released under the GNU General Public License, and its licence page states that Blender can be used commercially by artists and studios, that what you create is the artist's sole property, and that no registration is needed and no internet connection is made. No commercial licence for Blender itself is offered: the Foundation's store sells merchandise, Blender Studio sells a subscription for training and assets, and the FAQ records the removal of the commercial add-on offering in August 2024.",
+      "sourceUrl": "https://www.blender.org/about/license/",
+      "verifiedISO": "2026-11-02"
+    },
+    "io": {
+      "sourceUrl": "https://docs.blender.org/manual/en/latest/",
+      "verifiedISO": "2026-11-02",
+      "midi": {
+        "status": "no",
+        "text": "Blender itself ships no MIDI input or output; MIDI input control is available through add-ons such as SimpleMIDI on the official Extensions platform.",
+        "sourceUrl": "https://extensions.blender.org/add-ons/simplemidi/",
+        "quote": "Control object parameters through MIDI Input",
+        "verifiedISO": "2026-11-02",
+        "note": "Blender's manual has no MIDI page and the Python API has no MIDI operators, so this depends on a community add-on rather than on the application."
+      },
+      "osc": {
+        "status": "no",
+        "text": "Blender has no built-in OSC, and OSC messaging is provided by community add-ons such as NodeOSC.",
+        "sourceUrl": "https://github.com/maybites/NodeOSC",
+        "quote": "OSC support for nodes and general usage.",
+        "verifiedISO": "2026-11-02",
+        "via": "third-party",
+        "note": "A third-party add-on rather than a Blender feature; no OSC entry appears among the extensions listed on the official Extensions platform."
+      },
+      "syphon": {
+        "status": "no",
+        "text": "Blender has no native Syphon support; Syphon sharing is provided by the third-party TextureSharing add-on, whose own table notes the macOS client has performance issues.",
+        "sourceUrl": "https://github.com/maybites/TextureSharing",
+        "quote": "Blender addon that allows to share textures via Spout, Syphon, NDI or OMT from and to blender.",
+        "verifiedISO": "2026-11-02",
+        "via": "third-party"
+      },
+      "spout": {
+        "status": "no",
+        "text": "Blender has no native Spout support; Spout sharing is provided by the third-party TextureSharing add-on, whose own table notes the Windows receiver has performance issues.",
+        "sourceUrl": "https://github.com/maybites/TextureSharing",
+        "quote": "This works for current Windows (Spout, NDI & OMT), Linux (NDI & OMT) and OSX (Syphon, NDI & OMT).",
+        "verifiedISO": "2026-11-02",
+        "via": "third-party"
+      },
+      "ndi": {
+        "status": "no",
+        "text": "Blender has no native NDI support; NDI sending and receiving is provided by the third-party TextureSharing add-on across Windows, Linux and macOS.",
+        "sourceUrl": "https://github.com/maybites/TextureSharing",
+        "quote": "Blender addon that allows to share textures via Spout, Syphon, NDI or OMT from and to blender.",
+        "verifiedISO": "2026-11-02",
+        "via": "third-party"
+      },
+      "dmx": {
+        "status": "no",
+        "text": "Blender has no built-in DMX support; the official Extensions platform hosts a DMX add-on for visualisation and programming with GDTF and MVR fixtures.",
+        "sourceUrl": "https://extensions.blender.org/add-ons/open-stage-blender-dmx/",
+        "quote": "Visualization & programming with GDTF&MVR",
+        "verifiedISO": "2026-11-02",
+        "note": "A third-party add-on hosted on Blender's official Extensions platform rather than a Blender built-in."
+      },
+      "video": {
+        "status": "yes",
+        "text": "Blender encodes rendered frames into video containers using FFmpeg and includes a video sequencer and compositor for editing, though it writes video to files rather than sending a live feed to other applications.",
+        "sourceUrl": "https://docs.blender.org/manual/en/latest/files/media/video_formats.html",
+        "quote": "Blender uses FFmpeg to handle video encoding and decoding.",
+        "verifiedISO": "2026-11-02"
+      }
+    },
+    "limits": [
+      {
+        "text": "If you publish an add-on or Python script that calls the Blender Python API, the GPL requires you to share it under a GPL compatible licence.",
+        "sourceUrl": "https://www.blender.org/about/license/",
+        "quote": "The GNU GPL license therefore requires that such scripts (if published) are being shared under a GPL compliant license.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "The stated minimum machine is 8GB of RAM with a GPU offering 2GB of VRAM and OpenGL 4.3 or Vulkan 1.3, with 32GB of RAM recommended, and a 1920 by 1080 display is advised for live use.",
+        "sourceUrl": "https://www.blender.org/download/requirements/",
+        "quote": "a minimum resolution of 1920×1080 is recommended for optimal use",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "The download itself is substantial, with the macOS disk image listed at 330 MB and the Windows installer at 349 MB.",
+        "sourceUrl": "https://www.blender.org/download/",
+        "quote": "330 MB",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "Blender cannot drive visuals from live system audio, because its frequency analysis node samples a sound data-block held in the file at a given point in time rather than an incoming signal.",
+        "sourceUrl": "https://docs.blender.org/manual/en/latest/modeling/geometry_nodes/utilities/sound/sample_sound_frequencies.html",
+        "quote": "retrieves the amplitude of a frequency range from a sound data-block at a given point in time",
+        "verifiedISO": "2026-11-02"
+      }
+    ]
   }
 ]

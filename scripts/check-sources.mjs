@@ -144,15 +144,27 @@ async function pdfText(body) {
 }
 
 async function fetchPage(url) {
-    const res = await fetch(url, {
-        redirect: "follow",
-        signal: AbortSignal.timeout(TIMEOUT_MS),
-        headers: {
-            // A plain reader, not a scraper pretending to be a browser.
-            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36",
-            accept: "text/html,application/xhtml+xml,application/pdf",
-        },
-    });
+    let res;
+    try {
+        res = await fetch(url, {
+            redirect: "follow",
+            signal: AbortSignal.timeout(TIMEOUT_MS),
+            headers: {
+                // A plain reader, not a scraper pretending to be a browser.
+                "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36",
+                accept: "text/html,application/xhtml+xml,application/pdf",
+            },
+        });
+    } catch (e) {
+        // A slow site is not a broken citation. A timeout is reported and
+        // the check carries on; the source may well be perfectly good.
+        if (e.name === "TimeoutError" || e.name === "AbortError") {
+            const err = new Error("the request timed out");
+            err.blocked = true;
+            throw err;
+        }
+        throw e;
+    }
     // A site that refuses to be read is not the same as a link that died.
     // The first is a fact about the site; the second is a broken citation.
     if (res.status === 401 || res.status === 403 || res.status === 429) {
