@@ -110,10 +110,11 @@ final class InputState: @unchecked Sendable {
         let now = CACurrentMediaTime()
         let dt = min(0.1, max(0, now - mouseLastUpdate))
         mouseLastUpdate = now
-        // A time constant of about 45 milliseconds: quick enough that the
-        // pointer feels attached to the hand, slow enough that a flick
-        // does not snap the picture.
-        let k = 1 - exp(-dt / 0.045)
+        // A time constant of about 150 milliseconds. The built-in
+        // vibescapes turn a camera or move a vanishing point with it, and
+        // at anything quicker every flick of the hand swung the whole
+        // picture; this lets the picture drift after the pointer instead.
+        let k = 1 - exp(-dt / 0.15)
         mouseEased.x += (mouseTarget.x - mouseEased.x) * k
         mouseEased.y += (mouseTarget.y - mouseEased.y) * k
         return mouseEased
