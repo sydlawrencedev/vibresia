@@ -105,6 +105,13 @@ on search pages, `/ingest` analytics proxy in the Worker.
   pages, `blog.xml` for the best-of lists, `comparisons.xml` for the
   head-to-heads and the hub. The monthly review reports by template and
   needs the sitemaps to match.
+- The homepage (`site/index.html`) and the agents page (`site/agents.html`)
+  still have em dashes in their hand-written copy. The generated pages and
+  the footer don't, because the style rules ban them and a check enforces
+  it. The homepage is the owner's voice, so that copy is theirs to change.
+- The next wave of referee pairs came from fresh autocomplete demand rather
+  than the URL plan, whose "later" rows are used up. The pairs with demand
+  still unbuilt are listed under "Next".
 
 ## Next
 
