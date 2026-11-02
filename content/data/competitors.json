@@ -17,7 +17,14 @@
       "A song has to be playing in the Music app; it doesn't visualise Spotify, a browser or other apps"
     ],
     "ourAngle": "Vibresia listens to system audio, so it works with Spotify, a browser or anything else playing, and you can write or AI-generate your own scenes. The built-in visualiser wins if you only use Apple Music and want nothing to install.",
-    "profile": { "sourceUrl": "https://support.apple.com/guide/music/muse3aa39574/mac", "verifiedISO": "2026-11-02" }
+    "profile": { "sourceUrl": "https://support.apple.com/guide/music/muse3aa39574/mac", "verifiedISO": "2026-11-02" },
+    "pricing": {
+      "model": "free",
+      "freeTier": true,
+      "tiers": [{ "name": "Part of the Music app", "price": "0", "currency": "USD", "period": "once" }],
+      "sourceUrl": "https://support.apple.com/guide/music/muse3aa39574/mac",
+      "verifiedISO": "2026-11-02"
+    }
   },
   {
     "slug": "phosphor",
@@ -69,7 +76,8 @@
       "The macOS standalone apps are pre-releases or development previews; the Steam and Homebrew builds are an old 3.1.12 release"
     ],
     "ourAngle": "projectM is the way to get MilkDrop's thousands of presets on a Mac. Vibresia doesn't play .milk presets. Its scenes are its own, it's a signed and notarised app that updates itself, and new scenes are written in GLSL (by you or by an AI assistant) rather than MilkDrop's preset language.",
-    "profile": { "sourceUrl": "https://github.com/projectM-visualizer/projectm", "verifiedISO": "2026-11-02" }
+    "profile": { "sourceUrl": "https://github.com/projectM-visualizer/projectm", "verifiedISO": "2026-11-02" },
+    "licence": { "name": "LGPL", "openSource": true, "sourceUrl": "https://github.com/projectM-visualizer/projectm", "verifiedISO": "2026-11-02" }
   },
   {
     "slug": "milkdrop",
@@ -389,7 +397,8 @@
       "Always publishes to Syphon, so VJ software can record or remix it, and keeps running in the background"
     ],
     "ourAngle": "ProjectMilkSyphon is a source for a VJ rig. Vibresia is a visualiser to watch, with its own scenes rather than MilkDrop presets.",
-    "profile": { "sourceUrl": "https://docs.vidvox.net/project-milk-syphon/", "verifiedISO": "2026-11-02" }
+    "profile": { "sourceUrl": "https://docs.vidvox.net/project-milk-syphon/", "verifiedISO": "2026-11-02" },
+    "limits": ["Made as a video source for VJ software: it always publishes its output over Syphon"]
   },
   {
     "slug": "butterchurn",
@@ -406,6 +415,8 @@
       "A live demo at butterchurnviz.com"
     ],
     "ourAngle": "Butterchurn brings MilkDrop to the browser. Vibresia is a native Mac app that hears everything the Mac plays; its shared scenes also play in a browser.",
-    "profile": { "sourceUrl": "https://github.com/jberg/butterchurn", "verifiedISO": "2026-11-02" }
+    "profile": { "sourceUrl": "https://github.com/jberg/butterchurn", "verifiedISO": "2026-11-02" },
+    "limits": ["A library and a browser demo: audio comes in as a Web Audio node, from an audio source or the microphone"],
+    "licence": { "name": "MIT", "openSource": true, "sourceUrl": "https://github.com/jberg/butterchurn", "verifiedISO": "2026-11-02" }
   }
 ]

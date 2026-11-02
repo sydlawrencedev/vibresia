@@ -191,6 +191,10 @@
       var props = { placement: el.dataset.placement || "" };
       if (el.dataset.command) props.command = el.dataset.command;
       if (el.dataset.target) props.target = el.dataset.target;
+      // The search pages say which template and which page, so clicks can
+      // be grouped by template (docs/seo.md, Phase 3).
+      if (el.dataset.template) props.template = el.dataset.template;
+      if (el.dataset.slug) props.slug = el.dataset.slug;
       track(el.dataset.track, props);
       return;
     }

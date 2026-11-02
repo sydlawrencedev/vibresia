@@ -7,3 +7,4 @@ Allow: /
 # carries the one URL we actually want ranked.
 
 Sitemap: https://vibresia.com/sitemap.xml
+Sitemap: https://vibresia.com/sitemaps/blog.xml

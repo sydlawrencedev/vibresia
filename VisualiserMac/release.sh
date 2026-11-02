@@ -29,6 +29,9 @@ node ../scripts/check-admin-page.mjs
 # Every fact a comparison page states about another product has a source and
 # a date, and none of them is over a year old. See docs/seo.md, Phase 1b.
 node ../scripts/check-competitors.mjs
+# The search pages are generated from content/pages/ and those records;
+# a page that's stale, thin or uses a banned phrase stops the release.
+node ../scripts/generate-seo-pages.mjs --check
 ../scripts/check-posthog.sh
 ../scripts/check-no-webhook-leak.sh
 # The share page embeds a copy of the app's shaders, because a browser can't

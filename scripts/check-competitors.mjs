@@ -148,6 +148,19 @@ export function validate(records, { today = new Date().toISOString().slice(0, 10
             if (typeof r.trial.limits !== "string" || !r.trial.limits.trim()) errors.push(`${at}.trial: say what the trial limits`);
         }
 
+        if (r.licence !== undefined) {
+            checkSource(`${at}.licence`, r.licence);
+            if (typeof r.licence.name !== "string" || !r.licence.name.trim()) errors.push(`${at}.licence: no name`);
+            if (typeof r.licence.openSource !== "boolean") errors.push(`${at}.licence: openSource must be true or false`);
+        }
+
+        // Limits are what a page lists as the weakness, so they are claims
+        // too. They come from the profile's source; a page shows them only
+        // when they exist.
+        if (r.limits !== undefined && (!Array.isArray(r.limits) || r.limits.some((l) => typeof l !== "string" || !l.trim()))) {
+            errors.push(`${at}.limits: must be a list of sentences`);
+        }
+
         if (r.reviews !== undefined) {
             checkSource(`${at}.reviews`, r.reviews);
             if (typeof r.reviews.score !== "number") errors.push(`${at}.reviews: no score`);
