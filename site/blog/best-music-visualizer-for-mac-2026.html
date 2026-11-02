@@ -66,6 +66,12 @@
   .sources { color: var(--muted); font-size: 14px; }
   .sources li { overflow-wrap: anywhere; }
   .related { padding-left: 20px; }
+  .versus { min-width: 480px; }
+  .versus tbody th { font-weight: 500; color: var(--muted); }
+  .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
+  .verdict > div { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 6px; }
+  .verdict > div:first-child { border-color: var(--magenta); }
+  @media (max-width: 640px) { .verdict { grid-template-columns: 1fr; } }
 </style>
 <link rel="stylesheet" href="/chrome.css">
 <script type="application/ld+json">
@@ -237,9 +243,10 @@
           <tr><th scope="row"><a href="#projectm">projectM</a></th><td>Open source (LGPL)</td><td>Windows, Mac, Linux</td><td>MilkDrop fans who want the classic presets on Mac, Windows or Linux.</td></tr>
           <tr><th scope="row"><a href="#muvis">MuVis</a></th><td>Free</td><td>Mac, iPhone and iPad, Vision Pro</td><td>Listeners who want to see the notes being played, on Apple devices.</td></tr>
           <tr><th scope="row"><a href="#nyquist">Nyquist</a></th><td>US$4.99, one-time</td><td>Mac</td><td>Mac users who want a clean spectrum display in a window or the menu bar.</td></tr>
-          <tr><th scope="row"><a href="#synesthesia">Synesthesia</a></th><td>Free to try; paid plans on its site</td><td>Mac, Windows</td><td>DJs, VJs and streamers who perform live and need MIDI, OSC and video outputs.</td></tr>
+          <tr><th scope="row"><a href="#synesthesia">Synesthesia</a></th><td>US$199, one-time</td><td>Mac, Windows</td><td>DJs, VJs and streamers who perform live and need MIDI, OSC and video outputs.</td></tr>
         </tbody>
       </table></div>
+    
     <p class="cta"><a class="button" data-install data-track="download_clicked" data-placement="seo-top" data-template="2a" data-slug="best-music-visualizer-for-mac-2026" href="/download?src=seo-best-music-visualizer-for-mac-2026-top">Try Vibresia with what's playing now</a><span>Free, no account, macOS 14.2+ on Apple silicon.</span></p>
     <h2>The seven, one by one</h2>
     <article class="entry" id="vibresia">
@@ -292,11 +299,11 @@
     </article>
     <article class="entry" id="synesthesia">
       <h3>7. Synesthesia</h3>
-      <p class="meta">Free to try; paid plans on its site · Mac, Windows</p>
+      <p class="meta">US$199, one-time · Mac, Windows</p>
       <p><b>Who it's for:</b> DJs, VJs and streamers who perform live and need MIDI, OSC and video outputs.</p>
       <p><b>Good at:</b> 80 built-in scenes, MIDI and OSC controls, and Syphon, Spout and NDI output for projectors and streams.</p>
       <p><b>Falls short:</b> It's built for live performance, and the free version puts a watermark on video output.</p>
-      <p><b>Pick it if</b> you DJ, VJ or stream and need to control the visuals during a set. For watching at home it's more than you need.</p>
+      <p><b>Pick it if</b> you DJ, VJ or stream and need to control the visuals during a set. For watching at home it's more than you need (see <a href="/comparison/vibresia-vs-synesthesia">Vibresia vs Synesthesia</a>).</p>
     </article>
     <h2>What actually decides it</h2>
     <p>Three questions sort this list faster than any feature table.</p>
@@ -305,7 +312,7 @@
     <p><b>Do you want to change it?</b> projectM gives you thousands of community MilkDrop presets to choose from. Vibresia lets you write a scene from scratch, as a single GLSL function, or describe one to an AI assistant and have it written for you. Phosphor's site doesn't mention making your own scenes.</p>
     <h2>Free or paid</h2>
     <p>Four of the seven cost nothing. Apple's is part of the Music app. Vibresia and MuVis are free apps, and both are open source. projectM's library is open source under the LGPL; its Mac apps are early releases, which is worth knowing before you expect a polished install.</p>
-    <p>Phosphor and Nyquist are cheap one-off purchases on the Mac App Store. Phosphor's Apple TV link is an extra in-app purchase, so the full setup is US$6.99 plus US$9.99. Synesthesia has a free version with a watermark on video output; its paid plans are on <a href="https://synesthesia.live/pricing">its pricing page</a>.</p>
+    <p>Phosphor and Nyquist are cheap one-off purchases on the Mac App Store. Phosphor's Apple TV link is an extra in-app purchase, so the full setup is US$6.99 plus US$9.99. Synesthesia has a free version with a watermark on video output, and a licence is US$199 (<a href="https://synesthesia.live/pricing">its pricing page</a>).</p>
     <h2>Which Macs they run on</h2>
     <p>Check this before anything else if your Mac is a few years old. Vibresia needs Apple silicon and macOS 14.2 or later, so it won't run on an Intel Mac. Phosphor needs Apple silicon and macOS 14.4. Nyquist needs macOS 15. MuVis needs macOS 14. Apple's visualiser is already on every Mac, in the Music app.</p>
     <h2>How we put this together</h2>
@@ -329,6 +336,7 @@
     <ul class="related">
         <li><a href="/blog/milkdrop-alternatives-mac-2026">MilkDrop alternatives for Mac (2026)</a></li>
         <li><a href="/blog/does-milkdrop-work-on-mac">Does MilkDrop work on a Mac?</a></li>
+        <li><a href="/comparison/vibresia-vs-synesthesia">Vibresia vs Synesthesia</a></li>
         <li><a href="/vibescapes">See Vibresia's scenes, and ones people have made</a></li>
         <li><a href="/agents">Have an AI assistant write a scene for you</a></li>
     </ul>

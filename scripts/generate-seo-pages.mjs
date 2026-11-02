@@ -1,11 +1,12 @@
-// Builds the search pages in site/blog/ from content/pages/ and the
-// competitor records.
+// Builds the search pages in site/blog/ and site/comparison/ from
+// content/pages/ and the competitor records.
 //
 // The page files say what to write; every fact about another product comes
 // from content/data/competitors.json, which says where it came from and when
 // somebody looked. A page can't name a price, a platform, a strength or a
 // weakness that isn't in a record, so it can't drift from the record either.
-// See docs/seo.md, Phase 2a, and content/url-plan.csv for which pages exist.
+// See docs/seo.md, Phases 2a and 2c, and content/url-plan.csv for which
+// pages exist.
 //
 //   node scripts/generate-seo-pages.mjs           write the pages
 //   node scripts/generate-seo-pages.mjs --check   fail if a page is out of date
@@ -21,8 +22,12 @@ import { validate, DATA } from "./check-competitors.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PAGES_DIR = path.join(ROOT, "content/pages");
-const OUT_DIR = path.join(ROOT, "site/blog");
-const SITEMAP = path.join(ROOT, "site/sitemaps/blog.xml");
+// Where each template's pages live, and the sitemap each is listed in. One
+// sitemap per section, so Search Console reports on each separately (Phase 4).
+export const SECTIONS = {
+    blog: { templates: ["2a", "2d"], sitemap: "blog.xml" },
+    comparison: { templates: ["2c"], sitemap: "comparisons.xml" },
+};
 const PARTIALS = path.join(ROOT, "site/_partials");
 const ORIGIN = "https://vibresia.com";
 
@@ -76,6 +81,18 @@ const PLATFORM_NAMES = {
     macos: "Mac", windows: "Windows", linux: "Linux", ios: "iPhone and iPad", android: "Android",
     web: "Browser", tvos: "Apple TV", visionos: "Vision Pro",
 };
+
+/** The section a template's pages live in. */
+export function sectionOf(page) {
+    const found = Object.entries(SECTIONS).find(([, s]) => s.templates.includes(page.template));
+    if (!found) throw new Error(`${page.slug}: no section takes template ${page.template}`);
+    return found[0];
+}
+
+/** "/blog/x" or "/comparison/vibresia-vs-x". */
+export function pathOf(page) {
+    return `/${sectionOf(page)}/${page.slug}`;
+}
 
 function escapeHtml(s) {
     return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -217,6 +234,51 @@ function tableHtml(h, page) {
     return `<div class="table-scroll"><table>\n        <thead><tr>${head}</tr></thead>\n        <tbody>\n          ${rows.join("\n          ")}\n        </tbody>\n      </table></div>`;
 }
 
+/**
+ * The head-to-head table: one row per question, Vibresia and the other app
+ * side by side. Each row reads its two answers from the records.
+ */
+function versusTableHtml(h, page) {
+    const pair = ["vibresia", page.versus];
+    const head = `<th scope="col"></th>${pair.map((s) => `<th scope="col">${escapeHtml(h.name(s))}</th>`).join("")}`;
+    const rows = page.rows.map((row) =>
+        `<tr><th scope="row">${escapeHtml(row.label)}</th>${pair.map((s) => `<td>${escapeHtml(row.value(h, s))}</td>`).join("")}</tr>`);
+    return `<div class="table-scroll"><table class="versus">\n        <thead><tr>${head}</tr></thead>\n        <tbody>\n          ${rows.join("\n          ")}\n        </tbody>\n      </table></div>`;
+}
+
+/**
+ * Who should pick which. A head-to-head page argues for Vibresia, and it
+ * still says who the other app is right for: that's the honest verdict the
+ * playbook asks for (Phase 2c), and comparative claims have to hold up
+ * (Phase 5). A page without "pick them if" doesn't build.
+ */
+function verdictHtml(h, page) {
+    const v = page.verdict || {};
+    if (!v.pickUs || !v.pickThem) throw new Error(`${page.slug}: a head-to-head needs verdict.pickUs and verdict.pickThem`);
+    return `<div class="verdict">
+      <div><h3>Pick Vibresia if</h3><p>${v.pickUs}</p></div>
+      <div><h3>Pick ${escapeHtml(h.name(page.versus))} if</h3><p>${v.pickThem}</p></div>
+    </div>`;
+}
+
+/** SoftwareApplication for each app on a head-to-head, with sourced offers. */
+function appNode(h, slug) {
+    const r = h.rec(slug);
+    const node = {
+        "@type": "SoftwareApplication",
+        name: r.name,
+        url: r.homepage,
+        applicationCategory: "MultimediaApplication",
+        operatingSystem: h.platforms(slug),
+    };
+    if (r.pricing) {
+        node.offers = r.pricing.tiers.map((t) => ({
+            "@type": "Offer", name: t.name, price: String(Number(t.price)), priceCurrency: t.currency, url: r.pricing.sourceUrl,
+        }));
+    }
+    return node;
+}
+
 function jsonLd(page, h, url, verifiedISO) {
     const graph = [
         {
@@ -249,6 +311,7 @@ function jsonLd(page, h, url, verifiedISO) {
             })),
         });
     }
+    if (page.versus) graph.push(appNode(h, "vibresia"), appNode(h, page.versus));
     if (page.faq && page.faq.length) {
         graph.push({
             "@type": "FAQPage",
@@ -294,7 +357,13 @@ const STYLE = `  :root {
   .faq h3 { margin-top: 22px; }
   .sources { color: var(--muted); font-size: 14px; }
   .sources li { overflow-wrap: anywhere; }
-  .related { padding-left: 20px; }`;
+  .related { padding-left: 20px; }
+  .versus { min-width: 480px; }
+  .versus tbody th { font-weight: 500; color: var(--muted); }
+  .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
+  .verdict > div { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 6px; }
+  .verdict > div:first-child { border-color: var(--magenta); }
+  @media (max-width: 640px) { .verdict { grid-template-columns: 1fr; } }`;
 
 /**
  * The whole page, as the file that ships. A page file exports a function of
@@ -303,12 +372,14 @@ const STYLE = `  :root {
 export function render(pageFn, records) {
     const { h, used } = helpers(records);
     const page = pageFn(h);
-    const url = `${ORIGIN}/blog/${page.slug}`;
+    const url = `${ORIGIN}${pathOf(page)}`;
+    if (page.template === "2c" && !page.versus) throw new Error(`${page.slug}: a head-to-head needs versus`);
 
     // Build the body first: it's what asks for records, and the sources and
     // the "last verified" date come from whichever records it asked for.
     const entries = page.entries ? page.entries.map((e, i) => entryHtml(h, e, i + 1)).join("\n    ") : "";
-    const table = page.table ? tableHtml(h, page) : "";
+    const table = page.versus ? versusTableHtml(h, page) : page.table ? tableHtml(h, page) : "";
+    const verdict = page.versus ? verdictHtml(h, page) : "";
     const sections = page.sections.map((s) => `<h2>${escapeHtml(s.h2)}</h2>\n    ${s.html}`).join("\n    ");
     const faq = (page.faq || []).map((f) => `<h3>${escapeHtml(f.q)}</h3>\n      <p>${f.a}</p>`).join("\n      ");
 
@@ -317,7 +388,7 @@ export function render(pageFn, records) {
     for (const r of recordsUsed) for (const [u, d] of sourcesFor(r)) if (!sources.has(u)) sources.set(u, [r.name, d]);
     const verifiedISO = [...sources.values()].map(([, d]) => d).sort()[0];
 
-    const prose = [page.answer, entries, sections, faq].join(" ");
+    const prose = [page.answer, verdict, entries, sections, faq].join(" ");
     const count = words(prose);
     if (count < MIN_WORDS) throw new Error(`${page.slug}: ${count} words, under the ${MIN_WORDS} a page needs to publish`);
     const lower = prose.toLowerCase() + " " + page.title.toLowerCase() + " " + page.description.toLowerCase();
@@ -384,6 +455,7 @@ ${partial("nav.html")}
     <p class="byline">By <a href="/author/syd-lawrence">Syd Lawrence</a>, who makes Vibresia. Facts last checked ${longDate(verifiedISO)}; updated ${longDate(page.updatedISO)}.</p>
     <p class="answer">${page.answer}</p>
     ${table}
+    ${verdict}
     ${cta(page, "top", page.cta)}
     ${page.entries ? `<h2>${escapeHtml(page.entriesHeading)}</h2>\n    ${entries}` : ""}
     ${sections}
@@ -433,10 +505,10 @@ export async function loadPages(records) {
 }
 
 export function sitemap(pages) {
-    const urls = pages.map((p) => `  <url>\n    <loc>${ORIGIN}/blog/${p.slug}</loc>\n    <lastmod>${p.updatedISO}</lastmod>\n  </url>`);
+    const urls = pages.map((p) => `  <url>\n    <loc>${ORIGIN}${pathOf(p)}</loc>\n    <lastmod>${p.updatedISO}</lastmod>\n  </url>`);
     return `<?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated by scripts/generate-seo-pages.mjs. The search pages, in a
-     sitemap of their own so Search Console can report how they index
+     sitemap per section so Search Console can report how each indexes
      separately from the rest of the site. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.join("\n")}
@@ -454,8 +526,11 @@ async function main() {
     }
 
     const pages = await loadPages(records);
-    const outputs = new Map(pages.map(({ fn, page }) => [path.join(OUT_DIR, `${page.slug}.html`), render(fn, records)]));
-    outputs.set(SITEMAP, sitemap(pages.map((p) => p.page)));
+    const outputs = new Map(pages.map(({ fn, page }) => [path.join(ROOT, "site", `${pathOf(page)}.html`), render(fn, records)]));
+    for (const [section, { sitemap: file }] of Object.entries(SECTIONS)) {
+        const listed = pages.map((p) => p.page).filter((p) => sectionOf(p) === section);
+        if (listed.length) outputs.set(path.join(ROOT, "site/sitemaps", file), sitemap(listed));
+    }
 
     const stale = [];
     for (const [file, text] of outputs) {

@@ -59,7 +59,7 @@ export default (h) => ({
             strength: "80 built-in scenes, MIDI and OSC controls, and Syphon, Spout and NDI output for projectors and streams",
             weakness: "It's built for live performance, and the free version puts a watermark on video output",
             weaknessSource: "https://synesthesia.live/pricing",
-            pickIf: "you DJ, VJ or stream and need to control the visuals during a set. For watching at home it's more than you need.",
+            pickIf: 'you DJ, VJ or stream and need to control the visuals during a set. For watching at home it\'s more than you need (see <a href="/comparison/vibresia-vs-synesthesia">Vibresia vs Synesthesia</a>).',
         },
     ],
     sections: [
@@ -73,7 +73,7 @@ export default (h) => ({
         {
             h2: "Free or paid",
             html: `<p>Four of the seven cost nothing. Apple's is part of the Music app. Vibresia and MuVis are free apps, and both are open source. projectM's library is open source under the LGPL; its Mac apps are early releases, which is worth knowing before you expect a polished install.</p>
-    <p>Phosphor and Nyquist are cheap one-off purchases on the Mac App Store. Phosphor's Apple TV link is an extra in-app purchase, so the full setup is ${h.cost("phosphor")} plus ${h.cost("phosphor", "Phosphor Link (in-app purchase)")}. Synesthesia has a free version with a watermark on video output; its paid plans are on <a href="${h.sourceOf("synesthesia", "trial")}">its pricing page</a>.</p>`,
+    <p>Phosphor and Nyquist are cheap one-off purchases on the Mac App Store. Phosphor's Apple TV link is an extra in-app purchase, so the full setup is ${h.cost("phosphor")} plus ${h.cost("phosphor", "Phosphor Link (in-app purchase)")}. Synesthesia has a free version with a watermark on video output, and a licence is ${h.cost("synesthesia", "Standard")} (<a href="${h.sourceOf("synesthesia", "pricing")}">its pricing page</a>).</p>`,
         },
         {
             h2: "Which Macs they run on",
@@ -105,6 +105,7 @@ export default (h) => ({
     related: [
         { href: "/blog/milkdrop-alternatives-mac-2026", text: "MilkDrop alternatives for Mac (2026)" },
         { href: "/blog/does-milkdrop-work-on-mac", text: "Does MilkDrop work on a Mac?" },
+        { href: "/comparison/vibresia-vs-synesthesia", text: "Vibresia vs Synesthesia" },
         { href: "/vibescapes", text: "See Vibresia's scenes, and ones people have made" },
         { href: "/agents", text: "Have an AI assistant write a scene for you" },
     ],

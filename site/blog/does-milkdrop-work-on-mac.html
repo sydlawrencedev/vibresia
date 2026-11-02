@@ -66,6 +66,12 @@
   .sources { color: var(--muted); font-size: 14px; }
   .sources li { overflow-wrap: anywhere; }
   .related { padding-left: 20px; }
+  .versus { min-width: 480px; }
+  .versus tbody th { font-weight: 500; color: var(--muted); }
+  .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
+  .verdict > div { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 6px; }
+  .verdict > div:first-child { border-color: var(--magenta); }
+  @media (max-width: 640px) { .verdict { grid-template-columns: 1fr; } }
 </style>
 <link rel="stylesheet" href="/chrome.css">
 <script type="application/ld+json">
@@ -172,6 +178,7 @@
     <h1>Does MilkDrop work on Mac?</h1>
     <p class="byline">By <a href="/author/syd-lawrence">Syd Lawrence</a>, who makes Vibresia. Facts last checked 2 November 2026; updated 2 November 2026.</p>
     <p class="answer">No. MilkDrop is a visualiser plug-in for Winamp on Windows, and its author's <a href="https://www.geisswerks.com/milkdrop/">page</a> lists Windows 98 through Windows 7 with no Mac version. You can still get its presets on a Mac with <a href="https://github.com/projectM-visualizer/projectm">projectM</a>, an open-source rebuild of MilkDrop, or skip the presets and use a visualiser made for the Mac.</p>
+    
     
     <p class="cta"><a class="button" data-install data-track="download_clicked" data-placement="seo-top" data-template="2a" data-slug="does-milkdrop-work-on-mac" href="/download?src=seo-does-milkdrop-work-on-mac-top">Try Vibresia with what's playing now</a><span>Free, no account, macOS 14.2+ on Apple silicon.</span></p>
     

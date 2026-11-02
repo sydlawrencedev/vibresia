@@ -22,3 +22,5 @@ Every fact about another app on these pages comes from that app's own site, stor
 - [The best music visualizer for Mac in 2026](https://vibresia.com/blog/best-music-visualizer-for-mac-2026): seven Mac visualisers with prices, strengths and weaknesses
 - [MilkDrop alternatives for Mac in 2026](https://vibresia.com/blog/milkdrop-alternatives-mac-2026): five ways to get MilkDrop-style visuals on a Mac
 - [Does MilkDrop work on Mac?](https://vibresia.com/blog/does-milkdrop-work-on-mac): no; what does instead
+- [Vibresia vs Synesthesia](https://vibresia.com/comparison/vibresia-vs-synesthesia): the free alternative for watching music at home, and when Synesthesia is the better pick
+- [Vibresia vs TouchDesigner](https://vibresia.com/comparison/vibresia-vs-touchdesigner): a finished music visualiser against a build-it-yourself environment

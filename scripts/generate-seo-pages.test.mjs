@@ -11,7 +11,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { DATA } from "./check-competitors.mjs";
-import { render, loadPages, helpers, money, longDate, MIN_WORDS } from "./generate-seo-pages.mjs";
+import { render, loadPages, helpers, money, longDate, pathOf, MIN_WORDS } from "./generate-seo-pages.mjs";
 
 const records = JSON.parse(fs.readFileSync(DATA, "utf8"));
 const pages = await loadPages(records);
@@ -68,21 +68,29 @@ test("a weakness in the page's own words needs a source", () => {
     assert.throws(() => render(page({ entries, table, entriesHeading: "x" }), records), /needs weaknessSource/);
 });
 
-test("every page file is a batch-1 row in the URL plan, with one URL per query", () => {
+test("a head-to-head that doesn't say who should pick the other app doesn't build", () => {
+    const rows = [{ label: "Price", value: (h, s) => h.priceCell(s) }];
+    const versus = { template: "2c", versus: "touchdesigner", rows };
+    assert.throws(() => render(page({ ...versus, verdict: { pickUs: "you want it free." } }), records), /verdict.pickThem/);
+    assert.throws(() => render(page({ template: "2c", rows }), records), /needs versus/);
+});
+
+test("every page file is a planned row in the URL plan, with one URL per query", () => {
     const rows = fs.readFileSync(path.join(path.dirname(DATA), "../url-plan.csv"), "utf8").trim().split("\n").slice(1);
     const plan = rows.map((r) => r.split(","));
     const queries = plan.map((r) => r[2]);
     assert.equal(new Set(queries).size, queries.length, "two URLs target the same query");
     for (const { page } of built) {
-        const row = plan.find((r) => r[0] === `/blog/${page.slug}`);
-        assert.ok(row, `${page.slug} isn't in content/url-plan.csv`);
-        assert.equal(row[1], "1", `${page.slug} isn't in batch 1`);
+        const row = plan.find((r) => r[0] === pathOf(page));
+        assert.ok(row, `${pathOf(page)} isn't in content/url-plan.csv`);
+        assert.notEqual(row[1], "later", `${page.slug} is built but planned for later`);
+        assert.equal(row[5], page.template, `${page.slug} is planned as template ${row[5]}`);
     }
 });
 
 for (const { page, html } of built) {
     test(`${page.slug}: canonical, title and description are its own`, () => {
-        assert.match(html, new RegExp(`<link rel="canonical" href="https://vibresia.com/blog/${page.slug}">`));
+        assert.match(html, new RegExp(`<link rel="canonical" href="https://vibresia.com${pathOf(page)}">`));
         assert.equal((html.match(/rel="canonical"/g) || []).length, 1);
         assert.ok(page.title.length <= 65, `title is ${page.title.length} characters`);
     });
@@ -95,6 +103,10 @@ for (const { page, html } of built) {
         if (page.entries) {
             const list = ldJson(html)["@graph"].find((n) => n["@type"] === "ItemList");
             assert.equal(list.itemListElement.length, page.entries.length);
+        }
+        if (page.versus) {
+            const apps = ldJson(html)["@graph"].filter((n) => n["@type"] === "SoftwareApplication");
+            assert.deepEqual(apps.map((a) => a.name).sort(), [records.find((r) => r.slug === page.versus).name, "Vibresia"].sort());
         }
     });
 

@@ -43,11 +43,12 @@ def pages(root):
                 found.append(f"site/share/{name}")
     # The search pages are generated too (scripts/generate-seo-pages.mjs),
     # from the same partials.
-    blog = os.path.join(root, "site", "blog")
-    if os.path.isdir(blog):
-        for name in sorted(os.listdir(blog)):
-            if name.endswith(".html"):
-                found.append(f"site/blog/{name}")
+    for section in ("blog", "comparison"):
+        folder = os.path.join(root, "site", section)
+        if os.path.isdir(folder):
+            for name in sorted(os.listdir(folder)):
+                if name.endswith(".html"):
+                    found.append(f"site/{section}/{name}")
     return [p for p in found if os.path.exists(os.path.join(root, p))]
 
 

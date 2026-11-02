@@ -134,6 +134,17 @@
     ],
     "ourAngle": "Synesthesia is a performance tool, and if you play live it is the better pick: Vibresia has no OSC, no Syphon, Spout or NDI output, and no controls to map for a set. Vibresia is for watching your own music at home for free, with scenes you can describe to an AI assistant.",
     "profile": { "sourceUrl": "https://synesthesia.live/", "verifiedISO": "2026-11-02" },
+    "pricing": {
+      "model": "one-time",
+      "freeTier": false,
+      "tiers": [
+        { "name": "Standard", "price": "199", "currency": "USD", "period": "once", "includes": ["MIDI mappable controls", "One computer at a time"], "excludes": ["Syphon, Spout and NDI", "OSC"] },
+        { "name": "Pro", "price": "399", "currency": "USD", "period": "once", "includes": ["Syphon, Spout and NDI", "OSC input and output", "Two computers at a time"], "excludes": [] }
+      ],
+      "note": "The page shows $ with no currency code. Licences never expire and include a year of updates; renewal is $60 a year.",
+      "sourceUrl": "https://synesthesia.live/pricing",
+      "verifiedISO": "2026-11-02"
+    },
     "trial": {
       "limits": "Free and unlimited, no sign-up; video output carries a Synesthesia watermark.",
       "sourceUrl": "https://synesthesia.live/pricing",

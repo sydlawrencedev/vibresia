@@ -66,6 +66,12 @@
   .sources { color: var(--muted); font-size: 14px; }
   .sources li { overflow-wrap: anywhere; }
   .related { padding-left: 20px; }
+  .versus { min-width: 480px; }
+  .versus tbody th { font-weight: 500; color: var(--muted); }
+  .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
+  .verdict > div { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 6px; }
+  .verdict > div:first-child { border-color: var(--magenta); }
+  @media (max-width: 640px) { .verdict { grid-template-columns: 1fr; } }
 </style>
 <link rel="stylesheet" href="/chrome.css">
 <script type="application/ld+json">
@@ -226,6 +232,7 @@
           <tr><th scope="row"><a href="#apple-music-visualizer">Apple Music Visualizer</a></th><td>No</td><td>Free</td><td>Mac</td></tr>
         </tbody>
       </table></div>
+    
     <p class="cta"><a class="button" data-install data-track="download_clicked" data-placement="seo-top" data-template="2a" data-slug="milkdrop-alternatives-mac-2026" href="/download?src=seo-milkdrop-alternatives-mac-2026-top">Try Vibresia with what's playing now</a><span>Free, no account, macOS 14.2+ on Apple silicon.</span></p>
     <h2>The five, one by one</h2>
     <article class="entry" id="projectm">

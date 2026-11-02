@@ -19,7 +19,28 @@ Recurring dates:
 - **Eight weeks after launch**: decide which `later` rows in
   `content/url-plan.csv` to build, from impressions.
 
-## 2026-11-02 (not yet deployed)
+## 2026-11-02 (not yet deployed): batch 2
+
+Template 2c, head-to-heads at `/comparison/vibresia-vs-{competitor}`. Author:
+Syd Lawrence. These replace the planned "{competitor} alternatives" lists for
+Synesthesia and TouchDesigner: just the two apps, the case for Vibresia, and
+who should pick the other one.
+
+| URL | Target query | Title | Schema |
+| --- | --- | --- | --- |
+| `/comparison/vibresia-vs-synesthesia` | synesthesia free alternative | Synesthesia Alternative for Mac (2026): Vibresia vs Synesthesia | Article, BreadcrumbList, SoftwareApplication x2, FAQPage |
+| `/comparison/vibresia-vs-touchdesigner` | touchdesigner alternatives for mac | TouchDesigner Alternative (2026): Vibresia vs TouchDesigner | Article, BreadcrumbList, SoftwareApplication x2, FAQPage |
+
+- New sitemap `/sitemaps/comparisons.xml`, listed in `robots.txt`; both
+  pages in `llms.txt`.
+- Synesthesia's record gained a pricing section (Standard US$199, Pro
+  US$399, one-time; the page shows "$" with no currency code). The best-of
+  page's price cell for Synesthesia changed from "Free to try; paid plans on
+  its site" to "US$199, one-time", and it links to the new comparison.
+- Resolume stays a "later" referee list, with no head-to-head: its
+  searchers want another VJ tool, and Vibresia isn't one.
+
+## 2026-11-02 (not yet deployed): batch 1
 
 Batch 1 of `content/url-plan.csv`. Template 2a. Author: Syd Lawrence.
 
