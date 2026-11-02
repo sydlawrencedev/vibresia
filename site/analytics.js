@@ -24,7 +24,10 @@
   }
 
   var KEY = meta("posthog-key");
-  var HOST = (meta("posthog-host") || "https://us.i.posthog.com").replace(/\/+$/, "");
+  // "/ingest" on the live site: the Worker passes it on to PostHog, so a
+  // blocklist that names PostHog's host doesn't drop the visit.
+  var HOST = (meta("posthog-host") || "/ingest").replace(/\/+$/, "");
+  var TEMPLATE = meta("seo-template");
   var OPT_OUT_KEY = "vibresia.site.optOut";
   var ID_KEY = "vibresia.site.distinctId";
 
@@ -70,7 +73,7 @@
   var ENDPOINT = HOST + "/batch/";
 
   function baseProperties() {
-    return {
+    var props = {
       surface: "web",
       $lib: "vibresia-web",
       path: location.pathname,
@@ -81,6 +84,10 @@
       // analytics payload.
       referrer: document.referrer ? new URL(document.referrer).hostname : ""
     };
+    // Search pages say which template built them, so every event from one,
+    // the visit included, can be grouped by template (docs/seo.md, Phase 3).
+    if (TEMPLATE) props.template = TEMPLATE;
+    return props;
   }
 
   function track(event, properties) {
@@ -170,7 +177,14 @@
   // reconstruct them from an event with a different name.
   track("$pageview", {
     $current_url: location.href.split("?")[0],
-    $referrer: document.referrer || ""
+    $referrer: document.referrer || "",
+    // First touch: the page and the site that first brought this browser
+    // here, kept on the person and never overwritten, so a download a week
+    // later still says which search page started it (docs/seo.md, Phase 3).
+    $set_once: {
+      $initial_pathname: location.pathname,
+      $initial_referring_domain: document.referrer ? new URL(document.referrer).hostname : "$direct"
+    }
   });
 
   // Delegated, so the page can be edited without re-wiring anything here.
@@ -191,9 +205,7 @@
       var props = { placement: el.dataset.placement || "" };
       if (el.dataset.command) props.command = el.dataset.command;
       if (el.dataset.target) props.target = el.dataset.target;
-      // The search pages say which template and which page, so clicks can
-      // be grouped by template (docs/seo.md, Phase 3).
-      if (el.dataset.template) props.template = el.dataset.template;
+      // Which page, and where on it: the template comes with every event.
       if (el.dataset.slug) props.slug = el.dataset.slug;
       track(el.dataset.track, props);
       return;

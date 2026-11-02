@@ -259,6 +259,27 @@ test("local dev is left alone", async () => {
   assert.equal(onLocalhost.response.status, 200);
 });
 
+test("the site's analytics reach PostHog through this domain", async () => {
+  const batch = [{ api_key: "phc_test_key", event: "$pageview", distinct_id: "a" }];
+  const { response, events } = await run("https://vibresia.com/ingest/batch/", {
+    method: "POST",
+    headers: { "content-type": "application/json", "cf-connecting-ip": "203.0.113.7" },
+    body: JSON.stringify(batch),
+  });
+  assert.equal(response.status, 204);
+  assert.equal(events.length, 1);
+  assert.equal(events[0].url, "https://us.i.posthog.com/batch/");
+  assert.deepEqual(events[0].body, batch, "the batch was changed on the way through");
+});
+
+test("the analytics proxy forwards one endpoint, not all of PostHog", async () => {
+  const other = await run("https://vibresia.com/ingest/decide/", { method: "POST", body: "{}" });
+  assert.equal(other.response.status, 404);
+  const get = await run("https://vibresia.com/ingest/batch/");
+  assert.equal(get.response.status, 405);
+  assert.equal(other.events.length + get.events.length, 0);
+});
+
 test("everything else falls through to the static assets", async () => {
   const { response, posts } = await run("https://vibresia.com/index.html");
   assert.equal(response.status, 200);

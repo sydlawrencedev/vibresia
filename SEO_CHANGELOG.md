@@ -35,8 +35,19 @@ Batch 1 of `content/url-plan.csv`. Template 2a. Author: Syd Lawrence.
 - New sitemap `/sitemaps/blog.xml`, listed in `robots.txt`. The author page
   is in `/sitemap.xml`.
 - The three pages are listed in `llms.txt` under "Comparisons".
-- Download links carry `src=seo-{slug}-{top|bottom}`, and clicks send
-  `template` and `slug` with `download_clicked`.
+- Download links carry `src=seo-{slug}-{top|bottom}`. Every event on a
+  search page carries `template` (from `<meta name="seo-template">`), and
+  `download_clicked` adds `slug`.
+- Analytics go through `/ingest/batch/` on vibresia.com (the Worker passes
+  them to PostHog), so blocklists that name PostHog's host don't skew one
+  template against another. Every site page now points there.
+- First touch: the first pageview sets `$initial_pathname` and
+  `$initial_referring_domain` on the person.
+- PostHog dashboard "Search pages by template" (Shareware project):
+  visits, download click rate, per-page totals and server-counted
+  downloads. Search Console (`sc-domain:vibresia.com`) is connected and
+  syncing by page, query, and query and page; its tile is added once those
+  tables have data.
 - Demand evidence: Google autocomplete on 2026-11-02 (no volume data).
 - Competitor facts checked 2026-11-02, from each app's own pages.
 

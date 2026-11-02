@@ -413,6 +413,42 @@ function postDownloadEvent(env, { source, referer, country, city, seen }) {
   });
 }
 
+/// The site's analytics, sent through this domain rather than straight to
+/// PostHog's.
+///
+/// Blocklists name the analytics host, so a page that posts to
+/// us.i.posthog.com goes uncounted for anybody running one, and the search
+/// pages are measured against each other by template (docs/seo.md, Phase 3):
+/// a gap that differs by audience makes that comparison lie. The same events
+/// go to the same project; only the hop changes.
+///
+/// Only the one endpoint the site's client uses is forwarded. This is not an
+/// open relay to PostHog: anything else under /ingest is a 404.
+async function handleIngest(request, url, env) {
+  if (url.pathname !== "/ingest/batch/") return new Response("Not found", { status: 404 });
+  if (request.method !== "POST") {
+    return new Response("Method not allowed", { status: 405, headers: { allow: "POST" } });
+  }
+  const host = (env.POSTHOG_HOST || "https://us.i.posthog.com").replace(/\/+$/, "");
+  const headers = { "Content-Type": "application/json" };
+  // Without this PostHog would place every visitor at the Cloudflare edge
+  // that forwarded them. It's the address PostHog saw before the proxy, so
+  // nothing new leaves the browser.
+  const ip = request.headers.get("cf-connecting-ip");
+  if (ip) headers["X-Forwarded-For"] = ip;
+  try {
+    const response = await fetch(`${host}/batch/`, {
+      method: "POST",
+      headers,
+      body: await request.text(),
+    });
+    return new Response(response.body, { status: response.status });
+  } catch (error) {
+    console.log(`[ingest] could not reach PostHog: ${error}`);
+    return new Response(null, { status: 502 });
+  }
+}
+
 /// Builds the embed for a report from the app. Kept pure for the same reason
 /// as `buildDownloadEmbed`: the tests assert on the payload without a network.
 export function buildErrorEmbed({ title, message, priority = "high", fields = [] }) {
@@ -1683,6 +1719,7 @@ export default {
     }
 
     if (url.pathname === "/download") return handleDownload(request, url, env, ctx);
+    if (url.pathname.startsWith("/ingest/")) return handleIngest(request, url, env);
     if (url.pathname === "/api/notify") return handleNotify(request, env, ctx);
     if (url.pathname === "/api/health") return handleHealth(env);
     if (url.pathname === "/api/share") return handleShareCreate(request, env, ctx);

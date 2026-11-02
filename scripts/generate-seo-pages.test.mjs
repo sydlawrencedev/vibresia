@@ -103,6 +103,9 @@ for (const { page, html } of built) {
             assert.match(html, new RegExp(`href="/download\\?src=seo-${page.slug}-${position}"`));
         }
         assert.match(html, new RegExp(`data-template="${page.template}" data-slug="${page.slug}"`));
+        // Every event from the page carries the template, the visit included.
+        assert.match(html, new RegExp(`<meta name="seo-template" content="${page.template}">`));
+        assert.match(html, /<meta name="posthog-host" content="\/ingest">/);
     });
 
     test(`${page.slug}: every outside link is listed in the sources`, () => {

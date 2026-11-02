@@ -103,7 +103,7 @@ def render(slug: str, title: str, desc: str) -> str:
 <meta name="twitter:description" content="{safe_desc}">
 <meta name="twitter:image" content="{og_image}">
 <meta name="posthog-key" content="phc_pzYyxiM6u2pYa6FbCkRY8HPudHDopu5LrTwnoamHaeg2">
-<meta name="posthog-host" content="https://us.i.posthog.com">
+<meta name="posthog-host" content="/ingest">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="{og_image}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
