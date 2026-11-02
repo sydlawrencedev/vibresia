@@ -28,6 +28,15 @@ export const SECTIONS = {
     blog: { templates: ["2a", "2d"], sitemap: "blog.xml" },
     comparison: { templates: ["2b", "2c"], sitemap: "comparisons.xml" },
 };
+// Which sitemap a template's pages are listed in. The question pages are
+// tracked apart from the best-of lists, so a search console report shows how
+// each kind of page indexes on its own (docs/seo.md, Phase 4).
+export const SITEMAPS = {
+    "2a": "blog.xml",
+    "2d": "questions.xml",
+    "2b": "comparisons.xml",
+    "2c": "comparisons.xml",
+};
 const PARTIALS = path.join(ROOT, "site/_partials");
 const ORIGIN = "https://vibresia.com";
 
@@ -359,7 +368,21 @@ export function helpers(records) {
         limit(slug, i = 0) {
             const l = (rec(slug).limits || [])[i];
             if (!l) throw new Error(`${slug} has no limit ${i}: add it to the record, with its source, first`);
-            return l;
+            // A limit is a sentence, or an object carrying that sentence and
+            // the page it came from.
+            return typeof l === "string" ? l : l.text;
+        },
+        /** Where a limit came from: its own source, or the record's profile page. */
+        limitSource(slug, i = 0) {
+            const l = (rec(slug).limits || [])[i];
+            if (!l) throw new Error(`${slug} has no limit ${i}`);
+            return typeof l === "string" ? rec(slug).profile.sourceUrl : l.sourceUrl;
+        },
+        /** What a product can be wired into. Throws when the record doesn't say. */
+        io(slug, kind) {
+            const entry = rec(slug).io && rec(slug).io[kind];
+            if (!entry) throw new Error(`${slug} has no io.${kind}: add it to the record, with its source, first`);
+            return entry;
         },
         /** One tier's price, by name or the first. Throws with no pricing. */
         price(slug, tierName) {
@@ -410,13 +433,36 @@ export function helpers(records) {
     return { h, used, bySlug };
 }
 
-/** Every page that a section of a record came from, for the sources list. */
+/**
+ * Every page a fact of a record came from, for the sources list. A fact that
+ * came from somewhere other than the app's own site says so, so a reader can
+ * tell an official page from a third-party one.
+ */
 function sourcesFor(record) {
     const urls = [];
+    const add = (u, d, via) => { if (u && d) urls.push([u, d, via === "third-party"]); };
     for (const key of ["profile", "pricing", "licence", "trial", "reviews"]) {
-        if (record[key] && record[key].sourceUrl) urls.push([record[key].sourceUrl, record[key].verifiedISO]);
+        if (record[key]) add(record[key].sourceUrl, record[key].verifiedISO, record[key].via);
+    }
+    // A limit and a connection each carry the page they came from.
+    for (const l of record.limits || []) {
+        if (l && typeof l === "object") add(l.sourceUrl, l.verifiedISO, l.via);
+    }
+    if (record.io) {
+        add(record.io.sourceUrl, record.io.verifiedISO, record.io.via);
+        for (const e of Object.values(record.io)) {
+            if (e && typeof e === "object") add(e.sourceUrl, e.verifiedISO, e.via);
+        }
     }
     return urls;
+}
+
+/** A record with any fact that didn't come from the app's own site. */
+function isThirdParty(record) {
+    if (record.profile && record.profile.via === "third-party") return true;
+    if ((record.limits || []).some((l) => l && typeof l === "object" && l.via === "third-party")) return true;
+    if (record.io && Object.values(record.io).some((e) => e && typeof e === "object" && e.via === "third-party")) return true;
+    return false;
 }
 
 function words(html) {
@@ -474,6 +520,49 @@ function versusTableHtml(h, page) {
     const rows = page.rows.map((row) =>
         `<tr><th scope="row">${escapeHtml(row.label)}</th>${pair.map((s) => `<td>${escapeHtml(row.value(h, s))}</td>`).join("")}</tr>`);
     return `<div class="table-scroll"><table class="versus">\n        <thead><tr>${head}</tr></thead>\n        <tbody>\n          ${rows.join("\n          ")}\n        </tbody>\n      </table></div>`;
+}
+
+/**
+ * What each product can be wired into, side by side. For live-show software
+ * the things you can plug in decide the answer, so a referee page that
+ * leaves them out is leaving out the question.
+ *
+ * A row appears when at least one of the two has it documented: a row
+ * neither app documents tells the reader nothing. Where one app documents it
+ * and the other doesn't, the cell says so rather than implying the other
+ * can't do it.
+ */
+const IO_LABELS = {
+    midi: "MIDI",
+    osc: "OSC",
+    syphon: "Syphon",
+    spout: "Spout",
+    ndi: "NDI",
+    dmx: "DMX",
+    video: "Video in and out",
+};
+
+function ioCell(h, slug, kind) {
+    const e = h.io(slug, kind);
+    if (e.status === "unknown") return `<span class="unknown">Not that we could find</span>`;
+    return `<b>${e.status === "yes" ? "Yes" : "No"}</b> &mdash; ${escapeHtml(e.text)}`;
+}
+
+function connectionsHtml(h, page) {
+    const pair = sides(page);
+    const kinds = Object.keys(IO_LABELS).filter((kind) => pair.some((s) => h.io(s, kind).status !== "unknown"));
+    if (!kinds.length) throw new Error(`${page.slug}: a connections table with nothing in it`);
+    const head = `<th scope="col"></th>${pair.map((s) => `<th scope="col">${escapeHtml(h.name(s))}</th>`).join("")}`;
+    const rows = kinds.map((kind) =>
+        `<tr><th scope="row">${escapeHtml(IO_LABELS[kind])}</th>${pair.map((s) => `<td>${ioCell(h, s, kind)}</td>`).join("")}</tr>`);
+    return `<h2>Control and connections</h2>
+    <div class="table-scroll"><table class="versus">
+        <thead><tr>${head}</tr></thead>
+        <tbody>
+          ${rows.join("\n          ")}
+        </tbody>
+      </table></div>
+    <p class="meta">Every row comes from the app's own documentation, on the date shown in the sources below. "Not that we could find" means we could not find it documented, not that the app cannot do it.</p>`;
 }
 
 /**
@@ -650,6 +739,7 @@ const STYLE = `  :root {
   .verdict-table { min-width: 0; }
   .verdict-table tbody th { width: 34%; }
   .versus tbody th { font-weight: 500; color: var(--muted); }
+  .versus td .unknown { color: var(--muted); }
   .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
   .verdict > div { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 6px; }
   .verdict > div:first-child { border-color: var(--magenta); }
@@ -678,17 +768,18 @@ export function render(pageFn, records, others = []) {
         : page.template === "2d" ? (page.hub ? appsTableHtml(spokes) : appVerdictHtml(musicApp(page.app)))
         : page.table ? tableHtml(h, page) : "";
     const verdict = isComparison(page) ? verdictHtml(h, page) : "";
+    const connections = page.connections ? connectionsHtml(h, page) : "";
     const third = page.template === "2b" ? thirdOptionHtml(h, page) : "";
     const sections = page.sections.map((s) => `<h2>${escapeHtml(s.h2)}</h2>\n    ${s.html}`).join("\n    ");
     const faq = (page.faq || []).map((f) => `<h3>${escapeHtml(f.q)}</h3>\n      <p>${f.a}</p>`).join("\n      ");
 
     const recordsUsed = [...used].map((s) => h.rec(s));
     const sources = new Map();
-    for (const r of recordsUsed) for (const [u, d] of sourcesFor(r)) if (!sources.has(u)) sources.set(u, [r.name, d]);
+    for (const r of recordsUsed) for (const [u, d, tp] of sourcesFor(r)) if (!sources.has(u)) sources.set(u, [r.name, d, tp]);
     const appsUsed = page.template === "2d" ? [page.app, ...(page.hub ? spokes.map((sp) => sp.app) : [])] : [];
     for (const slug of appsUsed) {
         const a = musicApp(slug);
-        for (const f of appFacts(a)) if (!sources.has(f.sourceUrl)) sources.set(f.sourceUrl, [a.name, f.verifiedISO]);
+        for (const f of appFacts(a)) if (!sources.has(f.sourceUrl)) sources.set(f.sourceUrl, [a.name, f.verifiedISO, false]);
     }
     const verifiedISO = [...sources.values()].map(([, d]) => d).sort()[0];
 
@@ -701,12 +792,12 @@ export function render(pageFn, records, others = []) {
     if (page.description.length > 160) throw new Error(`${page.slug}: description is ${page.description.length} characters, over 160`);
 
     // Most facts come from each app's own pages. Say so when some don't.
-    const thirdParty = recordsUsed.filter((r) => r.profile && r.profile.via === "third-party").map((r) => r.name);
+    const thirdParty = recordsUsed.filter(isThirdParty).map((r) => r.name);
     const sourcesNote = thirdParty.length
-        ? `Every fact about another app on this page comes from the source listed for it, on the date shown. ${thirdParty.join(" and ")}'s own site blocks automated reading, so its facts come from the third-party pages below.`
+        ? `Every fact about another app on this page comes from the source listed for it, on the date shown. Some of ${thirdParty.join(" and ")}'s facts come from third-party pages, marked as such below, because its own site could not be read.`
         : "Every fact about another app on this page comes from that app's own site, store listing or code, on the date shown.";
     const sourceItems = [...sources.entries()]
-        .map(([u, [n, d]]) => `<li>${escapeHtml(n)}: <a href="${escapeHtml(u)}">${escapeHtml(u)}</a> (checked ${longDate(d)})</li>`)
+        .map(([u, [n, d, tp]]) => `<li>${escapeHtml(n)}: <a href="${escapeHtml(u)}">${escapeHtml(u)}</a> (checked ${longDate(d)})${tp ? " &mdash; third-party source" : ""}</li>`)
         .join("\n        ");
     const related = page.related.map((r) => `<li><a href="${r.href}">${escapeHtml(r.text)}</a></li>`).join("\n        ");
     const more = isComparison(page) ? moreComparisonsHtml(page, others) : page.template === "2d" ? moreAppsHtml(page, others) : "";
@@ -717,7 +808,7 @@ export function render(pageFn, records, others = []) {
     <h1>${escapeHtml(page.h1)}</h1>
     <p class="byline">By <a href="${AUTHOR_PATH}">${escapeHtml(AUTHOR_DATA.name)}</a>, ${escapeHtml(AUTHOR_DATA.byline)}. Facts last checked ${longDate(verifiedISO)}; updated ${longDate(page.updatedISO)}.</p>
     <p class="answer">${page.answer}</p>
-    ${table}
+    ${table}${connections ? `\n    ${connections}` : ""}
     ${verdict}
     ${page.hub ? LIVE_SCENE : promotes ? REEL : ""}
     ${promotes ? cta(page, "top", page.cta) : ""}
@@ -968,12 +1059,20 @@ async function main() {
     outputs.set(path.join(ROOT, `site${AUTHOR_PATH}.html`), renderAuthor(all));
     const comparisons = all.filter(isComparison);
     if (comparisons.length) outputs.set(path.join(ROOT, HUB.file), renderHub(comparisons, records));
-    for (const [section, { sitemap: file }] of Object.entries(SECTIONS)) {
-        const listed = all.filter((p) => sectionOf(p) === section);
-        // The hub goes in the comparisons sitemap, dated by its newest entry.
-        const extra = section === "comparison" && comparisons.length
+    // One sitemap per template group, so a search console report shows how
+    // each kind of page indexes on its own.
+    const sitemaps = new Map();
+    for (const p of all) {
+        const file = SITEMAPS[p.template];
+        if (!file) throw new Error(`${p.slug}: no sitemap for template ${p.template}`);
+        if (!sitemaps.has(file)) sitemaps.set(file, []);
+        sitemaps.get(file).push(p);
+    }
+    for (const [file, listed] of sitemaps) {
+        // The hub goes with the comparison pages, dated by its newest entry.
+        const extra = file === "comparisons.xml" && comparisons.length
             ? [{ path: HUB.path, lastmod: comparisons.map((c) => c.updatedISO).sort().at(-1) }] : [];
-        if (listed.length) outputs.set(path.join(ROOT, "site/sitemaps", file), sitemap(listed, extra));
+        outputs.set(path.join(ROOT, "site/sitemaps", file), sitemap(listed, extra));
     }
 
     const stale = [];
@@ -985,6 +1084,23 @@ async function main() {
             fs.mkdirSync(path.dirname(file), { recursive: true });
             fs.writeFileSync(file, text);
             console.log(`  wrote ${path.relative(ROOT, file)}`);
+        }
+    }
+    // A sitemap the generator no longer writes is one that still lists pages
+    // for a template that has moved. It has to go, or the old file keeps
+    // asking to be indexed.
+    const sitemapDir = path.join(ROOT, "site/sitemaps");
+    if (fs.existsSync(sitemapDir)) {
+        const wanted = new Set(outputs.keys());
+        for (const name of fs.readdirSync(sitemapDir)) {
+            if (!name.endsWith(".xml")) continue;
+            const file = path.join(sitemapDir, name);
+            if (wanted.has(file)) continue;
+            if (check) stale.push(path.relative(ROOT, file));
+            else {
+                fs.unlinkSync(file);
+                console.log(`  removed ${path.relative(ROOT, file)}`);
+            }
         }
     }
     if (check && stale.length) {

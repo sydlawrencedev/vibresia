@@ -30,6 +30,11 @@ const WARN_AGE_MONTHS = 9;
 const MAX_QUOTE_WORDS = 25;
 const MIN_STRENGTHS = 3;
 
+// What a product can be wired into. A referee page compares two of these
+// side by side, so a record has to say where it stands on each one.
+export const IO_KINDS = ["midi", "osc", "syphon", "spout", "ndi", "dmx", "video"];
+export const IO_STATUSES = ["yes", "no", "unknown"];
+
 /** Months between two ISO dates, as a fraction. */
 function monthsBetween(fromISO, toISO) {
     const ms = Date.parse(toISO) - Date.parse(fromISO);
@@ -155,10 +160,53 @@ export function validate(records, { today = new Date().toISOString().slice(0, 10
         }
 
         // Limits are what a page lists as the weakness, so they are claims
-        // too. They come from the profile's source; a page shows them only
-        // when they exist.
-        if (r.limits !== undefined && (!Array.isArray(r.limits) || r.limits.some((l) => typeof l !== "string" || !l.trim()))) {
-            errors.push(`${at}.limits: must be a list of sentences`);
+        // too. A limit is either a sentence, which the record's profile
+        // source covers, or an object with its own source, for a limit that
+        // came from somewhere else (a manual, a features page).
+        if (r.limits !== undefined) {
+            if (!Array.isArray(r.limits)) {
+                errors.push(`${at}.limits: must be a list of sentences`);
+            } else {
+                for (const [j, l] of r.limits.entries()) {
+                    const where = `${at}.limits[${j}]`;
+                    if (typeof l === "string") {
+                        if (!l.trim()) errors.push(`${where}: empty limit`);
+                    } else if (!l || typeof l !== "object") {
+                        errors.push(`${where}: must be a sentence or an object`);
+                    } else {
+                        if (typeof l.text !== "string" || !l.text.trim()) errors.push(`${where}: no text`);
+                        checkSource(where, l);
+                    }
+                }
+            }
+        }
+
+        // What a product can be wired into. Each kind says whether it is
+        // supported, and says so with its own source: "not that we could
+        // find" is a valid answer, a guess is not.
+        if (r.io !== undefined) {
+            if (!r.io || typeof r.io !== "object") {
+                errors.push(`${at}.io: must be an object`);
+            } else {
+                checkSource(`${at}.io`, r.io);
+                for (const [kind, entry] of Object.entries(r.io)) {
+                    if (kind === "sourceUrl" || kind === "verifiedISO" || kind === "via") continue;
+                    const where = `${at}.io.${kind}`;
+                    if (!IO_KINDS.includes(kind)) {
+                        errors.push(`${where}: unknown kind "${kind}"`);
+                        continue;
+                    }
+                    if (!entry || typeof entry !== "object") {
+                        errors.push(`${where}: must be an object`);
+                        continue;
+                    }
+                    if (!IO_STATUSES.includes(entry.status)) {
+                        errors.push(`${where}: status must be one of ${IO_STATUSES.join(", ")}`);
+                    }
+                    if (typeof entry.text !== "string" || !entry.text.trim()) errors.push(`${where}: no text`);
+                    checkSource(where, entry);
+                }
+            }
         }
 
         if (r.reviews !== undefined) {

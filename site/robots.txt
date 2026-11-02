@@ -9,3 +9,4 @@ Allow: /
 Sitemap: https://vibresia.com/sitemap.xml
 Sitemap: https://vibresia.com/sitemaps/blog.xml
 Sitemap: https://vibresia.com/sitemaps/comparisons.xml
+Sitemap: https://vibresia.com/sitemaps/questions.xml

@@ -64,6 +64,11 @@ test("a page using a banned phrase doesn't build", () => {
     assert.throws(() => render(page({ answer: `${filler} Let's delve in.` }), records), /uses "delve"/);
 });
 
+test("a page that asks for a connection the record doesn't have doesn't build", () => {
+    const { h } = helpers(records);
+    assert.throws(() => h.io("projectm", "midi"), /no io\.midi/);
+});
+
 test("a weakness in the page's own words needs a source", () => {
     const entries = [{ slug: "phosphor", weakness: "It's expensive", pickIf: "you like it." }];
     const table = [{ label: "App", value: (h, s) => h.name(s) }];

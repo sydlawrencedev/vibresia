@@ -136,6 +136,45 @@ test("slugs are unique", () => {
     assert.match(errorsFor([record(), record()]).join("\n"), /duplicate slug/);
 });
 
+test("a connection without a source fails", () => {
+    const io = {
+        sourceUrl: "https://example.com/docs", verifiedISO: TODAY,
+        midi: { status: "yes", text: "It takes MIDI.", sourceUrl: "https://example.com/docs", verifiedISO: TODAY },
+    };
+    const ok = record({ io });
+    assert.deepEqual(errorsFor([ok]), []);
+
+    const noSource = structuredClone(io);
+    delete noSource.midi.sourceUrl;
+    assert.match(errorsFor([record({ io: noSource })]).join("\n"), /io\.midi: no sourceUrl/);
+});
+
+test("a connection has to say yes, no, or unknown", () => {
+    const io = {
+        sourceUrl: "https://example.com/docs", verifiedISO: TODAY,
+        midi: { status: "maybe", text: "It takes MIDI.", sourceUrl: "https://example.com/docs", verifiedISO: TODAY },
+    };
+    assert.match(errorsFor([record({ io })]).join("\n"), /io\.midi: status must be one of/);
+});
+
+test("a connection of a kind we don't know fails", () => {
+    const io = {
+        sourceUrl: "https://example.com/docs", verifiedISO: TODAY,
+        bluetooth: { status: "no", text: "No Bluetooth.", sourceUrl: "https://example.com/docs", verifiedISO: TODAY },
+    };
+    assert.match(errorsFor([record({ io })]).join("\n"), /io\.bluetooth: unknown kind/);
+});
+
+test("a limit is a sentence, or a sentence with its own source", () => {
+    assert.deepEqual(errorsFor([record({ limits: ["Windows only."] })]), []);
+
+    const sourced = { text: "Capped at 1280x1280.", sourceUrl: "https://example.com/licence", verifiedISO: TODAY };
+    assert.deepEqual(errorsFor([record({ limits: [sourced] })]), []);
+
+    const { sourceUrl, ...withoutSource } = sourced;
+    assert.match(errorsFor([record({ limits: [withoutSource] })]).join("\n"), /limits\[0\]: no sourceUrl/);
+});
+
 // The real records.
 
 const records = JSON.parse(fs.readFileSync(DATA, "utf8"));
