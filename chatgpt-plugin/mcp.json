@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "vibresia": {
+      "type": "streamable-http",
+      "url": "https://vibresia.com/mcp"
+    }
+  }
+}

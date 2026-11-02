@@ -47,3 +47,4 @@ __pycache__/
 # macOS AppleDouble files from editors/sync tools
 ._*
 .!*
+chatgpt-plugin/*.zip

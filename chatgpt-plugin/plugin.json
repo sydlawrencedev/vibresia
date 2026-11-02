@@ -1,0 +1,104 @@
+{
+  "name": "vibresia",
+  "version": "1.0.0",
+  "description": "Vibresia is a music visualiser. Describe a look and it writes a live GLSL vibescape that moves with the music, then hands back a link that plays it in any browser.",
+  "author": {
+    "name": "Minith Labs",
+    "url": "https://vibresia.com"
+  },
+  "homepage": "https://vibresia.com/agents",
+  "repository": "https://github.com/sydlawrencedev/vibresia",
+  "keywords": [
+    "music visualiser",
+    "music visualizer",
+    "music visualisation",
+    "music visualization",
+    "musicviz",
+    "audio-reactive",
+    "GLSL",
+    "shader",
+    "generative art"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Vibresia",
+        "shortDescription": "Write music visualisers",
+        "longDescription": "Vibresia is a music visualiser (visualizer). Its visuals are vibescapes: small GLSL programs that draw one function, driven by the bass, the mids, the treble and the beat of whatever is playing.\n\nAsk for a music visualisation in plain words, such as \"a neon tunnel that pulses on the kick\" or \"slow ink in water for ambient tracks\". ChatGPT reads the vibescape reference, writes the shader, checks it with the linter, and hands back a link. The link is live: the page runs the vibescape in the browser with WebGL, so it plays for anyone it is sent to, with or without the app.\n\nNew vibescapes are unlisted. Ask for one to be shared and it goes into the public gallery at vibresia.com/vibescapes, which ChatGPT can also browse for ideas or adapt.\n\nNo account and no sign-in. Vibresia is also a free macOS app that listens to the system audio directly.",
+        "developerName": "Minith Labs",
+        "category": "Entertainment",
+        "capabilities": [
+          "Write a live music visualisation from a description",
+          "Check a vibescape for problems before sharing it",
+          "Browse and adapt vibescapes other people have shared",
+          "Share a vibescape to the public gallery"
+        ],
+        "websiteURL": "https://vibresia.com",
+        "supportURL": "https://github.com/sydlawrencedev/vibresia/issues",
+        "privacyPolicyURL": "https://vibresia.com/privacy",
+        "termsOfServiceURL": "https://vibresia.com/terms",
+        "defaultPrompt": [
+          "Make me a music visualiser that looks like a neon tunnel pulsing on the bass",
+          "Show me music visualisations other people have made"
+        ],
+        "brandColor": "#FF2BD6",
+        "composerIcon": "./assets/icon.png",
+        "logo": "./assets/icon.png",
+        "screenshots": [
+          "./assets/screenshot.jpg"
+        ]
+      },
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Writes a new music visualisation from a description",
+              "prompt": "Make me a music visualiser that looks like a neon tunnel pulsing on the bass.",
+              "tools_triggered": "vibescape_reference, create_vibescape",
+              "expected_behavior": "Returns a vibresia.com/s/ link; opening it shows the vibescape drawn and animated in the browser."
+            },
+            {
+              "description": "Browses the public gallery",
+              "prompt": "Show me some music visualisations other people have made.",
+              "tools_triggered": "list_vibescapes",
+              "expected_behavior": "Lists public vibescapes with their names, authors and links that play them."
+            },
+            {
+              "description": "Adapts an existing vibescape",
+              "prompt": "Take the first vibescape in the gallery and make a calmer version of it.",
+              "tools_triggered": "list_vibescapes, get_vibescape, create_vibescape",
+              "expected_behavior": "Reads the original's code and returns a link to a new, calmer vibescape."
+            },
+            {
+              "description": "Checks a shader before sharing",
+              "prompt": "Check this vibescape works: vec3 render(vec2 p, float t) { return vec3(0.5); }",
+              "tools_triggered": "lint_vibescape",
+              "expected_behavior": "Reports that it never reads the music, so it would look the same in silence as at full volume."
+            },
+            {
+              "description": "Shares a vibescape to the public gallery",
+              "prompt": "Make a slow ink-in-water visualiser called Ink, by Reviewer, then put it in the public gallery.",
+              "tools_triggered": "create_vibescape, share_vibescape",
+              "expected_behavior": "Creates the vibescape, then confirms it is in the public gallery at vibresia.com/vibescapes."
+            }
+          ],
+          "negative": [
+            {
+              "description": "A data chart is not a music visualisation",
+              "prompt": "Visualise this quarter's sales figures as a bar chart."
+            },
+            {
+              "description": "Writing music is not visualising it",
+              "prompt": "Write me a song about the sea."
+            },
+            {
+              "description": "Music recommendations have nothing to draw",
+              "prompt": "Recommend some albums like Kid A."
+            }
+          ]
+        },
+        "commerce": false
+      }
+    }
+  }
+}
