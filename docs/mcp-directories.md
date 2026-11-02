@@ -18,7 +18,7 @@ directory asks for it. Two servers:
 | Glama (hosted) | remote | Imported from the official registry; claimed via `/.well-known/glama.json` | Ownership verified, healthy since 2026-11-02 (Cloudflare had been blocking its checker with a 403 until the bot setting was changed) |
 | Glama (source) | local | glama.ai, Add Server, Runs from source | Submitted for review 2026-11-02. Glama will ask for a Dockerfile, which a macOS app can't provide |
 | awesome-mcp-servers (punkpeye) | local | PR, with the Glama badge | After Glama |
-| Smithery | remote | smithery.ai, sign in | To do |
+| Smithery | — | — | Closed to submissions: since 2026-10-31 it is a curated, read-only directory run by Arcade, with no accounts |
 | mcp.so | both | mcp.so/submit (free, reviewed) | To do |
 | mcpservers.org | both | mcpservers.org/submit (free, reviewed) | To do: asks for a contact email |
 | Cursor directory | both | cursor.directory | To do |
