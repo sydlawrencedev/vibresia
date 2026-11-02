@@ -1697,6 +1697,14 @@ export default {
     // How the registry knows this domain owns the com.vibresia namespace: the
     // public half of the key mcp-publisher signs with. The private half is in
     // the publisher's Keychain, as "vibresia-mcp-registry".
+    // Glama's proof that the com.vibresia connector listing is ours. The
+    // token is bound to the Glama account, not a secret.
+    if (url.pathname === "/.well-known/glama.json") {
+      return Response.json({
+        $schema: "https://glama.ai/mcp/schemas/connector.json",
+        claim: "glama_claim_aJGmh_J5dxXyhLE9MEeqoSoFXyP0nWKq",
+      });
+    }
     if (url.pathname === "/.well-known/mcp-registry-auth") {
       return new Response(MCP_REGISTRY_AUTH, {
         headers: { "content-type": "text/plain; charset=utf-8" },
