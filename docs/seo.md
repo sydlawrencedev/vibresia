@@ -308,6 +308,7 @@ Learned running this end to end on a small free Mac app with an AI agent doing t
 - **"No source says it exists" isn't "it doesn't exist".** Store `hasVisualizer: null` and write "not that we could find".
 - **A price shown with only "$"**: record the currency you can confirm elsewhere, with a note. Never convert currencies.
 - **Delegate research per competitor or per app** to sub-agents that return one JSON object in a fixed shape (facts, each with a source URL and a short quote). The lead agent merges them and runs the validator. Ten in parallel took about a minute each.
+- **Check that the source URL is still the page you read.** A validator can check that a source URL is a URL and that it was checked recently; it cannot check that it is the page the fact came from. A typo turns `resolume.com` into `resolution.com`, which answers 200, redirects, and belongs to a different company. Fetch each source and look for the quote you recorded: on a run of 150-odd facts this caught a paraphrase ("OBS is able to have the canvas..." where the page says "OBS also is able to have the canvas...") as well as the typo. Treat a source that refuses to be read as a fact about the site, not a broken citation, and say so on the page.
 - **Delegate drafts with a written brief** (file shape, the records allowed, the rules the build enforces, "touch no other file"), one page per sub-agent. The lead agent reads every draft against the records before building.
 
 **Pages**
@@ -316,6 +317,7 @@ Learned running this end to end on a small free Mac app with an AI agent doing t
 - **Spokes need less prose (300 words) when they carry a computed table** from sourced data. A table row with no fact is left out, never filled in.
 - **Interactive hub element**: reusing the product's own renderer in the browser (fed by the microphone, opt-in, nothing sent) was cheap and on-brand. Lazy-load any video so the answer stays the largest paint.
 - **Test tables at 375px.** A two-column table shouldn't have a minimum width; a five-column one scrolls with its first column fixed.
+- **When two products share a practical decision, compare them on it in a table.** For live-show software the decision is what you can connect to: MIDI, OSC, Syphon, Spout, NDI, DMX, video. A side-by-side table of those, with each cell a sourced sentence and "not that we could find" where the maker's own site is silent, settles a question prose takes a paragraph to approach. Record it as data, one entry per protocol with its own source, so the page can be rebuilt and the claim checked. Say what the silence means: "not that we could find" is never "it can't do it".
 
 **Measuring**
 - **The keyless PageSpeed Insights API runs out of quota quickly.** Get an API key, or take Core Web Vitals from Search Console field data once there's traffic.
