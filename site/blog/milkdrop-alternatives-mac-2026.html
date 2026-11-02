@@ -82,6 +82,7 @@
   .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
   .verdict > div { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 6px; }
   .verdict > div:first-child { border-color: var(--magenta); }
+  .verdict.even > div:first-child { border-color: var(--line); }
   @media (max-width: 640px) { .verdict { grid-template-columns: 1fr; } }
 </style>
 <link rel="stylesheet" href="/chrome.css">
@@ -354,6 +355,7 @@
     <p>Vibresia needs macOS 14.2 or later, Apple silicon, so it won't run on an Intel Mac. It's signed and notarised, and updates itself.</p>
     <h2>How we put this together</h2>
     <p>Every fact about the other apps comes from their own websites, documentation and source code, on the date at the top of this page. We didn't run each app for this page, so we've described what their makers say they do rather than how they feel to use. We make Vibresia. We've put the preset players first because, for most people searching for MilkDrop, one of them is the better answer.</p>
+    
 
     <section class="faq">
       <h2>Questions people ask</h2>

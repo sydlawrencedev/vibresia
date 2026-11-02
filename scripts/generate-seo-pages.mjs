@@ -26,7 +26,7 @@ const PAGES_DIR = path.join(ROOT, "content/pages");
 // sitemap per section, so Search Console reports on each separately (Phase 4).
 export const SECTIONS = {
     blog: { templates: ["2a", "2d"], sitemap: "blog.xml" },
-    comparison: { templates: ["2c"], sitemap: "comparisons.xml" },
+    comparison: { templates: ["2b", "2c"], sitemap: "comparisons.xml" },
 };
 const PARTIALS = path.join(ROOT, "site/_partials");
 const ORIGIN = "https://vibresia.com";
@@ -267,6 +267,38 @@ const LIVE_SCENE = `<figure class="live">
       })();
     </script>`;
 
+// Third-party pairs for the referee pages (Phase 2b), with who they're for,
+// why they're compared and whether Vibresia may appear as a third option.
+export const PAIRS = JSON.parse(fs.readFileSync(path.join(ROOT, "content/data/competitor-pairs.json"), "utf8")).pairs;
+
+function pairOf(page) {
+    const pair = PAIRS.find((x) => x.slug === page.slug);
+    if (!pair) throw new Error(`${page.slug}: no pair in content/data/competitor-pairs.json`);
+    return pair;
+}
+
+/** The two apps a side-by-side table compares: Vibresia and one, or a pair. */
+function sides(page) {
+    return page.template === "2b" ? [pairOf(page).a, pairOf(page).b] : ["vibresia", page.versus];
+}
+
+/** A comparison of any kind: a head-to-head or a referee pair. */
+const isComparison = (p) => p.template === "2b" || p.template === "2c";
+
+/**
+ * The third option on a referee page: shown only when the pair opted in
+ * (docs/seo.md, Phase 2b). A referee page that advertises on every pair
+ * stops being a referee, so a test fails if this appears anywhere else.
+ */
+function thirdOptionHtml(h, page) {
+    const pair = pairOf(page);
+    if (!pair.thirdOption) return "";
+    return `<section class="third-option">
+      <h2>Where both fall short, and a third option</h2>
+      <p>${escapeHtml(pair.thirdOptionWhy)} If what you want is visuals for whatever your Mac is playing, Vibresia, which we make, is a free Mac app that listens to the Mac's system audio, so it works with Spotify, Apple Music or a browser with no plug-in. It doesn't play MilkDrop presets: it has 18 scenes of its own, and a new one is a single GLSL function or a sentence to an AI assistant. It needs ${escapeHtml(h.rec("vibresia").requirements)}.</p>
+    </section>`;
+}
+
 /** The section a template's pages live in. */
 export function sectionOf(page) {
     const found = Object.entries(SECTIONS).find(([, s]) => s.templates.includes(page.template));
@@ -437,7 +469,7 @@ function tableHtml(h, page) {
  * side by side. Each row reads its two answers from the records.
  */
 function versusTableHtml(h, page) {
-    const pair = ["vibresia", page.versus];
+    const pair = sides(page);
     const head = `<th scope="col"></th>${pair.map((s) => `<th scope="col">${escapeHtml(h.name(s))}</th>`).join("")}`;
     const rows = page.rows.map((row) =>
         `<tr><th scope="row">${escapeHtml(row.label)}</th>${pair.map((s) => `<td>${escapeHtml(row.value(h, s))}</td>`).join("")}</tr>`);
@@ -452,6 +484,15 @@ function versusTableHtml(h, page) {
  */
 function verdictHtml(h, page) {
     const v = page.verdict || {};
+    if (page.template === "2b") {
+        // A referee says who each one is for, and favours neither.
+        if (!v.pickA || !v.pickB) throw new Error(`${page.slug}: a referee page needs verdict.pickA and verdict.pickB`);
+        const [a, b] = sides(page);
+        return `<div class="verdict even">
+      <div><h3>Pick ${escapeHtml(h.name(a))} if</h3><p>${v.pickA}</p></div>
+      <div><h3>Pick ${escapeHtml(h.name(b))} if</h3><p>${v.pickB}</p></div>
+    </div>`;
+    }
     if (!v.pickUs || !v.pickThem) throw new Error(`${page.slug}: a head-to-head needs verdict.pickUs and verdict.pickThem`);
     return `<div class="verdict">
       <div><h3>Pick Vibresia if</h3><p>${v.pickUs}</p></div>
@@ -486,7 +527,7 @@ const REEL = `<figure class="reel">
 /** Vibresia, then the comparisons hub for a head-to-head, then the page. */
 function breadcrumbs(page, url) {
     const trail = [{ name: "Vibresia", item: `${ORIGIN}/` }];
-    if (page.versus) trail.push({ name: HUB.breadcrumb, item: `${ORIGIN}${HUB.path}` });
+    if (isComparison(page)) trail.push({ name: HUB.breadcrumb, item: `${ORIGIN}${HUB.path}` });
     if (page.template === "2d" && !page.hub && page.hubPage) trail.push({ name: page.hubPage.breadcrumb, item: `${ORIGIN}${pathOf(page.hubPage)}` });
     trail.push({ name: page.breadcrumb, item: url });
     return trail.map((t, i) => ({ "@type": "ListItem", position: i + 1, ...t }));
@@ -499,7 +540,7 @@ function breadcrumbs(page, url) {
  */
 function moreComparisonsHtml(page, others) {
     const items = others
-        .filter((o) => o.versus && o.slug !== page.slug)
+        .filter((o) => isComparison(o) && o.slug !== page.slug)
         .map((o) => `<li><a href="${pathOf(o)}">${escapeHtml(o.breadcrumb)}</a></li>`);
     items.push(`<li><a href="${HUB.path}">${escapeHtml(HUB.linkText)}</a></li>`);
     return `<h2>More comparisons</h2>
@@ -556,7 +597,7 @@ function jsonLd(page, h, url, verifiedISO) {
             })),
         });
     }
-    if (page.versus) graph.push(appNode(h, "vibresia"), appNode(h, page.versus));
+    if (isComparison(page)) for (const s of sides(page)) graph.push(appNode(h, s));
     if (!page.faq || !page.faq.length) throw new Error(`${page.slug}: every page needs FAQs (docs/seo.md, Phase 4)`);
     graph.push(faqNode(page.faq));
     return graphJson(graph);
@@ -612,6 +653,7 @@ const STYLE = `  :root {
   .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
   .verdict > div { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 6px; }
   .verdict > div:first-child { border-color: var(--magenta); }
+  .verdict.even > div:first-child { border-color: var(--line); }
   @media (max-width: 640px) { .verdict { grid-template-columns: 1fr; } }`;
 
 /**
@@ -623,16 +665,20 @@ export function render(pageFn, records, others = []) {
     const page = pageFn(h);
     const url = `${ORIGIN}${pathOf(page)}`;
     if (page.template === "2c" && !page.versus) throw new Error(`${page.slug}: a head-to-head needs versus`);
+    // A referee page without the third option carries no Vibresia call to
+    // action and no reel: nothing on it argues for us.
+    const promotes = page.template !== "2b" || pairOf(page).thirdOption;
 
     // Build the body first: it's what asks for records, and the sources and
     // the "last verified" date come from whichever records it asked for.
     const entries = page.entries ? page.entries.map((e, i) => entryHtml(h, e, i + 1)).join("\n    ") : "";
     const spokes = others.filter((o) => o.template === "2d" && !o.hub);
     if (page.template === "2d" && !page.hub) page.hubPage = others.find((o) => o.template === "2d" && o.hub);
-    const table = page.versus ? versusTableHtml(h, page)
+    const table = isComparison(page) ? versusTableHtml(h, page)
         : page.template === "2d" ? (page.hub ? appsTableHtml(spokes) : appVerdictHtml(musicApp(page.app)))
         : page.table ? tableHtml(h, page) : "";
-    const verdict = page.versus ? verdictHtml(h, page) : "";
+    const verdict = isComparison(page) ? verdictHtml(h, page) : "";
+    const third = page.template === "2b" ? thirdOptionHtml(h, page) : "";
     const sections = page.sections.map((s) => `<h2>${escapeHtml(s.h2)}</h2>\n    ${s.html}`).join("\n    ");
     const faq = (page.faq || []).map((f) => `<h3>${escapeHtml(f.q)}</h3>\n      <p>${f.a}</p>`).join("\n      ");
 
@@ -646,7 +692,7 @@ export function render(pageFn, records, others = []) {
     }
     const verifiedISO = [...sources.values()].map(([, d]) => d).sort()[0];
 
-    const prose = [page.answer, verdict, entries, sections, faq].join(" ");
+    const prose = [page.answer, verdict, entries, sections, third, faq].join(" ");
     const count = words(prose);
     const minWords = page.template === "2d" && !page.hub ? MIN_WORDS_SPOKE : MIN_WORDS;
     if (count < minWords) throw new Error(`${page.slug}: ${count} words, under the ${minWords} a page needs to publish`);
@@ -663,7 +709,7 @@ export function render(pageFn, records, others = []) {
         .map(([u, [n, d]]) => `<li>${escapeHtml(n)}: <a href="${escapeHtml(u)}">${escapeHtml(u)}</a> (checked ${longDate(d)})</li>`)
         .join("\n        ");
     const related = page.related.map((r) => `<li><a href="${r.href}">${escapeHtml(r.text)}</a></li>`).join("\n        ");
-    const more = page.versus ? moreComparisonsHtml(page, others) : page.template === "2d" ? moreAppsHtml(page, others) : "";
+    const more = isComparison(page) ? moreComparisonsHtml(page, others) : page.template === "2d" ? moreAppsHtml(page, others) : "";
 
     return shell({
         page, url, source: `content/pages/${page.slug}.mjs`, ldJson: jsonLd(page, h, url, verifiedISO),
@@ -673,17 +719,18 @@ export function render(pageFn, records, others = []) {
     <p class="answer">${page.answer}</p>
     ${table}
     ${verdict}
-    ${page.hub ? LIVE_SCENE : REEL}
-    ${cta(page, "top", page.cta)}
+    ${page.hub ? LIVE_SCENE : promotes ? REEL : ""}
+    ${promotes ? cta(page, "top", page.cta) : ""}
     ${page.entries ? `<h2>${escapeHtml(page.entriesHeading)}</h2>\n    ${entries}` : ""}
     ${sections}
+    ${third}
 
     <section class="faq">
       <h2>Questions people ask</h2>
       ${faq}
     </section>
 
-    ${cta(page, "bottom", page.cta)}
+    ${promotes ? cta(page, "bottom", page.cta) : ""}
 
     <h2>Read next</h2>
     <ul class="related">
@@ -787,11 +834,19 @@ const HUB_FAQ = [
 export function renderHub(comparisons, records) {
     const { h } = helpers(records);
     const url = `${ORIGIN}${HUB.path}`;
-    const entries = comparisons.map((c) => `<article class="entry">
+    const entry = (c) => {
+        const meta = c.template === "2b"
+            ? sides(c).map((s) => `${h.name(s)}: ${h.priceCell(s)}`).join(" · ")
+            : `${h.priceCell(c.versus)} · ${h.platforms(c.versus)}`;
+        return `<article class="entry">
       <h3><a href="${pathOf(c)}">${escapeHtml(c.breadcrumb)}</a></h3>
-      <p class="meta">${escapeHtml(h.priceCell(c.versus))} · ${escapeHtml(h.platforms(c.versus))}</p>
+      <p class="meta">${escapeHtml(meta)}</p>
       <p>${escapeHtml(c.description)}</p>
-    </article>`);
+    </article>`;
+    };
+    const ours = comparisons.filter((c) => c.template === "2c").map(entry);
+    const referee = comparisons.filter((c) => c.template === "2b").map(entry);
+    const entries = [...ours, ...(referee.length ? ["<h2>Other apps, side by side</h2>\n    <p>Comparisons of two other apps, for people choosing between them. We refer; we only mention Vibresia where it fills a gap both leave.</p>", ...referee] : [])];
     const page = { title: HUB.title, description: HUB.description, template: "hub", slug: "comparison" };
     const graph = [
         {
@@ -911,7 +966,7 @@ async function main() {
     for (const w of handChecks(all.filter((p) => p.app).map((p) => p.app))) console.warn(`  ! check by hand: ${w}`);
     const outputs = new Map(pages.map(({ fn, page }) => [path.join(ROOT, "site", `${pathOf(page)}.html`), render(fn, records, all)]));
     outputs.set(path.join(ROOT, `site${AUTHOR_PATH}.html`), renderAuthor(all));
-    const comparisons = all.filter((p) => p.versus);
+    const comparisons = all.filter(isComparison);
     if (comparisons.length) outputs.set(path.join(ROOT, HUB.file), renderHub(comparisons, records));
     for (const [section, { sitemap: file }] of Object.entries(SECTIONS)) {
         const listed = all.filter((p) => sectionOf(p) === section);

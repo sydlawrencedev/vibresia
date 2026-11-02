@@ -82,6 +82,7 @@
   .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
   .verdict > div { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 6px; }
   .verdict > div:first-child { border-color: var(--magenta); }
+  .verdict.even > div:first-child { border-color: var(--line); }
   @media (max-width: 640px) { .verdict { grid-template-columns: 1fr; } }
 </style>
 <link rel="stylesheet" href="/chrome.css">
@@ -328,6 +329,7 @@
     <h2>Where Synesthesia is the better choice</h2>
     <p>If you're playing a set, use Synesthesia. It has MIDI and OSC controls you can map for performance, works alongside other VJ software over Syphon, Spout and NDI, and outputs to projectors and livestreams. Vibresia has no OSC, no Syphon, Spout or NDI output, and no controls built for a set.</p>
     <p>Synesthesia also runs on Windows, and its homepage lists 80 built-in scenes with an in-app marketplace for more. Vibresia is Mac only, needs macOS 14.2 or later, Apple silicon, and has 18 built-in scenes, so if you have an Intel Mac or a PC, Synesthesia is the one of these two that will run.</p>
+    
 
     <section class="faq">
       <h2>Questions people ask</h2>
@@ -351,6 +353,11 @@
     </ul>
     <h2>More comparisons</h2>
     <ul class="related">
+        <li><a href="/comparison/nestdrop-vs-milkdrop">NestDrop vs MilkDrop</a></li>
+        <li><a href="/comparison/projectm-vs-milkdrop">projectM vs MilkDrop</a></li>
+        <li><a href="/comparison/resolume-vs-touchdesigner">Resolume vs TouchDesigner</a></li>
+        <li><a href="/comparison/resolume-vs-vdmx">Resolume vs VDMX</a></li>
+        <li><a href="/comparison/touchdesigner-vs-vdmx">TouchDesigner vs VDMX</a></li>
         <li><a href="/comparison/vibresia-vs-magic-music-visuals">Vibresia vs Magic Music Visuals</a></li>
         <li><a href="/comparison/vibresia-vs-plane9">Vibresia vs Plane9</a></li>
         <li><a href="/comparison/vibresia-vs-projectm">Vibresia vs projectM</a></li>

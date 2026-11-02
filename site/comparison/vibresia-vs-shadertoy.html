@@ -82,6 +82,7 @@
   .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
   .verdict > div { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 6px; }
   .verdict > div:first-child { border-color: var(--magenta); }
+  .verdict.even > div:first-child { border-color: var(--line); }
   @media (max-width: 640px) { .verdict { grid-template-columns: 1fr; } }
 </style>
 <link rel="stylesheet" href="/chrome.css">
@@ -309,6 +310,7 @@
     <p>Both let you share. Shadertoy gives every shader a permanent URL, lets you embed it in other sites, and has a community that comments and likes. Vibresia gives a scene a short link that plays in any browser, with or without the app, and you can add it to a public gallery. Shadertoy's community is far bigger, and if learning from other people's shaders is the point, that matters.</p>
     <h2>Where Shadertoy is the better choice</h2>
     <p>For nearly everything that isn't music on your own Mac, use Shadertoy. It runs in a browser on any computer, takes the webcam, keyboard, mouse, video, textures and VR headsets as inputs, and has years of shared work to learn from. Vibresia is Mac only, needs macOS 14.2 or later, Apple silicon, and its only input that matters is sound.</p>
+    
 
     <section class="faq">
       <h2>Questions people ask</h2>
@@ -332,6 +334,11 @@
     </ul>
     <h2>More comparisons</h2>
     <ul class="related">
+        <li><a href="/comparison/nestdrop-vs-milkdrop">NestDrop vs MilkDrop</a></li>
+        <li><a href="/comparison/projectm-vs-milkdrop">projectM vs MilkDrop</a></li>
+        <li><a href="/comparison/resolume-vs-touchdesigner">Resolume vs TouchDesigner</a></li>
+        <li><a href="/comparison/resolume-vs-vdmx">Resolume vs VDMX</a></li>
+        <li><a href="/comparison/touchdesigner-vs-vdmx">TouchDesigner vs VDMX</a></li>
         <li><a href="/comparison/vibresia-vs-magic-music-visuals">Vibresia vs Magic Music Visuals</a></li>
         <li><a href="/comparison/vibresia-vs-plane9">Vibresia vs Plane9</a></li>
         <li><a href="/comparison/vibresia-vs-projectm">Vibresia vs projectM</a></li>

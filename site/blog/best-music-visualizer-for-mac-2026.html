@@ -82,6 +82,7 @@
   .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
   .verdict > div { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 6px; }
   .verdict > div:first-child { border-color: var(--magenta); }
+  .verdict.even > div:first-child { border-color: var(--line); }
   @media (max-width: 640px) { .verdict { grid-template-columns: 1fr; } }
 </style>
 <link rel="stylesheet" href="/chrome.css">
@@ -383,6 +384,7 @@
     <p>Check this before anything else if your Mac is a few years old. Vibresia needs Apple silicon and macOS 14.2 or later, so it won't run on an Intel Mac. Phosphor needs Apple silicon and macOS 14.4. Nyquist needs macOS 15. MuVis needs macOS 14. Apple's visualiser is already on every Mac, in the Music app.</p>
     <h2>How we put this together</h2>
     <p>We read each app's own website, Mac App Store listing or source code on the date shown at the top, and every price, platform and feature here comes from there. We didn't buy the paid apps for this page, so we haven't written about how they feel to use, only what their makers say they do. The strengths are the ones we think each maker would agree with. We make Vibresia and put it first because it's ours; the "pick it if" lines are there so you can skip it when something else fits better.</p>
+    
 
     <section class="faq">
       <h2>Questions people ask</h2>

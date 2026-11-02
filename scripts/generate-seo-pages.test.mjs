@@ -107,6 +107,20 @@ test("every indexable page has the shared Organization node and FAQs it shows", 
     assert.throws(() => render(page({ faq: [] }), records), /every page needs FAQs/);
 });
 
+test("Vibresia appears on a referee page only when its pair opted in", async () => {
+    const { PAIRS } = await import("./generate-seo-pages.mjs");
+    for (const { page, html } of built.filter((b) => b.page.template === "2b")) {
+        const pair = PAIRS.find((x) => x.slug === page.slug);
+        // The article itself: navigation lists further down may name other
+        // comparison pages, which is linking, not promotion.
+        const main = html.slice(html.indexOf("<main>"), html.indexOf("<h2>Read next</h2>"));
+        const promo = /download_clicked|class="third-option"|class="reel"/.test(main);
+        assert.equal(promo, pair.thirdOption, `${page.slug}: third option is ${pair.thirdOption} but the page ${promo ? "promotes" : "doesn't promote"} Vibresia`);
+        if (!pair.thirdOption) assert.ok(!/Vibresia/.test(main.replace(/<p class="byline">[\s\S]*?<\/p>/, "")), `${page.slug} mentions Vibresia outside the byline`);
+    }
+    for (const pair of PAIRS) assert.ok(pair.audience && pair.whyCompared, `${pair.slug} needs audience and whyCompared`);
+});
+
 test("the orphan check does catch an orphan", () => {
     const pages = new Map([["/", '<a href="/a">a</a>'], ["/a", ""], ["/b", '<a href="/">home</a>']]);
     const { reached, broken } = crawl(pages);
@@ -149,11 +163,17 @@ for (const { page, html } of built) {
         }
     });
 
-    test(`${page.slug}: the call to action says where it came from`, () => {
-        for (const position of ["top", "bottom"]) {
-            assert.match(html, new RegExp(`href="/download\\?src=seo-${page.slug}-${position}"`));
+    test(`${page.slug}: the call to action says where it came from`, async () => {
+        // A referee page that didn't opt in has no call to action at all;
+        // the opt-in test above checks that. The template meta still applies.
+        const { PAIRS } = await import("./generate-seo-pages.mjs");
+        const promotes = page.template !== "2b" || PAIRS.find((x) => x.slug === page.slug).thirdOption;
+        if (promotes) {
+            for (const position of ["top", "bottom"]) {
+                assert.match(html, new RegExp(`href="/download\\?src=seo-${page.slug}-${position}"`));
+            }
+            assert.match(html, new RegExp(`data-template="${page.template}" data-slug="${page.slug}"`));
         }
-        assert.match(html, new RegExp(`data-template="${page.template}" data-slug="${page.slug}"`));
         // Every event from the page carries the template, the visit included.
         assert.match(html, new RegExp(`<meta name="seo-template" content="${page.template}">`));
         assert.match(html, /<meta name="posthog-host" content="\/ingest">/);

@@ -169,6 +169,17 @@
     ],
     "ourAngle": "VDMX is a professional VJ rig and the better tool for a live show. Vibresia is a free, ready-to-watch visualiser for your own listening, with no setup beyond allowing system audio.",
     "profile": { "sourceUrl": "https://vdmx.vidvox.net/", "verifiedISO": "2026-11-02" },
+    "pricing": {
+      "model": "one-time",
+      "freeTier": false,
+      "tiers": [
+        { "name": "VDMX6", "price": "199.99", "currency": "USD", "period": "once", "includes": ["The full VDMX6 app"], "excludes": ["Vuo and TouchDesigner integration"] },
+        { "name": "VDMX6 Plus", "price": "349.00", "currency": "USD", "period": "once", "includes": ["Everything in VDMX6", "Vuo and TouchDesigner integration (TouchDesigner licensed separately)"], "excludes": [] }
+      ],
+      "note": "The store shows $199.99; vidvox.net says 199 USD. Educational, hobbyist and upgrade discounts are mentioned without amounts.",
+      "sourceUrl": "https://cart.vidvox.net/",
+      "verifiedISO": "2026-11-02"
+    },
     "trial": {
       "limits": "Fully functional except saving projects.",
       "sourceUrl": "https://vidvox.net/",

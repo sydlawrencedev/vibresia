@@ -291,6 +291,39 @@ We hit every one of these. Check them on day one.
 
 ---
 
+## 7. What made it easy the second time (lessons from a run)
+
+Learned running this end to end on a small free Mac app with an AI agent doing the work. Each one cost a round of back-and-forth the first time.
+
+**Set up before any page**
+- **Write every authority into the kick-off.** May the agent commit, merge and push? Deploy? Spend? Open issues and pull requests? Each missing answer became a stop. Deploys are usually blocked for agents: plan for the owner to run them, and for the agent to check the live site straight after.
+- **Ask the author's five questions on day one** (role, years, topic credibility, profiles, photo) and store them in `{data}/author.json`. A byline added later means rebuilding every page.
+- **One `{data}/schema.json`** for Organization and WebSite, and a check that every indexable page carries it and an FAQ it shows. Retro-fitting FAQs to hand-written pages is slow.
+- **Put the generator's gates in place first**: word count, banned phrases (including the em dash), description length, every fact through a helper that throws when the record lacks it, `--check` in the release script. Then no page can drift from its data.
+- **Analytics through your own domain, with the page template on every event** (a meta tag the analytics script reads), plus a server-side count of the conversion. A dashboard grouped by template can then exist before launch.
+
+**Research**
+- **No volume tool? Use autocomplete** (`suggestqueries.google.com/complete/search?client=firefox&q=…`) as demand evidence, and say so in the URL plan. Test "{competitor} alternative(s)" for comparison pages, "visualizer for {app}" and "does {app} have a visualizer" for question pages.
+- **Many sites block automated reading behind a human check. Never get around it.** Use a named third-party source, mark the record `"via": "third-party"`, say so on the page, and show "Not confirmed" for an unconfirmed price. Facts read from search snippets get `needsHandCheck`, and the build lists them.
+- **"No source says it exists" isn't "it doesn't exist".** Store `hasVisualizer: null` and write "not that we could find".
+- **A price shown with only "$"**: record the currency you can confirm elsewhere, with a note. Never convert currencies.
+- **Delegate research per competitor or per app** to sub-agents that return one JSON object in a fixed shape (facts, each with a source URL and a short quote). The lead agent merges them and runs the validator. Ten in parallel took about a minute each.
+- **Delegate drafts with a written brief** (file shape, the records allowed, the rules the build enforces, "touch no other file"), one page per sub-agent. The lead agent reads every draft against the records before building.
+
+**Pages**
+- **"{competitor} alternative" → `/comparison/{product}-vs-{competitor}`** (2c), making the case for your product while naming who should pick the other. Skip competitors whose searchers want a different kind of tool: a page saying you beat it is wrong for them.
+- **Every hub, list and comparison links to all its siblings automatically**, and a crawl from the homepage fails the build on an orphan or a broken link. Footer links to each hub keep everything within two clicks.
+- **Spokes need less prose (300 words) when they carry a computed table** from sourced data. A table row with no fact is left out, never filled in.
+- **Interactive hub element**: reusing the product's own renderer in the browser (fed by the microphone, opt-in, nothing sent) was cheap and on-brand. Lazy-load any video so the answer stays the largest paint.
+- **Test tables at 375px.** A two-column table shouldn't have a minimum width; a five-column one scrolls with its first column fixed.
+
+**Measuring**
+- **The keyless PageSpeed Insights API runs out of quota quickly.** Get an API key, or take Core Web Vitals from Search Console field data once there's traffic.
+- **The recurring work is routines, not reminders**: a monthly Search Console review that opens an issue (and proposes an A/B test once a template passes 1,000 visits), a quarterly price check, a one-off January year refresh that opens a pull request, and a one-off check that adds the Search Console tile once its tables sync.
+- **Keep a status file** (`seo-playbook-status.md`) so a new session can continue without re-reading the conversation.
+
+---
+
 ## Kick-off prompt for a new project
 
 > Using `seo.md`: decide `{data}` for this codebase, then run Phase 1 for {product} ({one-line description}, market: {market}). Read the codebase and write `content/product-truth.md` for me to check. Then list the 20 competitors with the most search demand, research each from primary sources into `{data}/competitors.json` with a source and verification date on every fact, and build the validator. Then pull demand data and produce `content/url-plan.csv` for templates 2a-2d. Stop for my review at the truth sheet and the URL plan only (see "How an agent runs this"); run everything else through to done. Use sub-agents for competitor research and page drafts. {You may / may not} commit, merge to main and push when every check passes.

@@ -82,6 +82,7 @@
   .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
   .verdict > div { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 6px; }
   .verdict > div:first-child { border-color: var(--magenta); }
+  .verdict.even > div:first-child { border-color: var(--line); }
   @media (max-width: 640px) { .verdict { grid-template-columns: 1fr; } }
 </style>
 <link rel="stylesheet" href="/chrome.css">
@@ -270,6 +271,7 @@
     <p>It has 18 built-in scenes, and Auto Scan moves between them on the beat. If you want something of your own, a scene is a single GLSL function, or you can describe one to an AI assistant and have it written for you. It needs macOS 14.2 or later, Apple silicon.</p>
     <h2>Why system audio is the way to do it</h2>
     <p>A visualiser built into one music app only sees that app. Apple's own visualiser is a good example: it only works with songs playing in the Music app. Listening to the Mac's system audio instead means one visualiser works with Deezer, with every other music app, with a browser tab and with a film, and keeps going when you switch between them.</p>
+    
 
     <section class="faq">
       <h2>Questions people ask</h2>

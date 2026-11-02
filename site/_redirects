@@ -17,3 +17,11 @@
 # own destination and 307s to itself forever. Files that genuinely exist
 # (/share/ribbons, /share/manifest.json) win the match, which is why the bug
 # looked like it only affected the bare page.
+
+# Referee pages have one canonical order per pair (content/competitor-pairs.json);
+# the reverse order redirects to it (docs/seo.md, Phase 2b).
+/comparison/milkdrop-vs-projectm  /comparison/projectm-vs-milkdrop  301
+/comparison/milkdrop-vs-nestdrop  /comparison/nestdrop-vs-milkdrop  301
+/comparison/vdmx-vs-resolume  /comparison/resolume-vs-vdmx  301
+/comparison/touchdesigner-vs-resolume  /comparison/resolume-vs-touchdesigner  301
+/comparison/vdmx-vs-touchdesigner  /comparison/touchdesigner-vs-vdmx  301

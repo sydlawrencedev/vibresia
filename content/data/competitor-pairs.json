@@ -1,0 +1,46 @@
+{
+  "_about": "Third-party pairs worth a referee page (docs/seo.md, Phase 2b). Only pairs that share an audience. The canonical order is the one people search; the reverse 301s to it (site/_redirects). thirdOption is opt-in: Vibresia appears on a pair's page only when it is true, and a test fails if it shows anywhere else.",
+  "pairs": [
+    {
+      "slug": "projectm-vs-milkdrop",
+      "a": "projectm",
+      "b": "milkdrop",
+      "audience": "MilkDrop fans deciding between the original Winamp plug-in and its open-source rebuild.",
+      "whyCompared": "projectM is a reimplementation of MilkDrop that plays the same presets, so people who remember MilkDrop look at both.",
+      "thirdOption": true,
+      "thirdOptionWhy": "Neither is a finished Mac app that hears every app's audio: MilkDrop doesn't run on a Mac, and projectM's Mac apps are previews."
+    },
+    {
+      "slug": "nestdrop-vs-milkdrop",
+      "a": "nestdrop",
+      "b": "milkdrop",
+      "audience": "Windows users who want MilkDrop-style visuals, for watching or for VJing.",
+      "whyCompared": "NestDrop is built on the MilkDrop engine and plays its presets, adding VJ controls and video output.",
+      "thirdOption": false
+    },
+    {
+      "slug": "resolume-vs-vdmx",
+      "a": "resolume",
+      "b": "vdmx",
+      "audience": "VJs choosing their main live-video software, on a Mac or across Mac and Windows.",
+      "whyCompared": "Both are full VJ applications used for live shows, and on a Mac they are the two most common choices.",
+      "thirdOption": false
+    },
+    {
+      "slug": "resolume-vs-touchdesigner",
+      "a": "resolume",
+      "b": "touchdesigner",
+      "audience": "Visual artists deciding between a ready-made VJ application and a programming environment for live visuals.",
+      "whyCompared": "They're different kinds of tool, but both are used for live visuals, and people starting out often weigh one against the other.",
+      "thirdOption": false
+    },
+    {
+      "slug": "touchdesigner-vs-vdmx",
+      "a": "touchdesigner",
+      "b": "vdmx",
+      "audience": "Mac-based visual artists choosing between a node-based environment and a modular VJ application.",
+      "whyCompared": "Both run on a Mac and both can build a live visual show, from different starting points.",
+      "thirdOption": false
+    }
+  ]
+}

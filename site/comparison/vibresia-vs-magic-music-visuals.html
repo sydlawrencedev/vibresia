@@ -82,6 +82,7 @@
   .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
   .verdict > div { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 6px; }
   .verdict > div:first-child { border-color: var(--magenta); }
+  .verdict.even > div:first-child { border-color: var(--line); }
   @media (max-width: 640px) { .verdict { grid-template-columns: 1fr; } }
 </style>
 <link rel="stylesheet" href="/chrome.css">
@@ -311,6 +312,7 @@
     <h2>Where Magic Music Visuals is the better choice</h2>
     <p>For live performance, use Magic. It takes several audio, MIDI and OSC inputs at once and has a full-screen mode for shows. Vibresia has no MIDI or OSC control and no video outputs for other software; it's for watching your own music.</p>
     <p>Magic also runs on Windows, and Vibresia needs macOS 14.2 or later, Apple silicon. And if you're making a full music video, Magic is built for it, where Vibresia's export is a ten-second clip.</p>
+    
 
     <section class="faq">
       <h2>Questions people ask</h2>
@@ -334,6 +336,11 @@
     </ul>
     <h2>More comparisons</h2>
     <ul class="related">
+        <li><a href="/comparison/nestdrop-vs-milkdrop">NestDrop vs MilkDrop</a></li>
+        <li><a href="/comparison/projectm-vs-milkdrop">projectM vs MilkDrop</a></li>
+        <li><a href="/comparison/resolume-vs-touchdesigner">Resolume vs TouchDesigner</a></li>
+        <li><a href="/comparison/resolume-vs-vdmx">Resolume vs VDMX</a></li>
+        <li><a href="/comparison/touchdesigner-vs-vdmx">TouchDesigner vs VDMX</a></li>
         <li><a href="/comparison/vibresia-vs-plane9">Vibresia vs Plane9</a></li>
         <li><a href="/comparison/vibresia-vs-projectm">Vibresia vs projectM</a></li>
         <li><a href="/comparison/vibresia-vs-shadertoy">Vibresia vs Shadertoy</a></li>

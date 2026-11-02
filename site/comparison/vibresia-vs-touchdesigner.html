@@ -82,6 +82,7 @@
   .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
   .verdict > div { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 6px; }
   .verdict > div:first-child { border-color: var(--magenta); }
+  .verdict.even > div:first-child { border-color: var(--line); }
   @media (max-width: 640px) { .verdict { grid-template-columns: 1fr; } }
 </style>
 <link rel="stylesheet" href="/chrome.css">
@@ -342,6 +343,7 @@
     <h2>Where TouchDesigner is the better choice</h2>
     <p>Vibresia isn't a node-based replacement, and it doesn't try to be. TouchDesigner is made for artists and developers building interactive installations, live visuals and generative work, and if that's your project, it's the tool. Vibresia has no MIDI, OSC, Syphon, Spout or NDI output, no projection mapping and no node editor. Its only job is music in and picture out.</p>
     <p>TouchDesigner also runs on Windows, and on Intel Macs from 2020 onwards. Vibresia needs macOS 14.2 or later, Apple silicon.</p>
+    
 
     <section class="faq">
       <h2>Questions people ask</h2>
@@ -365,6 +367,11 @@
     </ul>
     <h2>More comparisons</h2>
     <ul class="related">
+        <li><a href="/comparison/nestdrop-vs-milkdrop">NestDrop vs MilkDrop</a></li>
+        <li><a href="/comparison/projectm-vs-milkdrop">projectM vs MilkDrop</a></li>
+        <li><a href="/comparison/resolume-vs-touchdesigner">Resolume vs TouchDesigner</a></li>
+        <li><a href="/comparison/resolume-vs-vdmx">Resolume vs VDMX</a></li>
+        <li><a href="/comparison/touchdesigner-vs-vdmx">TouchDesigner vs VDMX</a></li>
         <li><a href="/comparison/vibresia-vs-magic-music-visuals">Vibresia vs Magic Music Visuals</a></li>
         <li><a href="/comparison/vibresia-vs-plane9">Vibresia vs Plane9</a></li>
         <li><a href="/comparison/vibresia-vs-projectm">Vibresia vs projectM</a></li>

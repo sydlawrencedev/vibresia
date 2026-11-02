@@ -19,6 +19,26 @@ Recurring dates:
 - **Eight weeks after launch**: decide which `later` rows in
   `content/url-plan.csv` to build, from impressions.
 
+## 2026-11-02 (not yet deployed): batch 6, referee pages
+
+Template 2b at `/comparison/{a}-vs-{b}`, from `content/data/competitor-pairs.json`:
+projectM vs MilkDrop (third option on), NestDrop vs MilkDrop, Resolume vs
+VDMX, Resolume vs TouchDesigner, TouchDesigner vs VDMX (third option off: no
+Vibresia call to action, reel or mention). A test fails if Vibresia appears on
+a pair that didn't opt in. Reverse orders 301 to the canonical one
+(`site/_redirects`). The hub lists them under "Other apps, side by side".
+
+- Drafted by five sub-agents from a written brief, one page each; reviewed
+  against the records before building. Resolume vs VDMX gained a note that
+  Resolume's record doesn't cover its controls or video connections, so the
+  VDMX section isn't read as saying Resolume lacks them.
+- VDMX's record gained pricing: VDMX6 US$199.99, VDMX6 Plus US$349, one-time
+  (store page; vidvox.net rounds to 199).
+- Records are thin on limits and I/O for VJ tools; filling them would make
+  these pages stronger.
+- `docs/seo.md` gained section 7 (lessons from this run), and
+  `seo-playbook-status.md` records where the work stands.
+
 ## 2026-11-02 (not yet deployed): batch 5, three more spokes, footer, routines
 
 - Spokes for Amazon Music, Deezer and VLC, researched by three sub-agents.

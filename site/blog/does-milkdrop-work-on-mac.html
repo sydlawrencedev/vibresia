@@ -82,6 +82,7 @@
   .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
   .verdict > div { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 6px; }
   .verdict > div:first-child { border-color: var(--magenta); }
+  .verdict.even > div:first-child { border-color: var(--line); }
   @media (max-width: 640px) { .verdict { grid-template-columns: 1fr; } }
 </style>
 <link rel="stylesheet" href="/chrome.css">
@@ -264,6 +265,7 @@
     <h2>If you want it for a live set</h2>
     <p>If you play visuals for other people, on a Mac ProjectMilkSyphon is the closest match: it sends its picture over Syphon so VJ software can mix it in. On Windows, <a href="https://nestimmersion.ca/nestdrop.php">NestDrop</a> builds a VJ tool around the MilkDrop engine, but it doesn't run on a Mac either.</p>
     <p>For a side-by-side of all of these, with prices, see <a href="/blog/milkdrop-alternatives-mac-2026">MilkDrop alternatives for Mac</a>.</p>
+    
 
     <section class="faq">
       <h2>Questions people ask</h2>
