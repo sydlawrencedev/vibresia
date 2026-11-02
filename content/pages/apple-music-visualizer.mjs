@@ -27,7 +27,7 @@ export default (h) => ({
         },
         {
             h2: "A visualiser for every music app",
-            html: `<p>The table above shows the other music apps people use on a Mac. As far as we can find, none of them has a visualiser built in, which is why the same question gets asked about each one. Each app's page says what it does have, with sources.</p>
+            html: `<p>The table above shows the other music apps people use on a Mac. Apart from VLC, which has simple visualisations of its own, none of them has a visualiser built in that we could find, which is why the same question gets asked about each one. Each app's page says what it does have, with sources.</p>
     <p>Vibresia works with all of them the same way: it listens to the Mac's system audio rather than to one app. It picks out the beat, the bass, mids and treble and the tempo on the Mac, and nothing is uploaded. It has 18 built-in scenes, Auto Scan moves between them on the beat, and a new scene is one GLSL function, or a sentence to an AI assistant. The scene playing at the top of this page is drawn by the same shader code, in your browser.</p>`,
         },
         {
@@ -37,7 +37,7 @@ export default (h) => ({
         },
         {
             h2: "Apple's visualiser or Vibresia?",
-            html: `<p>If all your music is in the Music app and you want something on screen with nothing to install, use Apple's: it's already on your Mac. If you also listen in Spotify, YouTube Music, SoundCloud, TIDAL, Mixcloud or a browser, or you want to make your own scenes, Vibresia covers all of that. It needs ${h.rec("vibresia").requirements}, and it's free.</p>`,
+            html: `<p>If all your music is in the Music app and you want something on screen with nothing to install, use Apple's: it's already on your Mac. If you also listen in Spotify, YouTube Music, Amazon Music, SoundCloud, TIDAL, Deezer, Mixcloud or a browser, or you want to make your own scenes, Vibresia covers all of that. It needs ${h.rec("vibresia").requirements}, and it's free.</p>`,
         },
     ],
     faq: [

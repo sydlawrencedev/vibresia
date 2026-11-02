@@ -164,20 +164,21 @@ export function handChecks(slugs) {
 function appVerdictHtml(a) {
     const builtIn = a.hasVisualizer === true ? `Yes. ${a.visualizerFacts[0].text}`
         : a.hasVisualizer === false ? "No." : a.noVisualizerNote;
-    const places = a.macApp && /no (official )?native|not the Mac|no official native/i.test(a.macApp.text) ? "the browser" : "its Mac app or the browser";
+    const places = !a.webPlayer ? "its Mac app"
+        : a.macApp && /no (official )?native|not the Mac|no official native/i.test(a.macApp.text) ? "the browser" : "its Mac app or the browser";
     const withUs = a.slug === "apple-music"
         ? "Yes, and it keeps going when you switch to Spotify, a browser or anything else."
         : `Yes. Vibresia hears the Mac's system audio, so it reacts to ${a.name} in ${places}, with no plug-in.`;
     const rows = [
         ["Built-in visualiser", builtIn],
         ["On a Mac", a.macApp.text],
-        ["In a browser", a.webPlayer.text],
+        ["In a browser", a.webPlayer && a.webPlayer.text],
         ["Works with Vibresia", withUs],
     ];
     return `<div class="table-scroll"><table class="versus verdict-table">
         <thead><tr><th scope="col"></th><th scope="col">${escapeHtml(a.name)} on a Mac</th></tr></thead>
         <tbody>
-          ${rows.map(([k, v]) => `<tr><th scope="row">${escapeHtml(k)}</th><td>${escapeHtml(v)}</td></tr>`).join("\n          ")}
+          ${rows.filter(([, v]) => v).map(([k, v]) => `<tr><th scope="row">${escapeHtml(k)}</th><td>${escapeHtml(v)}</td></tr>`).join("\n          ")}
         </tbody>
       </table></div>`;
 }

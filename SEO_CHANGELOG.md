@@ -19,6 +19,20 @@ Recurring dates:
 - **Eight weeks after launch**: decide which `later` rows in
   `content/url-plan.csv` to build, from impressions.
 
+## 2026-11-02 (not yet deployed): batch 5, three more spokes, footer, routines
+
+- Spokes for Amazon Music, Deezer and VLC, researched by three sub-agents.
+  VLC is the one app with its own visualiser (Audio, then Visualizations;
+  VideoLAN's docs), so its page shows how to turn it on; the hub now says so.
+  Verdict tables leave out a row that has no fact (VLC has no web player).
+- Check by hand: Amazon's main help pages couldn't be read; its facts come
+  from Amazon-owned help mirrors and an Apple forum thread, and whether its
+  Mac app is still offered is unclear.
+- Footer links "Visualizers for every music app" (the hub) on every page.
+- Routines: the monthly SEO review now proposes a CTA experiment for any
+  template past 1,000 visits a month; a new quarterly routine re-checks
+  competitor prices (1 Feb, May, Aug, Nov) and opens an issue.
+
 ## 2026-11-02 (merged 2026-11-02, not yet deployed): batch 4, question pages
 
 Template 2d, the first of its kind, so it waits for Syd's approval before it

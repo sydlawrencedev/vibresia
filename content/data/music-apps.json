@@ -181,6 +181,91 @@
         "needsHandCheck": "Not from the researched sources; confirm the web player page."
       },
       "other": []
+    },
+    {
+      "slug": "deezer",
+      "name": "Deezer",
+      "hasVisualizer": null,
+      "visualizerFacts": [
+        {
+          "text": "What Deezer shows on a Mac is lyrics, in the desktop app and on deezer.com.",
+          "sourceUrl": "https://support.deezer.com/hc/en-gb/articles/115004271149-Play-Share-And-Translate-Lyrics-with-Deezer",
+          "verifiedISO": "2026-11-02"
+        },
+        {
+          "text": "Deezer opened desktop lyrics to Free users in 2020.",
+          "sourceUrl": "https://newsroom-deezer.com/2020/06/deezer-free-users-can-sing-along-on-desktop/",
+          "verifiedISO": "2026-11-02"
+        }
+      ],
+      "noVisualizerNote": "Deezer's support pages don't mention a visualiser.",
+      "macApp": {
+        "text": "Deezer has a desktop app for the Mac, for macOS 12 or later.",
+        "sourceUrl": "https://support.deezer.com/hc/en-gb/articles/115005516009-Deezer-Desktop-App",
+        "verifiedISO": "2026-11-02"
+      },
+      "webPlayer": {
+        "text": "Deezer plays in a browser at deezer.com.",
+        "sourceUrl": "https://support.deezer.com/hc/p/breaking-news",
+        "verifiedISO": "2026-11-02"
+      },
+      "other": []
+    },
+    {
+      "slug": "vlc",
+      "name": "VLC",
+      "hasVisualizer": true,
+      "visualizerFacts": [
+        {
+          "text": "VLC for Mac has built-in visualisations, turned on from Audio, then Visualizations.",
+          "sourceUrl": "https://vlc-user-documentation.readthedocs.io/en/latest/gettingstarted/interface/mac/index.html",
+          "verifiedISO": "2026-11-02"
+        },
+        {
+          "text": "VLC's visualizer effects are scope, spectrum, spectrometer and VU meter, with spectrum the default, drawn in a separate video window.",
+          "sourceUrl": "https://wiki.videolan.org/Documentation:Modules/visual/",
+          "verifiedISO": "2026-11-02"
+        },
+        {
+          "text": "VLC's visualisations are filters on VLC's own audio output, so they show what VLC itself is playing.",
+          "sourceUrl": "https://wiki.videolan.org/Documentation:Modules/visual/",
+          "verifiedISO": "2026-11-02"
+        }
+      ],
+      "macApp": {
+        "text": "VLC for Mac is a free download from VideoLAN, for Intel and Apple silicon Macs.",
+        "sourceUrl": "https://www.videolan.org/vlc/download-macosx.html",
+        "verifiedISO": "2026-11-02"
+      },
+      "webPlayer": null,
+      "other": []
+    },
+    {
+      "slug": "amazon-music",
+      "name": "Amazon Music",
+      "hasVisualizer": null,
+      "visualizerFacts": [
+        {
+          "text": "The visual Amazon documents for its web app is lyrics in the full-screen player, scrolling in time with the music.",
+          "sourceUrl": "https://digprjsurvey.amazon.com/csad/help/node/T7Vr52cJWK0sj67dLP",
+          "verifiedISO": "2026-11-02",
+          "needsHandCheck": "An Amazon-owned help domain, not the usual amazon.com help URL: find the canonical page."
+        }
+      ],
+      "noVisualizerNote": "Amazon's help pages that we could read don't mention a visualiser.",
+      "macApp": {
+        "text": "Whether Amazon still offers a Mac desktop app is unclear: a February 2025 Amazon forum post, relayed on Apple's forums, says it was discontinued.",
+        "sourceUrl": "https://discussions.apple.com/thread/255979675",
+        "verifiedISO": "2026-11-02",
+        "needsHandCheck": "Amazon's own download page couldn't be read; check whether the Mac app is still offered."
+      },
+      "webPlayer": {
+        "text": "Amazon Music plays in a browser at music.amazon.com, in Safari, Chrome, Firefox and Edge.",
+        "sourceUrl": "https://digprjsurvey.amazon.co.uk/csad/help/node/T4P9nQ9IMA1HJ6JncZ",
+        "verifiedISO": "2026-11-02",
+        "needsHandCheck": "An Amazon-owned help domain, not the usual amazon.com help URL."
+      },
+      "other": []
     }
   ]
 }
