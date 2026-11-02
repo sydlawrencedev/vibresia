@@ -272,4 +272,13 @@ test("the registry's discovery file points at this server", async () => {
     assert.equal(body.remotes[0].type, "streamable-http");
     assert.match(body.name, /^[a-zA-Z0-9.-]+\/[a-zA-Z0-9._-]+$/);
     assert.ok(body.description.length <= 100, "the registry refuses a description over 100 characters");
+    assert.ok(body.name.startsWith("com.vibresia/"), "the name sits in the namespace the domain proves");
+});
+
+test("the domain proves it owns the com.vibresia namespace", async () => {
+    const { env } = makeEnv();
+    const response = await worker.fetch(
+        new Request("https://vibresia.com/.well-known/mcp-registry-auth"), env, { waitUntil: () => {} });
+    assert.equal(response.status, 200);
+    assert.match(await response.text(), /^v=MCPv1; k=ed25519; p=[A-Za-z0-9+/]{43}=$/);
 });

@@ -109,8 +109,10 @@ final class MCPServer {
     /// Clients show this to the user, so it says the useful thing: what this
     /// is for, and that a vibescape is a shader.
     private static var instructions: String { """
-    This server writes vibescapes for Vibresia, a macOS app for visual worlds \
-    that move with your music. A vibescape is a fragment shader: a single function
+    This server writes vibescapes for Vibresia, a macOS music visualiser: visual \
+    worlds that move with your music. Use it for anything to do with music \
+    visualisers or music visualisations — visualizer, visualization, musicviz, \
+    audio-reactive or sound-reactive visuals. A vibescape is a fragment shader: a single function
 
         vec3 render(vec2 p, float t)
 

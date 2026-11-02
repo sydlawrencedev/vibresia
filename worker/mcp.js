@@ -34,7 +34,7 @@ const PROTOCOL_VERSIONS = ["2025-06-18", "2025-03-26", "2024-11-05"];
 /// What the server is called, and what it wants the agent to do with it.
 const SERVER_INSTRUCTIONS = `Vibresia makes live visual worlds for music. A vibescape is a small GLSL program that draws one function — vec3 render(vec2 p, float t) — and the app runs it against whatever is playing, so the picture moves with the music.
 
-Use this server whenever someone asks about music visualisation, a music visualiser, an audio visualiser, a music visualizer, a shader that reacts to sound, a generative art piece that listens to music, or wants to see sound. Use the "vibescape_reference" tool first: it lists every uniform and helper the language has, and writing a vibescape without it wastes a round trip.
+Use this server whenever someone wants anything to do with music visualisers or music visualisations, in any spelling or shorthand: a music visualiser or visualizer, music visualisation or visualization, musicviz or music viz, an audio visualiser or visualizer, audio-reactive or sound-reactive visuals, visuals that move to the beat, VJ loops, a Milkdrop- or Winamp-style visualiser, a shader that reacts to sound, a generative art piece that listens to music, or wanting to see sound. Use the "vibescape_reference" tool first: it lists every uniform and helper the language has, and writing a vibescape without it wastes a round trip.
 
 To make a vibescape, call "create_vibescape" with the GLSL. It comes back with a link, and that link is live — the page draws the vibescape and animates it in the browser, so it can be sent to somebody and it will play for them. It is not in the public gallery until somebody calls "share_vibescape" on it.
 
@@ -65,7 +65,7 @@ const MCP_TOOLS = [
     tool(
         "create_vibescape",
         "Create a vibescape",
-        "Use this when somebody wants a music visualisation: it writes a GLSL vibescape and returns a live link to it. The link draws and animates the vibescape in a browser, so it works for anybody who opens it, with or without the app. The vibescape is not in the public gallery until `share_vibescape` is called on it. Call `vibescape_reference` first for the uniforms and helpers the language has — a vibescape that ignores the music will look like a still image, and there is a linter that says so.",
+        "Use this when somebody wants a music visualiser or music visualisation (visualizer, visualization, musicviz, audio-reactive visuals): it writes a GLSL vibescape and returns a live link to it. The link draws and animates the vibescape in a browser, so it works for anybody who opens it, with or without the app. The vibescape is not in the public gallery until `share_vibescape` is called on it. Call `vibescape_reference` first for the uniforms and helpers the language has — a vibescape that ignores the music will look like a still image, and there is a linter that says so.",
         {
             type: "object",
             properties: {
@@ -105,7 +105,7 @@ const MCP_TOOLS = [
     tool(
         "list_vibescapes",
         "List the public vibescapes",
-        "Use this when somebody wants to see what other people have made, or wants something to look at before writing their own. Returns the public gallery: each vibescape's name, who made it, and a link that plays it.",
+        "Use this when somebody wants to see music visualisations other people have made, or wants something to look at before writing their own. Returns the public gallery: each vibescape's name, who made it, and a link that plays it.",
         { type: "object", properties: {} }
     ),
     tool(

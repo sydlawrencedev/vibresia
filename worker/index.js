@@ -21,6 +21,7 @@ import { handleMcp } from "./mcp.js";
 // same file from the repository root, so what is published and what is served
 // here cannot drift apart.
 import SERVER_JSON from "../server.json" with { type: "json" };
+const MCP_REGISTRY_AUTH = "v=MCPv1; k=ed25519; p=lFHTVZgSo/YyYNfyVnswDTDgLqhkG87dUveJjIaRwLQ=";
 
 const CANONICAL_HOST = "vibresia.com";
 const CANONICAL_SITE = `https://${CANONICAL_HOST}/`;
@@ -1691,6 +1692,14 @@ export default {
     if (url.pathname === "/.well-known/mcp.json") {
       return Response.json(SERVER_JSON, {
         headers: { "cache-control": "public, max-age=3600" },
+      });
+    }
+    // How the registry knows this domain owns the com.vibresia namespace: the
+    // public half of the key mcp-publisher signs with. The private half is in
+    // the publisher's Keychain, as "vibresia-mcp-registry".
+    if (url.pathname === "/.well-known/mcp-registry-auth") {
+      return new Response(MCP_REGISTRY_AUTH, {
+        headers: { "content-type": "text/plain; charset=utf-8" },
       });
     }
     if (url.pathname.startsWith("/api/share/")) {
