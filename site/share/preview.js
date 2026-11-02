@@ -417,7 +417,14 @@ void main() {
 
   function draw(gl, canvas, s, t) {
     easePointer(t);
+    // A page that has real sound (the microphone, on a search page) passes a
+    // function that returns what it heard; anything it leaves out is filled
+    // from the synthetic beat, so a quiet room still draws.
     var a = fakeAudio(t);
+    if (s.listen) {
+      var heard = s.listen(t);
+      if (heard) for (var k in heard) a[k] = heard[k];
+    }
     var w = canvas.width, h = canvas.height;
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, s.fbo);
@@ -464,7 +471,7 @@ void main() {
     gl.uniform1f(u.uMidiNotes, 0);
     gl.uniform1f(u.uMidiCC, 0);
     gl.uniform1f(u.uMidiCCValue, 0);
-    gl.uniform1fv(u["uBands[0]"], bands(a));
+    gl.uniform1fv(u["uBands[0]"], a.bands || bands(a));
     gl.uniform3fv(u["uPalette[0]"], s.palette);
     gl.bindVertexArray(s.vao);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -526,6 +533,10 @@ void main() {
       return { ok: false, error: String(e.message || e) };
     }
     if (!s) return { ok: false, error: "framebuffer incomplete" };
+    // opts.listen(t) -> uniforms heard from real audio, or null for none.
+    // It can be swapped later with the returned listen(), so the page can
+    // start on the synthetic beat and switch when the visitor allows the mic.
+    s.listen = opts.listen || null;
 
     watchPointer(canvas);
 
@@ -552,8 +563,9 @@ void main() {
       raf = null;
     };
 
+    var listen = function (fn) { s.listen = fn || null; };
     if (opts.animate === false) {
-      return { ok: true, stop: stop };
+      return { ok: true, stop: stop, listen: listen };
     }
     start();
 
@@ -566,7 +578,7 @@ void main() {
         if (visible && !document.hidden) start(); else stop();
       }, { threshold: 0.01 }).observe(canvas);
     }
-    return { ok: true, stop: stop };
+    return { ok: true, stop: stop, listen: listen };
   }
 
   window.vibresiaPreview = {

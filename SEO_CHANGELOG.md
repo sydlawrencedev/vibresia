@@ -19,6 +19,29 @@ Recurring dates:
 - **Eight weeks after launch**: decide which `later` rows in
   `content/url-plan.csv` to build, from impressions.
 
+## 2026-11-02 (on the branch, awaiting review): batch 4, question pages
+
+Template 2d, the first of its kind, so it waits for Syd's approval before it
+merges. Hub `/blog/apple-music-visualizer` ("does apple music have a
+visualizer") with a live Vibresia scene drawn in the browser by
+`site/share/preview.js`, following the microphone if the reader allows it
+(nothing recorded or sent). Spokes for Spotify, YouTube Music, SoundCloud,
+TIDAL and Mixcloud, each with a verdict table computed from
+`content/data/music-apps.json`.
+
+- App facts were researched by five sub-agents in parallel and merged by the
+  lead agent. No service documents a visualiser except Apple's Music app,
+  so pages say "not that we could find", not "no".
+- Check by hand before merging (the build prints these): SoundCloud's and
+  TIDAL's help centres block automated reading, so their facts come from
+  search snippets; TIDAL's macOS minimum disagrees (14 on its page, 12 in
+  Homebrew). Apple Music's web player fact needs its page confirmed.
+- Mixcloud has no autocomplete demand; built at Syd's request. Prune first if
+  it gets no impressions.
+- New "later" spokes with demand: Amazon Music, VLC, Deezer.
+- Spokes need 300 words plus the computed table (Phase 5); hubs and
+  comparisons stay at 600.
+
 ## 2026-11-02 (not yet deployed): schema, author and reel
 
 - Every indexable page now carries one shared `Organization` (Minith Labs,

@@ -132,6 +132,140 @@ export const HUB = {
     description: "Vibresia side by side with other music visualisers and visual tools: what each costs, what each does well, and who should pick which.",
 };
 
+// Sourced facts about music apps, for the "visualizer for {app}" question
+// pages (Phase 2d). Researched per app; see content/data/music-apps.json.
+export const MUSIC_APPS = JSON.parse(fs.readFileSync(path.join(ROOT, "content/data/music-apps.json"), "utf8")).apps;
+// A spoke needs less prose than a comparison because it carries a computed
+// verdict for its app (docs/seo.md, Phase 5: 300 words plus a computed element).
+export const MIN_WORDS_SPOKE = 300;
+
+function musicApp(slug) {
+    const a = MUSIC_APPS.find((x) => x.slug === slug);
+    if (!a) throw new Error(`no music app "${slug}" in content/data/music-apps.json`);
+    return a;
+}
+
+/** Every sourced fact about one music app, for the sources list. */
+function appFacts(a) {
+    return [...a.visualizerFacts, a.macApp, a.webPlayer, ...(a.other || [])].filter(Boolean);
+}
+
+/** Facts read from search snippets, because the site blocks reading: a person checks these. */
+export function handChecks(slugs) {
+    return slugs.flatMap((slug) => appFacts(musicApp(slug)).filter((f) => f.needsHandCheck)
+        .map((f) => `${slug}: "${f.text}" (${f.sourceUrl}): ${f.needsHandCheck}`));
+}
+
+/**
+ * The spoke's computed element: does this app have a visualiser, where does
+ * it run on a Mac, and does Vibresia work with it. Every cell but the last is
+ * a sourced fact; the last follows from Vibresia hearing system audio.
+ */
+function appVerdictHtml(a) {
+    const builtIn = a.hasVisualizer === true ? `Yes. ${a.visualizerFacts[0].text}`
+        : a.hasVisualizer === false ? "No." : a.noVisualizerNote;
+    const places = a.macApp && /no (official )?native|not the Mac|no official native/i.test(a.macApp.text) ? "the browser" : "its Mac app or the browser";
+    const withUs = a.slug === "apple-music"
+        ? "Yes, and it keeps going when you switch to Spotify, a browser or anything else."
+        : `Yes. Vibresia hears the Mac's system audio, so it reacts to ${a.name} in ${places}, with no plug-in.`;
+    const rows = [
+        ["Built-in visualiser", builtIn],
+        ["On a Mac", a.macApp.text],
+        ["In a browser", a.webPlayer.text],
+        ["Works with Vibresia", withUs],
+    ];
+    return `<div class="table-scroll"><table class="versus verdict-table">
+        <thead><tr><th scope="col"></th><th scope="col">${escapeHtml(a.name)} on a Mac</th></tr></thead>
+        <tbody>
+          ${rows.map(([k, v]) => `<tr><th scope="row">${escapeHtml(k)}</th><td>${escapeHtml(v)}</td></tr>`).join("\n          ")}
+        </tbody>
+      </table></div>`;
+}
+
+/** The hub's table: one row per app, linking to its spoke. */
+function appsTableHtml(spokes) {
+    const rows = spokes.map((sp) => {
+        const a = musicApp(sp.app);
+        const built = a.hasVisualizer === true ? "Yes" : a.hasVisualizer === false ? "No" : "Not that we could find";
+        return `<tr><th scope="row"><a href="${pathOf(sp)}">${escapeHtml(a.name)}</a></th><td>${built}</td><td>Yes, through system audio</td></tr>`;
+    });
+    return `<div class="table-scroll"><table>
+        <thead><tr><th scope="col">App</th><th scope="col">Built-in visualiser</th><th scope="col">Works with Vibresia</th></tr></thead>
+        <tbody>
+          ${rows.join("\n          ")}
+        </tbody>
+      </table></div>`;
+}
+
+/** A spoke links to its hub and every other spoke; the hub to every spoke. */
+function moreAppsHtml(page, others) {
+    const hub = others.find((o) => o.template === "2d" && o.hub);
+    const items = others.filter((o) => o.template === "2d" && !o.hub && o.slug !== page.slug)
+        .map((o) => `<li><a href="${pathOf(o)}">${escapeHtml(o.breadcrumb)}</a></li>`);
+    if (hub && !page.hub) items.unshift(`<li><a href="${pathOf(hub)}">${escapeHtml(hub.breadcrumb)}</a></li>`);
+    return `<h2>${page.hub ? "Visualisers for each app" : "Other music apps"}</h2>
+    <ul class="related">
+        ${items.join("\n        ")}
+    </ul>`;
+}
+
+const HUB_SCENE = fs.readFileSync(path.join(ROOT, "content/scenes/hub-live.glsl"), "utf8");
+
+/**
+ * The hub's interactive element (Phase 2d): a Vibresia scene drawn live in
+ * the browser by the share-link player. It moves to a synthetic beat until
+ * the reader allows the microphone, then to whatever the room is playing.
+ * Nothing is recorded or sent anywhere: the analysis happens in the page.
+ */
+const LIVE_SCENE = `<figure class="live">
+      <canvas width="960" height="540" aria-label="A Vibresia scene, drawn live in your browser"></canvas>
+      <figcaption><button type="button" class="mic" data-track="live_scene_mic" data-placement="seo-hub">Use my microphone</button> <span class="mic-note">Play music near your computer and the scene follows it. The sound stays in this page: nothing is recorded or sent.</span></figcaption>
+    </figure>
+    <script src="/share/preview.js"></script>
+    <script>
+      (function () {
+        var canvas = document.querySelector(".live canvas");
+        var player = window.vibresiaPreview && window.vibresiaPreview.animate(${JSON.stringify(HUB_SCENE).replace(/</g, "\\u003c")}, canvas);
+        var button = document.querySelector(".live .mic");
+        if (!player || !player.ok) { document.querySelector(".live").hidden = true; return; }
+        button.addEventListener("click", function () {
+          if (!navigator.mediaDevices) return;
+          navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+            var ctx = new (window.AudioContext || window.webkitAudioContext)();
+            var an = ctx.createAnalyser();
+            an.fftSize = 2048;
+            ctx.createMediaStreamSource(stream).connect(an);
+            var bins = new Uint8Array(an.frequencyBinCount);
+            var hz = ctx.sampleRate / an.fftSize;
+            var smooth = { level: 0, bass: 0, avg: 0.2 }, kick = 0;
+            function band(lo, hi) {
+              var a = Math.floor(lo / hz), b = Math.max(a + 1, Math.floor(hi / hz)), s = 0;
+              for (var i = a; i < b; i++) s += bins[i];
+              return s / (b - a) / 255;
+            }
+            player.listen(function () {
+              an.getByteFrequencyData(bins);
+              var bass = band(30, 150), mid = band(300, 2000), treble = band(4000, 12000);
+              var level = (bass + mid + treble) / 3;
+              smooth.level += (level - smooth.level) * 0.08;
+              smooth.bass += (bass - smooth.bass) * 0.1;
+              smooth.avg += (bass - smooth.avg) * 0.02;
+              kick = bass > smooth.avg * 1.3 && bass > 0.25 ? 1 : kick * 0.85;
+              var bands = [];
+              for (var j = 0; j < 96; j++) bands.push(band(40 * Math.pow(400, j / 96), 40 * Math.pow(400, (j + 1) / 96)));
+              return { bass: bass, mid: mid, treble: treble, level: level, levelSmooth: smooth.level,
+                       bassSmooth: smooth.bass, beat: kick > 0.75 ? 1 : 0, beatStrength: 0.62 * kick, bands: bands };
+            });
+            button.textContent = "Listening";
+            button.disabled = true;
+          }).catch(function () {
+            button.textContent = "No microphone, so it's playing a beat of its own";
+            button.disabled = true;
+          });
+        });
+      })();
+    </script>`;
+
 /** The section a template's pages live in. */
 export function sectionOf(page) {
     const found = Object.entries(SECTIONS).find(([, s]) => s.templates.includes(page.template));
@@ -352,6 +486,7 @@ const REEL = `<figure class="reel">
 function breadcrumbs(page, url) {
     const trail = [{ name: "Vibresia", item: `${ORIGIN}/` }];
     if (page.versus) trail.push({ name: HUB.breadcrumb, item: `${ORIGIN}${HUB.path}` });
+    if (page.template === "2d" && !page.hub && page.hubPage) trail.push({ name: page.hubPage.breadcrumb, item: `${ORIGIN}${pathOf(page.hubPage)}` });
     trail.push({ name: page.breadcrumb, item: url });
     return trail.map((t, i) => ({ "@type": "ListItem", position: i + 1, ...t }));
 }
@@ -463,8 +598,15 @@ const STYLE = `  :root {
   .reel { margin: 26px 0 0; }
   .reel video { width: 100%; aspect-ratio: 1280 / 844; border-radius: 14px; border: 1px solid var(--line); background: var(--panel); display: block; }
   .reel figcaption { color: var(--muted); font-size: 14px; margin-top: 8px; }
+  .live { margin: 26px 0 0; }
+  .live canvas { width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; border: 1px solid var(--line); background: var(--panel); display: block; }
+  .live figcaption { color: var(--muted); font-size: 14px; margin-top: 10px; }
+  .mic { font: inherit; font-weight: 700; color: var(--text); background: var(--panel); border: 1px solid var(--magenta); border-radius: 999px; padding: 6px 14px; cursor: pointer; margin-right: 8px; }
+  .mic:disabled { border-color: var(--line); cursor: default; }
   .avatar { border-radius: 50%; border: 1px solid var(--line); margin: 0 0 18px; display: block; }
   .versus { min-width: 480px; }
+  .verdict-table { min-width: 0; }
+  .verdict-table tbody th { width: 34%; }
   .versus tbody th { font-weight: 500; color: var(--muted); }
   .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
   .verdict > div { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 6px; }
@@ -484,7 +626,11 @@ export function render(pageFn, records, others = []) {
     // Build the body first: it's what asks for records, and the sources and
     // the "last verified" date come from whichever records it asked for.
     const entries = page.entries ? page.entries.map((e, i) => entryHtml(h, e, i + 1)).join("\n    ") : "";
-    const table = page.versus ? versusTableHtml(h, page) : page.table ? tableHtml(h, page) : "";
+    const spokes = others.filter((o) => o.template === "2d" && !o.hub);
+    if (page.template === "2d" && !page.hub) page.hubPage = others.find((o) => o.template === "2d" && o.hub);
+    const table = page.versus ? versusTableHtml(h, page)
+        : page.template === "2d" ? (page.hub ? appsTableHtml(spokes) : appVerdictHtml(musicApp(page.app)))
+        : page.table ? tableHtml(h, page) : "";
     const verdict = page.versus ? verdictHtml(h, page) : "";
     const sections = page.sections.map((s) => `<h2>${escapeHtml(s.h2)}</h2>\n    ${s.html}`).join("\n    ");
     const faq = (page.faq || []).map((f) => `<h3>${escapeHtml(f.q)}</h3>\n      <p>${f.a}</p>`).join("\n      ");
@@ -492,11 +638,17 @@ export function render(pageFn, records, others = []) {
     const recordsUsed = [...used].map((s) => h.rec(s));
     const sources = new Map();
     for (const r of recordsUsed) for (const [u, d] of sourcesFor(r)) if (!sources.has(u)) sources.set(u, [r.name, d]);
+    const appsUsed = page.template === "2d" ? [page.app, ...(page.hub ? spokes.map((sp) => sp.app) : [])] : [];
+    for (const slug of appsUsed) {
+        const a = musicApp(slug);
+        for (const f of appFacts(a)) if (!sources.has(f.sourceUrl)) sources.set(f.sourceUrl, [a.name, f.verifiedISO]);
+    }
     const verifiedISO = [...sources.values()].map(([, d]) => d).sort()[0];
 
     const prose = [page.answer, verdict, entries, sections, faq].join(" ");
     const count = words(prose);
-    if (count < MIN_WORDS) throw new Error(`${page.slug}: ${count} words, under the ${MIN_WORDS} a page needs to publish`);
+    const minWords = page.template === "2d" && !page.hub ? MIN_WORDS_SPOKE : MIN_WORDS;
+    if (count < minWords) throw new Error(`${page.slug}: ${count} words, under the ${minWords} a page needs to publish`);
     const lower = prose.toLowerCase() + " " + page.title.toLowerCase() + " " + page.description.toLowerCase();
     for (const phrase of BANNED) if (lower.includes(phrase)) throw new Error(`${page.slug}: uses "${phrase}"`);
     if (page.description.length > 160) throw new Error(`${page.slug}: description is ${page.description.length} characters, over 160`);
@@ -510,7 +662,7 @@ export function render(pageFn, records, others = []) {
         .map(([u, [n, d]]) => `<li>${escapeHtml(n)}: <a href="${escapeHtml(u)}">${escapeHtml(u)}</a> (checked ${longDate(d)})</li>`)
         .join("\n        ");
     const related = page.related.map((r) => `<li><a href="${r.href}">${escapeHtml(r.text)}</a></li>`).join("\n        ");
-    const more = page.versus ? moreComparisonsHtml(page, others) : "";
+    const more = page.versus ? moreComparisonsHtml(page, others) : page.template === "2d" ? moreAppsHtml(page, others) : "";
 
     return shell({
         page, url, source: `content/pages/${page.slug}.mjs`, ldJson: jsonLd(page, h, url, verifiedISO),
@@ -520,7 +672,7 @@ export function render(pageFn, records, others = []) {
     <p class="answer">${page.answer}</p>
     ${table}
     ${verdict}
-    ${REEL}
+    ${page.hub ? LIVE_SCENE : REEL}
     ${cta(page, "top", page.cta)}
     ${page.entries ? `<h2>${escapeHtml(page.entriesHeading)}</h2>\n    ${entries}` : ""}
     ${sections}
@@ -719,7 +871,8 @@ export function renderAuthor(pages) {
 
 /** Each page file's function, with the page it makes from these records. */
 export async function loadPages(records) {
-    const files = fs.readdirSync(PAGES_DIR).filter((f) => f.endsWith(".mjs")).sort();
+    // Files starting with "_" are shared helpers for page files, not pages.
+    const files = fs.readdirSync(PAGES_DIR).filter((f) => f.endsWith(".mjs") && !f.startsWith("_")).sort();
     const pages = [];
     for (const f of files) {
         const mod = await import(pathToFileURL(path.join(PAGES_DIR, f)).href);
@@ -754,6 +907,7 @@ async function main() {
 
     const pages = await loadPages(records);
     const all = pages.map((p) => p.page);
+    for (const w of handChecks(all.filter((p) => p.app).map((p) => p.app))) console.warn(`  ! check by hand: ${w}`);
     const outputs = new Map(pages.map(({ fn, page }) => [path.join(ROOT, "site", `${pathOf(page)}.html`), render(fn, records, all)]));
     outputs.set(path.join(ROOT, `site${AUTHOR_PATH}.html`), renderAuthor(all));
     const comparisons = all.filter((p) => p.versus);

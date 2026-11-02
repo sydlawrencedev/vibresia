@@ -29,3 +29,5 @@ Every fact about another app on these pages comes from that app's own site, stor
 - [Vibresia vs Magic Music Visuals](https://vibresia.com/comparison/vibresia-vs-magic-music-visuals): a finished visualiser against a modular editor for live visuals
 - [Vibresia vs Shadertoy](https://vibresia.com/comparison/vibresia-vs-shadertoy): shaders that react to the music the Mac is playing
 - [All comparisons](https://vibresia.com/comparison): every head-to-head in one list
+- [Does Apple Music have a visualizer?](https://vibresia.com/blog/apple-music-visualizer): yes, in the Music app on a Mac, and what works with every other app
+- [Spotify visualizer for Mac](https://vibresia.com/blog/spotify-visualizer-mac), [YouTube Music](https://vibresia.com/blog/youtube-music-visualizer-mac), [SoundCloud](https://vibresia.com/blog/soundcloud-visualizer-mac), [TIDAL](https://vibresia.com/blog/tidal-visualizer-mac), [Mixcloud](https://vibresia.com/blog/mixcloud-visualizer-mac): whether each has a visualiser, with sources

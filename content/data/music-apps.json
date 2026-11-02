@@ -1,0 +1,186 @@
+{
+  "_about": "Sourced facts about music apps, for the 'visualizer for {app}' question pages (docs/seo.md, Phase 2d). Every fact has a sourceUrl and verifiedISO. Researched by sub-agents on 2026-11-02 and merged here by the lead agent.",
+  "apps": [
+    {
+      "slug": "spotify",
+      "name": "Spotify",
+      "hasVisualizer": null,
+      "visualizerFacts": [
+        {
+          "text": "Canvas is a short looping visual that artists can add to each of their tracks, not a visualiser.",
+          "sourceUrl": "https://artists.spotify.com/canvas",
+          "verifiedISO": "2026-11-02"
+        },
+        {
+          "text": "In March 2014 Spotify stopped accepting new third-party apps for its desktop App Finder.",
+          "sourceUrl": "https://techcrunch.com/2014/03/24/spotify-shutters-app-submissions",
+          "verifiedISO": "2026-11-02",
+          "thirdParty": true
+        },
+        {
+          "text": "In February 2015 a desktop update phased out App Finder and third-party apps from the client.",
+          "sourceUrl": "https://www.hypebot.com/hypebot/2015/02/spotify-launches-major-desktop-update-kills-app-finder.html",
+          "verifiedISO": "2026-11-02",
+          "thirdParty": true
+        }
+      ],
+      "noVisualizerNote": "We couldn't find a visualiser mentioned in Spotify's own help or download pages.",
+      "macApp": {
+        "text": "Spotify has a desktop app for the Mac.",
+        "sourceUrl": "https://www.spotify.com/us/download/mac/",
+        "verifiedISO": "2026-11-02"
+      },
+      "webPlayer": {
+        "text": "Spotify plays in a browser at open.spotify.com.",
+        "sourceUrl": "https://support.spotify.com/us/article/web-player-help/",
+        "verifiedISO": "2026-11-02"
+      },
+      "other": [
+        {
+          "text": "In November 2024 Spotify cut off new apps from its Web API's audio-features and audio-analysis endpoints.",
+          "sourceUrl": "https://developer.spotify.com/blog/2024-11-27-changes-to-the-web-api",
+          "verifiedISO": "2026-11-02"
+        }
+      ]
+    },
+    {
+      "slug": "youtube-music",
+      "name": "YouTube Music",
+      "hasVisualizer": null,
+      "visualizerFacts": [
+        {
+          "text": "On a computer, YouTube Music runs as a web app, installable from Chrome; Google's help page for it doesn't mention a visualiser.",
+          "sourceUrl": "https://support.google.com/youtubemusic/answer/9231765?hl=en&co=GENIE.Platform%3DDesktop",
+          "verifiedISO": "2026-11-02"
+        },
+        {
+          "text": "Visualisers for YouTube Music come from third-party browser extensions.",
+          "sourceUrl": "https://chromewebstore.google.com/detail/music-visualizer-for-yout/ofhohcappnjhojpboeamfijglinngdnb",
+          "verifiedISO": "2026-11-02"
+        }
+      ],
+      "noVisualizerNote": "Google's help pages for YouTube Music on a computer don't mention a visualiser.",
+      "macApp": {
+        "text": "There's no official native Mac app; Google's route on a computer is the installable web app in Chrome.",
+        "sourceUrl": "https://support.google.com/youtubemusic/answer/9231765?hl=en&co=GENIE.Platform%3DDesktop",
+        "verifiedISO": "2026-11-02"
+      },
+      "webPlayer": {
+        "text": "It plays in a browser at music.youtube.com.",
+        "sourceUrl": "https://support.google.com/youtubemusic/answer/9231765?hl=en&co=GENIE.Platform%3DDesktop",
+        "verifiedISO": "2026-11-02"
+      },
+      "other": []
+    },
+    {
+      "slug": "tidal",
+      "name": "TIDAL",
+      "hasVisualizer": null,
+      "visualizerFacts": [],
+      "noVisualizerNote": "We couldn't find a visualiser in TIDAL's support pages.",
+      "macApp": {
+        "text": "TIDAL has a desktop app for the Mac.",
+        "sourceUrl": "https://support.tidal.com/hc/en-us/articles/115005872445",
+        "verifiedISO": "2026-11-02",
+        "needsHandCheck": "Read from a search snippet: the support site blocks automated reading. The page says macOS 14 or later; Homebrew's cask says 12 or later."
+      },
+      "webPlayer": {
+        "text": "TIDAL plays in a browser, in Chrome, Safari, Firefox, Edge and others.",
+        "sourceUrl": "https://support.tidal.com/hc/en-us/articles/115005872445",
+        "verifiedISO": "2026-11-02",
+        "needsHandCheck": "Read from a search snippet."
+      },
+      "other": []
+    },
+    {
+      "slug": "soundcloud",
+      "name": "SoundCloud",
+      "hasVisualizer": null,
+      "visualizerFacts": [
+        {
+          "text": "SoundCloud's player shows a waveform of the track, used for seeking and timed comments; it doesn't move with the music.",
+          "sourceUrl": "https://help.soundcloud.com/hc/en-us/articles/1260803560930-Desktop-Player",
+          "verifiedISO": "2026-11-02",
+          "needsHandCheck": "Read from a search snippet: the help centre blocks automated reading."
+        },
+        {
+          "text": "Visualisers for SoundCloud's web player come from third-party browser extensions.",
+          "sourceUrl": "https://chromewebstore.google.com/detail/chromic-visualizer-for-so/nilhfoheoenjjpkhbilccklofndhpfdp",
+          "verifiedISO": "2026-11-02"
+        }
+      ],
+      "noVisualizerNote": "SoundCloud's help pages don't mention a visualiser.",
+      "macApp": {
+        "text": "There's no native Mac app; SoundCloud's Desktop Player is the website installed as an app from Chrome, Brave or Edge.",
+        "sourceUrl": "https://help.soundcloud.com/hc/en-us/articles/1260803560930-Desktop-Player",
+        "verifiedISO": "2026-11-02",
+        "needsHandCheck": "Read from a search snippet."
+      },
+      "webPlayer": {
+        "text": "It plays in a browser at soundcloud.com.",
+        "sourceUrl": "https://help.soundcloud.com/hc/en-us/articles/1260803560930-Desktop-Player",
+        "verifiedISO": "2026-11-02",
+        "needsHandCheck": "Read from a search snippet."
+      },
+      "other": []
+    },
+    {
+      "slug": "mixcloud",
+      "name": "Mixcloud",
+      "hasVisualizer": null,
+      "visualizerFacts": [
+        {
+          "text": "The visual Mixcloud documents is Mixcloud Live, where creators stream their own video, not a visualiser in the player.",
+          "sourceUrl": "https://www.mixcloud.com/blog/2020/04/20/mixcloud-launches-live-streaming/",
+          "verifiedISO": "2026-11-02"
+        },
+        {
+          "text": "For Mixcloud Live, a webcam is optional: visuals come from the creator.",
+          "sourceUrl": "https://www.mixcloud.com/blog/2020/05/28/how-to-get-set-up-on-mixcloud-live/",
+          "verifiedISO": "2026-11-02"
+        }
+      ],
+      "noVisualizerNote": "We couldn't find a visualiser in Mixcloud's player in any of its pages we could read.",
+      "macApp": {
+        "text": "Mixcloud's App Store listing covers iPhone, iPad, Apple TV and Vision Pro, not the Mac; on a Mac it's the website.",
+        "sourceUrl": "https://apps.apple.com/us/app/mixcloud/id401206431",
+        "verifiedISO": "2026-11-02"
+      },
+      "webPlayer": {
+        "text": "Mixcloud plays in a browser at mixcloud.com, live streams included.",
+        "sourceUrl": "https://www.mixcloud.com/blog/2020/05/28/how-to-get-set-up-on-mixcloud-live/",
+        "verifiedISO": "2026-11-02"
+      },
+      "other": []
+    },
+    {
+      "slug": "apple-music",
+      "name": "Apple Music",
+      "hasVisualizer": true,
+      "visualizerFacts": [
+        {
+          "text": "The Music app on the Mac has a visualiser: Window > Visualizer, with effects that change with the music.",
+          "sourceUrl": "https://support.apple.com/guide/music/muse3aa39574/mac",
+          "verifiedISO": "2026-11-02"
+        },
+        {
+          "text": "It only visualises songs playing in the Music app, not Spotify, a browser or other apps.",
+          "sourceUrl": "https://support.apple.com/guide/music/muse3aa39574/mac",
+          "verifiedISO": "2026-11-02"
+        }
+      ],
+      "macApp": {
+        "text": "The Music app is built into every Mac.",
+        "sourceUrl": "https://support.apple.com/guide/music/muse3aa39574/mac",
+        "verifiedISO": "2026-11-02"
+      },
+      "webPlayer": {
+        "text": "Apple Music also plays in a browser at music.apple.com.",
+        "sourceUrl": "https://music.apple.com/",
+        "verifiedISO": "2026-11-02",
+        "needsHandCheck": "Not from the researched sources; confirm the web player page."
+      },
+      "other": []
+    }
+  ]
+}
