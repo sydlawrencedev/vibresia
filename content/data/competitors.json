@@ -115,8 +115,83 @@
     ],
     "limits": [
       "The Apple Music plug-in for macOS is an unsigned development preview",
-      "The macOS standalone apps are pre-releases or development previews; the Steam and Homebrew builds are an old 3.1.12 release"
+      "The macOS standalone apps are pre-releases or development previews; the Steam and Homebrew builds are an old 3.1.12 release",
+      {
+        "text": "The library is only useful inside a host application: it captures no audio itself and simply takes PCM data through its API.",
+        "sourceUrl": "https://github.com/projectM-visualizer/projectm/blob/master/docs/building.rst",
+        "quote": "libprojectM on its own does not have any means of capturing audio, it simply takes PCM data via the API.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "The library ships with no presets of its own; preset packs such as Cream of the Crop live in separate repositories.",
+        "sourceUrl": "https://github.com/projectM-visualizer/projectm/blob/master/README.md",
+        "quote": "The projectM library does not ship with any presets.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "At 4K and above many presets render too dimly, because all lines and points are drawn at a fixed physical 1px size.",
+        "sourceUrl": "https://github.com/projectM-visualizer/projectm/wiki/Milkdrop-Compatibility",
+        "quote": "Some presets will render quite dimly in higher resolutions like 4K and above.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "The macOS standalone application cannot capture audio from other local applications and needs a virtual loopback driver such as BlackHole to record system audio.",
+        "sourceUrl": "https://github.com/projectM-visualizer/frontend-sdl-cpp/releases/tag/2.0.0-pre1",
+        "quote": "Due to CoreAudio restrictions, the application cannot capture audio played by local applications.",
+        "verifiedISO": "2026-11-02"
+      }
     ],
+    "io": {
+      "sourceUrl": "https://github.com/projectM-visualizer/projectm",
+      "verifiedISO": "2026-11-02",
+      "midi": {
+        "status": "no",
+        "text": "MIDI is not implemented in the library or in any official front-end; the MIDI control request was closed in favour of a remote-control API that is still an open feature request.",
+        "sourceUrl": "https://github.com/projectM-visualizer/frontend-sdl-cpp/issues/72",
+        "quote": "closing this in favor of a remote-control API which might be consistent accross the different projectM frontends",
+        "verifiedISO": "2026-11-02"
+      },
+      "osc": {
+        "status": "no",
+        "text": "OSC is not implemented; the OpenSoundControl request was closed as a duplicate of the still-open remote-control API feature request, and no OSC code exists in the library or the front-ends.",
+        "sourceUrl": "https://github.com/projectM-visualizer/frontend-sdl-cpp/issues/67",
+        "quote": "closing this in favor of a remote-control API which might be consistent accross the different projectM frontends",
+        "verifiedISO": "2026-11-02"
+      },
+      "syphon": {
+        "status": "no",
+        "text": "Syphon output is not available in any official front-end; the macOS pull request was abandoned and the feature request remains open.",
+        "sourceUrl": "https://github.com/projectM-visualizer/frontend-sdl-cpp/issues/67",
+        "quote": "There's already a draft PR for Syphon, but nothing has happened for several months on that front, so I'll consider it to be abandoned.",
+        "verifiedISO": "2026-11-02"
+      },
+      "spout": {
+        "status": "no",
+        "text": "Spout output is not implemented on Windows; the feature request is open and has not been actioned.",
+        "sourceUrl": "https://github.com/projectM-visualizer/frontend-sdl-cpp/issues/69",
+        "quote": "As an analogue to #62, we should also add Spout support on Windows.",
+        "verifiedISO": "2026-11-02"
+      },
+      "ndi": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://github.com/projectM-visualizer/frontend-sdl-cpp/issues/67",
+        "verifiedISO": "2026-11-02"
+      },
+      "dmx": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://github.com/projectM-visualizer/frontend-sdl-cpp/issues/74",
+        "verifiedISO": "2026-11-02"
+      },
+      "video": {
+        "status": "no",
+        "text": "There is no video or camera input, and no video output in the front-ends: video output comes from the separate GStreamer plug-in, which generates a raw video stream, and from a QuickTime-based movie generator utility.",
+        "sourceUrl": "https://github.com/projectM-visualizer/gst-projectm/blob/master/docs/OVERVIEW.md",
+        "quote": "Generating a video/x-raw stream (coded to add more formats later, if needed)",
+        "verifiedISO": "2026-11-02"
+      }
+    },
     "ourAngle": "projectM is the way to get MilkDrop's thousands of presets on a Mac. Vibresia doesn't play .milk presets. Its scenes are its own, it's a signed and notarised app that updates itself, and new scenes are written in GLSL (by you or by an AI assistant) rather than MilkDrop's preset language.",
     "profile": {
       "sourceUrl": "https://github.com/projectM-visualizer/projectm",
@@ -146,8 +221,94 @@
       "Source code for several versions is published by its author"
     ],
     "limits": [
-      "Windows only, as a Winamp plug-in; its page lists Windows 98 through Windows 7"
+      "Windows only, as a Winamp plug-in; its page lists Windows 98 through Windows 7",
+      {
+        "text": "The last released binary is MilkDrop 2.0d from January 2008, and the only later version is the 2.25c source code of 15 May 2013, so no new build has been issued in over thirteen years.",
+        "sourceUrl": "https://www.geisswerks.com/milkdrop/",
+        "quote": "Source Code for MilkDrop 2.25c (15 May 2013)",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "MilkDrop requires Winamp 5.12 or later to run, and the official download is a Winamp installer rather than a standalone MilkDrop program.",
+        "sourceUrl": "https://www.geisswerks.com/milkdrop/milkdrop.html",
+        "quote": "3. Winamp 5.12 or later",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "Presets requiring pixel shaders the graphics card cannot run are hidden from the preset list, so preset compatibility depends on the GPU's shader model.",
+        "sourceUrl": "https://www.geisswerks.com/milkdrop/milkdrop.html",
+        "quote": "MilkDrop automatically hides any presets from you that you can't run.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "Frame rate falls as resolution rises, and the documented guidance is to pick a fullscreen display mode no larger than the machine can sustain, with a maximum framerate dividing evenly into 60 Hz.",
+        "sourceUrl": "https://www.geisswerks.com/milkdrop/milkdrop.html",
+        "quote": "the speed (framerate) and smoothness of MilkDrop will drop as the resolution (number of pixels on the screen) increases",
+        "verifiedISO": "2026-11-02"
+      }
     ],
+    "io": {
+      "sourceUrl": "https://www.geisswerks.com/milkdrop/milkdrop.html",
+      "verifiedISO": "2026-11-02",
+      "midi": {
+        "status": "no",
+        "text": "MilkDrop has no MIDI input or output; it is controlled only through Winamp keyboard commands, and a later community attempt to add MIDI control to the open-sourced 2.25c code confirms the feature is absent from the plug-in.",
+        "sourceUrl": "https://sourceforge.net/p/milkdrop2/discussion/general/thread/7af1a0af1f/",
+        "quote": "But I really want to add native MIDI (perhaps someday OSC) to Milkdrop.",
+        "verifiedISO": "2026-11-02",
+        "via": "third-party",
+        "note": "A SourceForge project forum post by a third party, 2021-11-17; the official 2.25c source tree contains no MIDI handling code."
+      },
+      "osc": {
+        "status": "no",
+        "text": "MilkDrop has no OSC input, output or remote control; the open-sourced 2.25c plug-in contains no OSC code, and a user was seeking to add OSC support themselves.",
+        "sourceUrl": "https://sourceforge.net/p/milkdrop2/discussion/general/thread/7af1a0af1f/",
+        "quote": "But I really want to add native MIDI (perhaps someday OSC) to Milkdrop.",
+        "verifiedISO": "2026-11-02",
+        "via": "third-party",
+        "note": "A SourceForge project forum post by a third party, 2021-11-17."
+      },
+      "syphon": {
+        "status": "no",
+        "text": "MilkDrop has no Syphon input or output; Syphon is a macOS-only framework and MilkDrop is a Windows DirectX 9 Winamp plug-in.",
+        "sourceUrl": "https://github.com/ofTheO/ofxSyphon",
+        "quote": "Requirements Mac OS X 10.6.4 or greater",
+        "verifiedISO": "2026-11-02",
+        "via": "third-party",
+        "note": "The ofxSyphon readme establishes Syphon as a Mac OS X technology; MilkDrop's own documentation lists Windows and DirectX 9 as its requirements."
+      },
+      "spout": {
+        "status": "no",
+        "text": "MilkDrop has no Spout input or output; the open-sourced 2.25c plug-in contains no Spout code, and Spout output for the MilkDrop engine is supplied by the separate third-party NestDrop application.",
+        "sourceUrl": "https://nestimmersion.ca/nestdrop.php",
+        "quote": "Since the Milkdrop engine is at the core you can easily bring in your own Milkdrop presets.",
+        "verifiedISO": "2026-11-02",
+        "via": "third-party",
+        "note": "NestDrop's page credits the MilkDrop engine to Ryan Geiss and provides Spout output around it, which implies the plug-in itself has none."
+      },
+      "ndi": {
+        "status": "no",
+        "text": "MilkDrop has no NDI input or output; the open-sourced 2.25c plug-in contains no NDI code, and NDI output is offered only by the separate third-party NestDrop application.",
+        "sourceUrl": "https://nestimmersion.ca/nestdrop.php",
+        "quote": "NDI output",
+        "verifiedISO": "2026-11-02",
+        "via": "third-party",
+        "note": "NestDrop's version table lists NDI output as a NestDrop Midnight Pro feature, not a MilkDrop feature."
+      },
+      "dmx": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://www.geisswerks.com/milkdrop/milkdrop.html",
+        "verifiedISO": "2026-11-02"
+      },
+      "video": {
+        "status": "no",
+        "text": "MilkDrop takes an audio feed rather than a video feed, renders to the screen or a fullscreen DirectX 9 display mode, and has no video output path of its own.",
+        "sourceUrl": "https://www.geisswerks.com/milkdrop/milkdrop.html",
+        "quote": "MilkDrop can also be driven by a live audio feed (microphone or line-in)",
+        "verifiedISO": "2026-11-02"
+      }
+    },
     "ourAngle": "MilkDrop doesn't run on a Mac. For Mac users searching for it, the real options are projectM (MilkDrop presets) or a native Mac visualiser like Vibresia.",
     "profile": {
       "sourceUrl": "https://www.geisswerks.com/milkdrop/",
@@ -396,6 +557,11 @@
       "macos",
       "windows"
     ],
+    "requirements": "macOS 13.4 Ventura or later, or Windows 10 or later, with 8GB of RAM and an AMD, Iris Pro or Apple silicon graphics card",
+    "requirementsSource": {
+      "sourceUrl": "https://resolume.com/support/en/tech-specs",
+      "verifiedISO": "2026-11-02"
+    },
     "strengths": [
       "An industry-standard pair: Avenue for VJing, Arena adding media-server features",
       "Wire for building your own effects and generators visually",
@@ -696,6 +862,10 @@
       "windows",
       "macos"
     ],
+    "requirementsSource": {
+      "sourceUrl": "https://docs.derivative.ca/System_Requirements",
+      "verifiedISO": "2026-11-02"
+    },
     "requirements": "macOS 13 or later on a 2020-or-later Mac (Apple silicon highly recommended); Windows 10 or 11",
     "strengths": [
       "A free Non-Commercial licence for personal use and learning",
@@ -1128,5 +1298,464 @@
       "via": "third-party",
       "note": "Third-party source: shadertoy.com blocks automated reading with a human check."
     }
+  },
+  {
+    "slug": "millumin",
+    "name": "Millumin",
+    "category": "vj",
+    "audience": "vj_pro",
+    "homepage": "https://millumin.com/",
+    "tagline": "Software for creating and playing audiovisual shows on stage, with media playback, projection mapping and lighting control.",
+    "bestFor": "Operators, technicians and production teams running live shows in theatres, dance performances, videomapping events and interactive installations, who need to programme a show in advance and trigger it from controllers.",
+    "platforms": [
+      "macos"
+    ],
+    "requirementsSource": {
+      "sourceUrl": "https://help.millumin.com/docs/general/faq/#is-there-a-windows-or-linux-version",
+      "verifiedISO": "2026-11-02"
+    },
+    "requirements": "macOS 11 Big Sur or later, optimised for Intel and Apple silicon machines",
+    "strengths": [
+      "Projection mapping toolkit with perspective transform, mesh warping and masks, applied from layers up to outputs",
+      "Multiple displays up to 16K, with 8 or 10-bit depth, and video routing between canvases and outputs",
+      "A sequencer and timeline in the dashboard, so a show is written as columns of cues that launch in order",
+      "Live inputs including MIDI, OSC, DMX, timecode, Kinect, LeapMotion, Arduino and gamepads, with data sent back out to other software and hardware",
+      "Receives and sends video over Syphon and NDI, and streams over RTMP, while controlling DMX fixtures, LED strips and ILDA lasers"
+    ],
+    "ourAngle": "Millumin is a media server and show sequencer for someone who has already prepared their media, and it wins wherever Vibresia does not reach: it warps video onto surfaces and multi-projector setups, outputs to displays, capture cards, Syphon, NDI and RTMP, takes MIDI, OSC and DMX input and sends them back out, and plays multi-canvas timelines. Vibresia is a free Mac app that turns whatever the Mac is already playing into live visuals, with no plug-in and nothing to prepare, and it has no video output, no MIDI, OSC, NDI, Syphon or Spout output and no Windows version.",
+    "profile": {
+      "sourceUrl": "https://millumin.com/",
+      "verifiedISO": "2026-11-02"
+    },
+    "pricing": {
+      "model": "one-time",
+      "freeTier": false,
+      "tiers": [
+        {
+          "name": "Lifetime licence, one seat",
+          "price": "399.00",
+          "currency": "EUR",
+          "period": "once",
+          "includes": [
+            "Permanent licence for Millumin V5",
+            "Access to Millumin V1, V2, V3 and V4 as well",
+            "One computer activated at a time"
+          ],
+          "excludes": [
+            "Additional seats, which are sold separately",
+            "Educational discount rates, which need a separate application"
+          ]
+        },
+        {
+          "name": "Upgrade to V5, or an extra seat",
+          "price": "85.00",
+          "currency": "EUR",
+          "period": "once",
+          "includes": [
+            "Millumin V5 licence for an existing licence holder",
+            "Extra seats on an existing licence"
+          ],
+          "excludes": [
+            "A full licence for buyers with no existing licence"
+          ]
+        }
+      ],
+      "note": "The buy section on millumin.com shows prices in euros, per computer and before tax, and labels them as starting prices, so the lifetime and upgrade figures rise with the number of seats. Rental licences are also sold: 29 euros for 7 days, 69 euros for 30 days and 199 euros for a year, and any version of Millumin can be used with them. The educational page lists US dollar figures next to the euro ones, but the shop itself displays euros.",
+      "sourceUrl": "https://millumin.com/#buy",
+      "verifiedISO": "2026-11-02"
+    },
+    "trial": {
+      "limits": "The trial lasts 30 days with no limitation, after which white lines are watermarked onto the outputs, while saving a project and using every feature stay possible.",
+      "sourceUrl": "https://help.millumin.com/docs/general/license/",
+      "verifiedISO": "2026-11-02"
+    },
+    "io": {
+      "sourceUrl": "https://help.millumin.com/",
+      "verifiedISO": "2026-11-02",
+      "midi": {
+        "status": "yes",
+        "text": "Millumin receives MIDI and can send MIDI out, and it also handles MIDI Show Control.",
+        "sourceUrl": "https://help.millumin.com/docs/connect/devices/",
+        "quote": "This tab allows you to enable or disable the MIDI sources and destinations",
+        "verifiedISO": "2026-11-02"
+      },
+      "osc": {
+        "status": "yes",
+        "text": "Millumin listens for OSC messages and can send OSC to other applications, with OSCQuery support.",
+        "sourceUrl": "https://help.millumin.com/docs/connect/devices/",
+        "quote": "OSC is a protocol to control Millumin or send data to another application.",
+        "verifiedISO": "2026-11-02"
+      },
+      "syphon": {
+        "status": "yes",
+        "text": "Millumin can send its output as a Syphon stream and can receive Syphon streams from other software into its library.",
+        "sourceUrl": "https://help.millumin.com/docs/display/outputs/",
+        "quote": "It allows Millumin to send its frame to another application supporting Syphon.",
+        "verifiedISO": "2026-11-02"
+      },
+      "spout": {
+        "status": "no",
+        "text": "Spout is not documented anywhere in Millumin's own help centre, and Millumin has no Windows build, so the Windows-only Spout protocol is not available.",
+        "sourceUrl": "https://help.millumin.com/docs/general/faq/#is-there-a-windows-or-linux-version",
+        "quote": "No, sorry. For now, we are focused on the Mac version.",
+        "verifiedISO": "2026-11-02"
+      },
+      "ndi": {
+        "status": "yes",
+        "text": "Millumin receives NDI sources into its library and can send NDI output, with the option to embed audio in the stream.",
+        "sourceUrl": "https://help.millumin.com/docs/connect/capture/",
+        "quote": "This protocol, created by NewTek, does pretty much the same thing than Syphon, but through the network.",
+        "verifiedISO": "2026-11-02"
+      },
+      "dmx": {
+        "status": "yes",
+        "text": "Millumin sends and receives DMX over Art-Net, sACN and USB DMX, and uses it to drive fixtures and LED pixel mapping.",
+        "sourceUrl": "https://help.millumin.com/docs/connect/devices/",
+        "quote": "In this tab, you can configure or create various devices to receive or send DMX data.",
+        "verifiedISO": "2026-11-02"
+      },
+      "video": {
+        "status": "yes",
+        "text": "Millumin outputs video to external displays, Blackmagic and AJA cards, Syphon, NDI and RTMP streams, and captures from cameras, capture cards, screens and network sources.",
+        "sourceUrl": "https://help.millumin.com/docs/display/outputs/",
+        "quote": "Millumin supports the RTMP protocol, you can now output to a steaming platform directly, such as Youtube or Twitch.",
+        "verifiedISO": "2026-11-02"
+      }
+    },
+    "limits": [
+      {
+        "text": "After 30 days the free trial puts a watermark of white lines on the outputs, although every feature and project saving stay available.",
+        "sourceUrl": "https://help.millumin.com/docs/general/license/",
+        "quote": "There is no limitation during 30 days, then a watermark on the outputs",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "Millumin runs on macOS only, with no Windows or Linux version planned, so Windows users depend on the separate MilluNode player.",
+        "sourceUrl": "https://help.millumin.com/docs/general/faq/#is-there-a-windows-or-linux-version",
+        "quote": "A Windows version is a very huge project. Currently, this is not a priority",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "The MilluNode player that runs on Windows and macOS is limited to video, with no interactions, data-tracks, lights or capture cards.",
+        "sourceUrl": "https://millumin.com/millunode/",
+        "quote": "For now, MilluNode is focused on video, so it is not supporting interactions, data-tracks, lights, or capture cards.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "The Kinect 2 addon works natively only on Intel machines, so Apple silicon users must run Millumin through Rosetta or use the skeleton tracker effect.",
+        "sourceUrl": "https://help.millumin.com/docs/connect/addons/",
+        "quote": "Note that it only works on Intel machines : for Apple Silicon machines, please run Millumin via Rosetta",
+        "verifiedISO": "2026-11-02"
+      }
+    ]
+  },
+  {
+    "slug": "madmapper",
+    "name": "MadMapper",
+    "category": "vj",
+    "audience": "vj_pro",
+    "homepage": "https://madmapper.com/",
+    "tagline": "Video and LED mapping software for macOS and Windows, with mesh warping, DMX and Art-Net lighting control, and a live GLSL shader editor.",
+    "bestFor": "Artists, scenographers and technicians who need to project mapped video onto real surfaces and drive LED or DMX fixtures during a live show, and who trigger parameters from MIDI or OSC controllers.",
+    "platforms": [
+      "macos",
+      "windows"
+    ],
+    "requirementsSource": {
+      "sourceUrl": "https://docs.madmapper.com/madmapper/6/13.-setup-and-installation/requirements",
+      "verifiedISO": "2026-11-02"
+    },
+    "requirements": "macOS 11 or higher, or Windows 10 or higher on 64-bit, with a GPU compatible with OpenGL 3.3",
+    "strengths": [
+      "Bezier masking and mesh warping let you fit content to real surfaces",
+      "One machine can drive many projectors, with output up to 16K",
+      "DMX, Art-Net and sACN light control sits alongside the video tools, with a cueing system for the show",
+      "A built-in GLSL shader editor with live coding and a shared online material library",
+      "Audio analysis binds bass, mid and treble to any parameter, with beat detection and Ableton Live Link",
+      "Space Scanner uses structured light with a Canon DSLR to capture the projector's view for 3D calibration"
+    ],
+    "ourAngle": "MadMapper wins on anything that leaves the screen: it drives projectors, LED arrays and DMX fixtures, and takes MIDI, OSC, NDI, Syphon and Spout, none of which Vibresia does, because Vibresia draws only into its own Mac window and sends nothing out. Vibresia wins on cost and immediacy: it is free, needs no input file or plug-in, and reacts to whatever the Mac is already playing, while MadMapper starts at a rental licence and asks you to build a show from surfaces, cues and timelines. Vibresia is Mac only, so on Windows MadMapper is the only one of the two you can run.",
+    "profile": {
+      "sourceUrl": "https://madmapper.com/madmapper/software",
+      "verifiedISO": "2026-11-02"
+    },
+    "pricing": {
+      "model": "one-time",
+      "freeTier": true,
+      "tiers": [
+        {
+          "name": "Try MadMapper",
+          "price": "0.00",
+          "currency": "EUR",
+          "period": "once",
+          "includes": [
+            "All MadMapper features"
+          ],
+          "excludes": [
+            "Watermarked video output and input",
+            "Loading and saving a project is disabled",
+            "DMX channels blackout every 30 seconds",
+            "Space scanner resolution limited to one quarter",
+            "Export to SVG, PNG and PDF is disabled"
+          ]
+        },
+        {
+          "name": "Temporary licence",
+          "price": "39.00",
+          "currency": "EUR",
+          "period": "month",
+          "includes": [
+            "All MadMapper features",
+            "A temporary licence that works with any current or future version"
+          ],
+          "excludes": [
+            "Expires at the end of the term and never renews automatically",
+            "Minimum of one seat",
+            "MadLaser and MadProjectorControl need a separate licence"
+          ]
+        },
+        {
+          "name": "Perpetual licence",
+          "price": "399.00",
+          "currency": "EUR",
+          "period": "once",
+          "includes": [
+            "All MadMapper features",
+            "A perpetual licence that works forever for the current 6.xx version",
+            "One extra seat for a spare computer"
+          ],
+          "excludes": [
+            "Switching to a new major version carries an upgrade fee",
+            "Extensions such as MadLaser and MadProjectorControl are not included"
+          ]
+        }
+      ],
+      "note": "The 39 euro and 399 euro figures are the from prices printed on the MadMapper shop page, exclude tax, and rise with the number of seats. A perpetual licence covers the current 6.xx version only. Educational users get 30% off.",
+      "sourceUrl": "https://madmapper.com/madmapper/software",
+      "verifiedISO": "2026-11-02"
+    },
+    "trial": {
+      "limits": "The demo is free and can be used indefinitely but cannot be authorised: it watermarks input, output and preview, disables loading and saving a project and SVG, PNG and PDF export, crops the Space Scanner to one quarter of its resolution, blacks out DMX devices every 30 seconds, and blocks installing or publishing library materials.",
+      "sourceUrl": "https://madmapper.com/madmapper/faq",
+      "verifiedISO": "2026-11-02"
+    },
+    "io": {
+      "sourceUrl": "https://madmapper.com/madmapper/features",
+      "verifiedISO": "2026-11-02",
+      "midi": {
+        "status": "yes",
+        "text": "MadMapper takes MIDI in and out, and any MIDI or OSC controller can drive parameters live.",
+        "sourceUrl": "https://madmapper.com/madmapper/features",
+        "quote": "Midi input / output",
+        "verifiedISO": "2026-11-02"
+      },
+      "osc": {
+        "status": "yes",
+        "text": "MadMapper takes OSC in and out, and supports OSC Query for browsing its address space on the network.",
+        "sourceUrl": "https://madmapper.com/madmapper/features",
+        "quote": "OSC input / output with OSC Query support",
+        "verifiedISO": "2026-11-02"
+      },
+      "syphon": {
+        "status": "yes",
+        "text": "MadMapper sends and receives Syphon textures, which its FAQ names as the macOS path for sharing a projector's video output.",
+        "sourceUrl": "https://madmapper.com/madmapper/faq",
+        "quote": "you can use as media the video output of a MadMapper projector through Syphon (macOS) or Spout (Windows)",
+        "verifiedISO": "2026-11-02"
+      },
+      "spout": {
+        "status": "yes",
+        "text": "MadMapper sends and receives Spout textures, which its FAQ names as the Windows path for sharing a projector's video output.",
+        "sourceUrl": "https://madmapper.com/madmapper/faq",
+        "quote": "you can use as media the video output of a MadMapper projector through Syphon (macOS) or Spout (Windows)",
+        "verifiedISO": "2026-11-02"
+      },
+      "ndi": {
+        "status": "yes",
+        "text": "MadMapper sends and receives NDI, for passing video between machines.",
+        "sourceUrl": "https://madmapper.com/madmapper/features",
+        "quote": "NDI send / receive",
+        "verifiedISO": "2026-11-02"
+      },
+      "dmx": {
+        "status": "yes",
+        "text": "MadMapper handles DMX over Art-Net, sACN and USB interfaces, with a fixture editor and its own output framerate control.",
+        "sourceUrl": "https://madmapper.com/madmapper/features",
+        "quote": "Up to 4096 DMX universes",
+        "verifiedISO": "2026-11-02"
+      },
+      "video": {
+        "status": "yes",
+        "text": "MadMapper sends video to projectors and displays, one output per GPU-capable projector, up to 8k per projector.",
+        "sourceUrl": "https://madmapper.com/madmapper/features",
+        "quote": "As many projector outputs as your GPU can handle",
+        "verifiedISO": "2026-11-02"
+      }
+    },
+    "limits": [
+      {
+        "text": "The free demo shows a watermark on input, output and output preview, and loading and saving a project is disabled.",
+        "sourceUrl": "https://madmapper.com/madmapper/faq",
+        "quote": "a watermark is shown on input, output and output preview, loading/saving a project is disabled",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "In the demo, DMX lighting devices blackout once every 30 seconds.",
+        "sourceUrl": "https://madmapper.com/madmapper/faq",
+        "quote": "DMX lighting devices will blackout once every 30 seconds",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "MadMapper will not fade between two effects, so the FX Name parameter switches rather than fading.",
+        "sourceUrl": "https://madmapper.com/madmapper/faq",
+        "quote": "MadMapper will not fade between two effects. You must use two surfaces to do that.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "The software is only available in English.",
+        "sourceUrl": "https://madmapper.com/madmapper/faq",
+        "quote": "The software is only available in English.",
+        "verifiedISO": "2026-11-02"
+      }
+    ]
+  },
+  {
+    "slug": "obs",
+    "name": "OBS Studio",
+    "category": "vj",
+    "audience": "vj_pro",
+    "homepage": "https://obsproject.com/",
+    "tagline": "Free and open source software for live video recording and streaming, built around scenes that mix camera, screen, media and audio sources.",
+    "bestFor": "People who need a live or recorded video feed on screen, saved to a file or sent to a streaming service, and who want the same tool on Windows, macOS and Linux.",
+    "platforms": [
+      "macos",
+      "windows",
+      "linux"
+    ],
+    "requirementsSource": {
+      "sourceUrl": "https://obsproject.com/download",
+      "verifiedISO": "2026-11-02"
+    },
+    "requirements": "macOS 13.0 or newer, or Windows 10 or 11, with an OpenGL 3.3-compatible GPU",
+    "strengths": [
+      "It captures and mixes several video and audio sources into switchable scenes, with per-source filters, an audio mixer and hotkeys",
+      "It runs the same application on Windows, macOS and Linux",
+      "It has shipped a WebSocket API inside the application since version 28, alongside Lua and Python scripting and a plug-in system",
+      "It includes Studio Mode, a multiview that monitors eight scenes at once, and customisable transitions for running a live show",
+      "It is free and open source under the GNU General Public License version 2, with the source published and community plug-ins listed on the project's forum"
+    ],
+    "ourAngle": "OBS Studio is a production tool for recording and live streaming, and it wins on output and reach: it runs on Windows, macOS and Linux, writes video to files, streams to services, drives projector outputs and a virtual camera, and reaches other applications over the network through add-ons such as DistroAV for NDI and the OBS Spout plug-in for Spout. Vibresia has no video output, no recording or streaming, no MIDI, OSC, NDI, Syphon or Spout output, and it runs on macOS only. Vibresia wins on setup: it needs no scene building, no encoder configuration and no add-ons, and it responds to the audio already playing on the Mac.",
+    "profile": {
+      "sourceUrl": "https://obsproject.com/",
+      "verifiedISO": "2026-11-02"
+    },
+    "pricing": {
+      "model": "free",
+      "freeTier": true,
+      "tiers": [
+        {
+          "name": "OBS Studio",
+          "price": "0",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Video recording and live streaming",
+            "All features, including scenes, sources, filters, transitions, Studio Mode and the built-in WebSocket API",
+            "Windows, macOS and Linux builds"
+          ],
+          "excludes": []
+        }
+      ],
+      "note": "OBS Studio is free and open source software, so the price is zero rather than a paid tier. Its licence is the GNU General Public License version 2, which is a licence rather than a price.",
+      "sourceUrl": "https://obsproject.com/",
+      "verifiedISO": "2026-11-02"
+    },
+    "io": {
+      "sourceUrl": "https://obsproject.com/kb/sources-guide",
+      "verifiedISO": "2026-11-02",
+      "midi": {
+        "status": "no",
+        "text": "OBS Studio has no built-in MIDI source, filter or action, and MIDI control comes from community plug-ins such as obs-midi-mg.",
+        "sourceUrl": "https://obsproject.com/forum/threads/obs-midi-mg.158407",
+        "quote": "obs-midi-mg - Allows MIDI devices to interact with OBS Studio.",
+        "verifiedISO": "2026-11-02",
+        "via": "third-party",
+        "note": "The project's own Sources Guide lists every built-in source type and no MIDI source appears among them. The cited page is a plug-in listing on the project's forum."
+      },
+      "osc": {
+        "status": "no",
+        "text": "OBS Studio does not speak OSC natively, and OSC is handled by community scripts and companion applications built on its WebSocket API.",
+        "sourceUrl": "https://obsproject.com/forum/resources/osc-for-obs-app.1222",
+        "quote": "Requires: obs-websocket plugin",
+        "verifiedISO": "2026-11-02",
+        "via": "third-party",
+        "note": "No OSC support appears in the knowledge base, and the project's ideas board carries an open request to add it. OBS Studio's own remote control is WebSocket, which has shipped with every download since version 28.0.0."
+      },
+      "syphon": {
+        "status": "yes",
+        "text": "OBS Studio includes a macOS module that reads Syphon servers, so Syphon video can be used as a source on a Mac; it has no Syphon output.",
+        "sourceUrl": "https://github.com/obsproject/obs-studio/pull/12688",
+        "quote": "libobs: Fix Syphon by treating IOSurface pixel format 0 as 32BGRA; mac-syphon: Fix Metal opaque effect",
+        "verifiedISO": "2026-11-02"
+      },
+      "spout": {
+        "status": "no",
+        "text": "OBS Studio has no built-in Spout support, and Spout video is shared with it through the third-party OBS Spout plug-in, which is Windows only.",
+        "sourceUrl": "https://obsproject.com/forum/resources/obs-spout-bi-directional-video-sharing-with-obs-studio-from-any-spout-program.1384",
+        "quote": "This plugin lets you send and receive video feeds to and from OBS Studio with zero latency, compression and computational overhead using Spout.",
+        "verifiedISO": "2026-11-02",
+        "via": "third-party"
+      },
+      "ndi": {
+        "status": "no",
+        "text": "OBS Studio ships no NDI support of its own, and NDI input, main output and a per-source filter come from the DistroAV plug-in.",
+        "sourceUrl": "https://obsproject.com/forum/resources/distroav-network-audio-video-in-obs-studio-using-ndi-technology.528",
+        "quote": "This plugin adds simple audio/video input and output over IP using NDI® technology.",
+        "verifiedISO": "2026-11-02",
+        "via": "third-party"
+      },
+      "dmx": {
+        "status": "no",
+        "text": "OBS Studio has no DMX support of its own, and DMX over Art-Net control is offered by community tools such as ArtNetOBS.",
+        "sourceUrl": "https://obsproject.com/forum/threads/artnetobs.164335",
+        "quote": "ArtNetOBS allows you to control OBS Studio via the Artnet protocol.",
+        "verifiedISO": "2026-11-02",
+        "via": "third-party",
+        "note": "The tool reaches OBS through the WebSocket API rather than a native DMX implementation."
+      },
+      "video": {
+        "status": "yes",
+        "text": "OBS Studio produces video output as recordings, live streams, projector outputs and a virtual camera that other applications can read.",
+        "sourceUrl": "https://obsproject.com/kb/virtual-camera-guide",
+        "quote": "allows you to share your OBS Studio scene with any applications that can make use of a webcam",
+        "verifiedISO": "2026-11-02"
+      }
+    },
+    "limits": [
+      {
+        "text": "The Media Source accepts only a listed set of video and audio file types, and the playlist-capable VLC Video source appears only when VLC is installed on the machine.",
+        "sourceUrl": "https://obsproject.com/kb/media-sources",
+        "quote": "It requires that VLC be installed on your system to show up as an available source in OBS Studio.",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "On macOS, OBS Studio needs Screen Recording permission before it can capture the desktop, windows or applications, alongside Camera, Microphone and Accessibility permissions.",
+        "sourceUrl": "https://obsproject.com/kb/macos-permissions-guide",
+        "quote": "Enable Screen Recording to capture your desktop, windows, and apps",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "The OBS Studio canvas can be set at any resolution required up to 8K pixels squared.",
+        "sourceUrl": "https://obsproject.com/kb/power-of-projectors",
+        "quote": "OBS also is able to have the canvas be at any resolution required up to 8K pixels squared",
+        "verifiedISO": "2026-11-02"
+      },
+      {
+        "text": "CPU requirements vary considerably depending on the chosen encoder, resolution, frame rate and scene complexity.",
+        "sourceUrl": "https://obsproject.com/kb/system-requirements",
+        "quote": "The CPU requirements vary considerably depending on the chosen encoder, resolution, FPS and your scene complexity.",
+        "verifiedISO": "2026-11-02"
+      }
+    ]
   }
 ]

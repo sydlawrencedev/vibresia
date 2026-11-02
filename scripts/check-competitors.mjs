@@ -181,6 +181,16 @@ export function validate(records, { today = new Date().toISOString().slice(0, 10
             }
         }
 
+        // Requirements are a fact too. The sentence may come from the
+        // profile page, in which case the record's own source covers it, or
+        // from a specifications page of its own.
+        if (r.requirements !== undefined && (typeof r.requirements !== "string" || !r.requirements.trim())) {
+            errors.push(`${at}.requirements: must be a sentence`);
+        }
+        if (r.requirementsSource !== undefined) {
+            checkSource(`${at}.requirementsSource`, r.requirementsSource);
+        }
+
         // What a product can be wired into. Each kind says whether it is
         // supported, and says so with its own source: "not that we could
         // find" is a valid answer, a guess is not.

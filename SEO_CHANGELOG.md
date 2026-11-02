@@ -19,6 +19,38 @@ Recurring dates:
 - **Eight weeks after launch**: decide which `later` rows in
   `content/url-plan.csv` to build, from impressions.
 
+## 2026-11-02 (not yet deployed): batch 8, more referee pairs
+
+The URL plan's "later" rows were used up, so this wave came from fresh
+demand research: Google autocomplete on 2026-11-02. The playbook's own
+evidence says third-party X vs Y pages are the biggest traffic engine, and
+this batch has the pairs people actually type.
+
+| URL | Target query | Demand evidence |
+| --- | --- | --- |
+| `/comparison/resolume-vs-madmapper` | resolume vs madmapper | autocomplete: "resolume vs madmapper", "madmapper alternative" |
+| `/comparison/resolume-vs-obs` | resolume vs obs | autocomplete: "resolume vs obs", "obs alternative for mac" |
+| `/comparison/resolume-vs-millumin` | resolume vs millumin | autocomplete: "resolume vs millumin", "millumin alternative" |
+
+- Three new records, each researched from the maker's own pages: MadMapper
+  (Digidance), OBS Studio (OBS Project) and Millumin. Every fact carries a
+  source and a date, and `scripts/check-sources.mjs` fetched all 152
+  sources and confirmed 93 of them by quote.
+- Vibresia is the third option on none of them, and that is deliberate:
+  Resolume, MadMapper and Millumin are show tools, and Vibresia neither
+  performs video nor sequences a show. A page claiming otherwise would be
+  wrong for the people reading it.
+- The comparison that matters on `/comparison/resolume-vs-obs` is not the
+  price. OBS Studio has no built-in MIDI, OSC, NDI, Spout or DMX at all, and
+  each comes from a community plug-in; Resolume has all of them, with DMX in
+  Arena.
+- Each pair has one canonical order, the one people search, and the reverse
+  301s to it. A test now fails if a pair has no redirect.
+- The three referee pairs from batch 6 got the same "Control and
+  connections" treatment, and projectM and MilkDrop now carry their own
+  limits and I/O, so a page can say what a MilkDrop preset engine can and
+  cannot be wired into.
+
 ## 2026-11-02 (not yet deployed): what each app can be wired into
 
 The VJ records were thin on limits and I/O, so the referee pages couldn't

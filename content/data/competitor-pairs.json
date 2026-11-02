@@ -41,6 +41,46 @@
       "audience": "Mac-based visual artists choosing between a node-based environment and a modular VJ application.",
       "whyCompared": "Both run on a Mac and both can build a live visual show, from different starting points.",
       "thirdOption": false
+    },
+    {
+      "slug": "resolume-vs-madmapper",
+      "a": "resolume",
+      "b": "madmapper",
+      "audience": "Mac and Windows VJs choosing between the two VJ applications people compare most.",
+      "whyCompared": "Both are VJ applications for putting video on screens and projectors at a show, and they are the pair people weigh up when they are looking for one.",
+      "thirdOption": false
+    },
+    {
+      "slug": "resolume-vs-obs",
+      "a": "resolume",
+      "b": "obs",
+      "audience": "People setting up a live video feed, choosing between a VJ application and free streaming software.",
+      "whyCompared": "Both put video on a screen live, one as a paid VJ rig and one as free recording and streaming software, and people building a show weigh one against the other.",
+      "thirdOption": false
+    },
+    {
+      "slug": "resolume-vs-millumin",
+      "a": "resolume",
+      "b": "millumin",
+      "audience": "Venue and installation teams choosing media-server software for a live show.",
+      "whyCompared": "Both drive screens and projectors with prepared media at a show, and the people booked to run that show are the ones who compare them.",
+      "thirdOption": false
+    },
+    {
+      "slug": "touchdesigner-vs-blender",
+      "a": "touchdesigner",
+      "b": "blender",
+      "audience": "Creative coders and 3D artists choosing a tool for live visuals and installation work.",
+      "whyCompared": "Both build visuals from nodes and scripts and both are free to start with, so people starting out in either often weigh one against the other.",
+      "thirdOption": false
+    },
+    {
+      "slug": "touchdesigner-vs-vvvv",
+      "a": "touchdesigner",
+      "b": "vvvv",
+      "audience": "Mac and Windows artists building live visuals from a patch of nodes.",
+      "whyCompared": "Both are real-time visual programming environments with a patch of nodes and a live renderer, and both run on a Mac, so they get compared directly.",
+      "thirdOption": false
     }
   ]
 }

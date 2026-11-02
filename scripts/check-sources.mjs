@@ -153,7 +153,18 @@ async function fetchPage(url) {
             accept: "text/html,application/xhtml+xml,application/pdf",
         },
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    // A site that refuses to be read is not the same as a link that died.
+    // The first is a fact about the site; the second is a broken citation.
+    if (res.status === 401 || res.status === 403 || res.status === 429) {
+        const err = new Error(`HTTP ${res.status} (the site refused to be read)`);
+        err.blocked = true;
+        throw err;
+    }
+    if (!res.ok) {
+        const err = new Error(`HTTP ${res.status}`);
+        err.dead = true;
+        throw err;
+    }
     const type = res.headers.get("content-type") || "";
     const body = Buffer.from(await res.arrayBuffer());
     if (type.includes("pdf") || url.toLowerCase().split("?")[0].endsWith(".pdf")) {
@@ -166,6 +177,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const records = JSON.parse(fs.readFileSync(DATA, "utf8"));
     const facts = records.flatMap(factsOf);
     const problems = [];
+    const blocked = [];
     let checked = 0;
     let quotes = 0;
     let unchecked = 0;
@@ -177,7 +189,14 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
         }
         const got = await pages.get(fact.url);
         if (got.error) {
-            problems.push(`${fact.where}: ${fact.url} couldn't be read (${got.error.message})`);
+            // A refused site is reported, not failed: the citation may well be
+            // right, and a person can open it in a browser. A dead link is a
+            // broken citation and fails.
+            if (got.error.dead || !got.error.blocked) {
+                problems.push(`${fact.where}: ${fact.url} couldn't be read (${got.error.message})`);
+            } else if (!blocked.some(([u]) => u === fact.url)) {
+                blocked.push([fact.url, got.error.message]);
+            }
             continue;
         }
         checked++;
@@ -187,8 +206,10 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
         if (fact.quote && got.text === null) unchecked++;
     }
     for (const p of problems) console.error(`error: ${p}`);
+    for (const [u, why] of blocked) console.log(`blocked: ${u} (${why})`);
     console.log(`checked ${checked} source${checked === 1 ? "" : "s"} (${quotes} with a quote) across ${facts.length} facts`);
     if (unchecked) console.log(`${unchecked} quote${unchecked === 1 ? "" : "s"} could not be checked (a PDF pdftotext can't read)`);
+    if (blocked.length) console.log(`${blocked.length} source${blocked.length === 1 ? "" : "s"} refused to be read, so its quotes are unconfirmed`);
     if (problems.length) {
         console.error(`${problems.length} source${problems.length === 1 ? "" : "s"} could not be confirmed`);
         process.exit(1);

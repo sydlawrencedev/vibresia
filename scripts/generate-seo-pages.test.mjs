@@ -64,6 +64,20 @@ test("a page using a banned phrase doesn't build", () => {
     assert.throws(() => render(page({ answer: `${filler} Let's delve in.` }), records), /uses "delve"/);
 });
 
+test("each referee pair has one canonical order, and the reverse 301s to it", async () => {
+    const { PAIRS } = await import("./generate-seo-pages.mjs");
+    const root = path.join(path.dirname(DATA), "../..");
+    const redirects = fs.readFileSync(path.join(root, "site/_redirects"), "utf8");
+    for (const pair of PAIRS) {
+        assert.notEqual(pair.a, pair.b, `${pair.slug} compares an app with itself`);
+        const reverse = `/comparison/${pair.b}-vs-${pair.a}`;
+        assert.ok(
+            redirects.includes(`${reverse}  /comparison/${pair.slug}  301`),
+            `no redirect from ${reverse} to /comparison/${pair.slug}`,
+        );
+    }
+});
+
 test("a page that asks for a connection the record doesn't have doesn't build", () => {
     const { h } = helpers(records);
     assert.throws(() => h.io("phosphor", "midi"), /no io\.midi/);

@@ -454,6 +454,8 @@ function sourcesFor(record, usedFacts = new Set()) {
     for (const key of ["profile", "pricing", "licence", "trial", "reviews"]) {
         if (record[key]) add(record[key].sourceUrl, record[key].verifiedISO, record[key].via);
     }
+    // Requirements may come from a specifications page of their own.
+    if (record.requirementsSource) add(record.requirementsSource.sourceUrl, record.requirementsSource.verifiedISO, record.requirementsSource.via);
     // A limit and a connection each carry the page they came from.
     (record.limits || []).forEach((l, i) => {
         if (l && typeof l === "object" && usedFacts.has(`${record.slug}:limits[${i}]`)) {
