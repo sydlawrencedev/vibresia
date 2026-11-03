@@ -1,6 +1,6 @@
 // The scene on the question-page hub: rings that breathe with the bass and
 // ripple with the spectrum. Drawn in the browser by site/share/preview.js,
-// from the synthetic beat or, once the reader allows it, their microphone.
+// from the synthetic beat or, once the reader shares their sound, the room.
 vec3 render(vec2 p, float t) {
     float e = clamp(uBassSmooth * 1.3, 0.0, 1.0);
     float r = length(p);

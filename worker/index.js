@@ -804,10 +804,13 @@ async function setPublic(env, id, isPublic) {
   try {
     await env.SHARES.prepare("UPDATE shares SET is_public = ? WHERE id = ?")
       .bind(isPublic ? 1 : 0, id).run();
+    return { ok: true };
   } catch (error) {
     // A database without the column yet: the share is still a share, it just
-    // isn't in the gallery.
+    // isn't in the gallery. The caller is told, because a caller that is
+    // told "it worked" when it did not will say so to somebody.
     console.log(`[share] could not set the gallery flag on ${id}: ${error}`);
+    return { ok: false, error: "the database refused the change" };
   }
 }
 
@@ -818,14 +821,14 @@ async function setPublic(env, id, isPublic) {
 /// it, so the gallery does not fill up with every version of the same
 /// vibescape.
 async function deleteShare(env, id) {
-  if (!isValidShareId(id)) return false;
+  if (!isValidShareId(id)) return { ok: false, error: "no such share" };
   try {
     const result = await env.SHARES.prepare("DELETE FROM shares WHERE id = ?")
       .bind(id).run();
-    return (result?.meta?.changes ?? 0) > 0;
+    return { ok: true, deleted: (result?.meta?.changes ?? 0) > 0 };
   } catch (error) {
     console.log(`[share] could not delete ${id}: ${error}`);
-    return false;
+    return { ok: false, error: "the database refused the delete" };
   }
 }
 
@@ -1536,12 +1539,15 @@ async function handleAdminAction(request, url, env) {
   const action = typeof body?.action === "string" ? body.action : "";
 
   if (action === "hide" || action === "show") {
-    await setPublic(env, id, action === "show");
+    const wrote = await setPublic(env, id, action === "show");
+    // A write that failed must not be reported as one that worked.
+    if (!wrote.ok) return Response.json({ ok: false, error: wrote.error }, { status: 500 });
     return Response.json({ ok: true, id, inGallery: action === "show" });
   }
   if (action === "delete") {
     const gone = await deleteShare(env, id);
-    if (!gone) return Response.json({ ok: false, error: "no such share" }, { status: 404 });
+    if (!gone.ok) return Response.json({ ok: false, error: gone.error }, { status: 500 });
+    if (!gone.deleted) return Response.json({ ok: false, error: "no such share" }, { status: 404 });
     return Response.json({ ok: true, id, deleted: true });
   }
   if (action === "edit") {

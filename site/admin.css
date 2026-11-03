@@ -62,6 +62,15 @@ h1 {
   margin: 8px 0 0;
 }
 
+/* A share that refused to change says so on its own row, where the button
+   that was pressed is, rather than only at the top of a long list. */
+.action-error {
+  grid-column: 1 / -1;
+  color: var(--red);
+  font-size: 13px;
+  margin: 6px 0 0;
+}
+
 /* Unlocking. */
 .unlock {
   border: 1px solid var(--line);

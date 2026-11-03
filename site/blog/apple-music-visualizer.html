@@ -72,7 +72,7 @@
   .live { margin: 26px 0 0; }
   .live canvas { width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; border: 1px solid var(--line); background: var(--panel); display: block; }
   .live figcaption { color: var(--muted); font-size: 14px; margin-top: 10px; }
-  .mic { font: inherit; font-weight: 700; color: var(--text); background: var(--panel); border: 1px solid var(--magenta); border-radius: 999px; padding: 6px 14px; cursor: pointer; margin-right: 8px; }
+  .mic { font: inherit; font-weight: 700; color: var(--text); background: var(--panel); border: 1px solid var(--magenta); border-radius: 999px; padding: 6px 14px; cursor: pointer; margin-right: 8px; max-width: 100%; }
   .mic:disabled { border-color: var(--line); cursor: default; }
   .avatar { border-radius: 50%; border: 1px solid var(--line); margin: 0 0 18px; display: block; }
   .versus { min-width: 480px; }
@@ -194,10 +194,10 @@
         },
         {
           "@type": "Question",
-          "name": "Does the scene on this page use my microphone?",
+          "name": "What happens when I share my sound?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Only if you press the button and allow it. The sound is analysed in the page to move the scene; nothing is recorded or sent anywhere."
+            "text": "Only if you press the button and allow it does the scene hear anything. The sound is analysed in the page to move the scene; nothing is recorded or sent anywhere."
           }
         }
       ]
@@ -246,14 +246,15 @@
     
     <figure class="live">
       <canvas width="960" height="540" aria-label="A Vibresia scene, drawn live in your browser"></canvas>
-      <figcaption><button type="button" class="mic" data-track="live_scene_mic" data-placement="seo-hub">Use my microphone</button> <span class="mic-note">Play music near your computer and the scene follows it. The sound stays in this page: nothing is recorded or sent.</span></figcaption>
+      <figcaption><button type="button" class="mic" data-track="live_scene_mic" data-placement="seo-hub">Share my sound</button> <span class="mic-note">Let the scene hear what's playing near your computer, and it follows it. The sound stays in this page: nothing is recorded or sent.</span></figcaption>
     </figure>
     <script src="/share/preview.js"></script>
     <script>
       (function () {
         var canvas = document.querySelector(".live canvas");
-        var player = window.vibresiaPreview && window.vibresiaPreview.animate("// The scene on the question-page hub: rings that breathe with the bass and\n// ripple with the spectrum. Drawn in the browser by site/share/preview.js,\n// from the synthetic beat or, once the reader allows it, their microphone.\nvec3 render(vec2 p, float t) {\n    float e = clamp(uBassSmooth * 1.3, 0.0, 1.0);\n    float r = length(p);\n    float a = atan(p.y, p.x);\n    float glow = 0.0;\n    for (int i = 0; i \u003c 5; i++) {\n        float fi = float(i);\n        float band = uBands[int(fi * 18.0)];\n        float wobble = 0.05 * sin(a * (3.0 + fi) + uBeats * 0.8 + fi) * (0.4 + e + band);\n        float rad = 0.14 + fi * 0.11 + wobble + 0.05 * uBeatStrength;\n        glow += 0.010 / (abs(r - rad) + 0.004);\n    }\n    vec3 hot = vec3(1.0, 0.17, 0.84);\n    vec3 cool = vec3(0.17, 0.95, 1.0);\n    vec3 col = mix(hot, cool, 0.5 + 0.5 * sin(a + uBeats * 0.25)) * glow * (0.30 + uLevelSmooth * 1.1);\n    col += vec3(0.06, 0.0, 0.10) * (1.0 - r);\n    return clamp(col, 0.0, 1.0);\n}\n", canvas);
+        var player = window.vibresiaPreview && window.vibresiaPreview.animate("// The scene on the question-page hub: rings that breathe with the bass and\n// ripple with the spectrum. Drawn in the browser by site/share/preview.js,\n// from the synthetic beat or, once the reader shares their sound, the room.\nvec3 render(vec2 p, float t) {\n    float e = clamp(uBassSmooth * 1.3, 0.0, 1.0);\n    float r = length(p);\n    float a = atan(p.y, p.x);\n    float glow = 0.0;\n    for (int i = 0; i \u003c 5; i++) {\n        float fi = float(i);\n        float band = uBands[int(fi * 18.0)];\n        float wobble = 0.05 * sin(a * (3.0 + fi) + uBeats * 0.8 + fi) * (0.4 + e + band);\n        float rad = 0.14 + fi * 0.11 + wobble + 0.05 * uBeatStrength;\n        glow += 0.010 / (abs(r - rad) + 0.004);\n    }\n    vec3 hot = vec3(1.0, 0.17, 0.84);\n    vec3 cool = vec3(0.17, 0.95, 1.0);\n    vec3 col = mix(hot, cool, 0.5 + 0.5 * sin(a + uBeats * 0.25)) * glow * (0.30 + uLevelSmooth * 1.1);\n    col += vec3(0.06, 0.0, 0.10) * (1.0 - r);\n    return clamp(col, 0.0, 1.0);\n}\n", canvas);
         var button = document.querySelector(".live .mic");
+        var note = document.querySelector(".live .mic-note");
         if (!player || !player.ok) { document.querySelector(".live").hidden = true; return; }
         button.addEventListener("click", function () {
           if (!navigator.mediaDevices) return;
@@ -286,8 +287,11 @@
             button.textContent = "Listening";
             button.disabled = true;
           }).catch(function () {
-            button.textContent = "No microphone, so it's playing a beat of its own";
+            // The button stays short so it fits a phone; the explanation goes
+            // in the note, where it has room to wrap.
+            button.textContent = "Couldn't share your sound";
             button.disabled = true;
+            if (note) note.textContent = "The scene is playing a beat of its own instead. Nothing was recorded or sent.";
           });
         });
       })();
@@ -313,8 +317,8 @@
       <p>Yes, in the Music app on a Mac: choose Window, then Visualizer, while a song plays.</p>
       <h3>Does the Apple Music visualizer work with Spotify?</h3>
       <p>No. It only visualises songs playing in the Music app. For Spotify and other apps, use a visualiser that hears the Mac's system audio, such as Vibresia.</p>
-      <h3>Does the scene on this page use my microphone?</h3>
-      <p>Only if you press the button and allow it. The sound is analysed in the page to move the scene; nothing is recorded or sent anywhere.</p>
+      <h3>What happens when I share my sound?</h3>
+      <p>Only if you press the button and allow it does the scene hear anything. The sound is analysed in the page to move the scene; nothing is recorded or sent anywhere.</p>
     </section>
 
     <p class="cta"><a class="button" data-install data-track="download_clicked" data-placement="seo-bottom" data-template="2d" data-slug="apple-music-visualizer" href="/download?src=seo-apple-music-visualizer-bottom">Get Vibresia free for every app</a><span>Free, no account, macOS 14.2+ on Apple silicon.</span></p>

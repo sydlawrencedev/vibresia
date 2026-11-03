@@ -2,8 +2,8 @@
 // Target query: "does apple music have a visualizer" (content/url-plan.csv).
 // The hub for the "visualizer for {app}" spokes (template 2d). Its
 // interactive element is a Vibresia scene drawn live in the browser, which
-// follows the reader's microphone if they allow it. The table of apps and the
-// links to every spoke are generated.
+// follows the sound in the room if the reader shares it. The table of apps
+// and the links to every spoke are generated.
 
 export default (h) => ({
     slug: "apple-music-visualizer",
@@ -43,7 +43,7 @@ export default (h) => ({
     faq: [
         { q: "Does Apple Music have a visualizer?", a: "Yes, in the Music app on a Mac: choose Window, then Visualizer, while a song plays." },
         { q: "Does the Apple Music visualizer work with Spotify?", a: "No. It only visualises songs playing in the Music app. For Spotify and other apps, use a visualiser that hears the Mac's system audio, such as Vibresia." },
-        { q: "Does the scene on this page use my microphone?", a: "Only if you press the button and allow it. The sound is analysed in the page to move the scene; nothing is recorded or sent anywhere." },
+        { q: "What happens when I share my sound?", a: "Only if you press the button and allow it does the scene hear anything. The sound is analysed in the page to move the scene; nothing is recorded or sent anywhere." },
     ],
     related: [
         { href: "/blog/best-music-visualizer-for-mac-2026", text: "The best music visualizer for Mac in 2026" },

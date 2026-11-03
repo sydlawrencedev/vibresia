@@ -52,8 +52,8 @@
         <span id="count"></span>
         <button id="refresh">Refresh</button>
       </div>
-      <div id="list"></div>
       <p class="note" id="status"></p>
+      <div id="list"></div>
     </div>
   </main>
 
@@ -173,7 +173,7 @@
           editForm(row, share);
           return;
         }
-        act(action, share);
+        act(action, share, null, row);
       });
       return b;
     }
@@ -207,7 +207,7 @@
       var save = document.createElement("button");
       save.textContent = "Save";
       save.addEventListener("click", function () {
-        act("edit", share, { name: title.value.trim(), author: author.value.trim() });
+        act("edit", share, { name: title.value.trim(), author: author.value.trim() }, row);
       });
 
       var cancel = document.createElement("button");
@@ -228,7 +228,7 @@
       title.focus();
     }
 
-    function act(action, share, extra) {
+    function act(action, share, extra, row) {
       say("Working…");
       var body = { action: action };
       if (extra) {
@@ -242,7 +242,21 @@
         return response.json().then(function (body) { return { ok: response.ok, body: body }; });
       }).then(function (result) {
         if (!result.ok) {
-          say(result.body.error || "That did not work.");
+          var message = result.body.error || "That did not work.";
+          say(message);
+          // The message at the top of the list is a long way from the button
+          // that was pressed, so the failure is also shown on the row itself.
+          // Otherwise a share that refused to change looks like a button
+          // that did nothing.
+          if (row) {
+            var warn = row.querySelector(".action-error");
+            if (!warn) {
+              warn = document.createElement("span");
+              warn.className = "action-error";
+              row.appendChild(warn);
+            }
+            warn.textContent = message;
+          }
           return;
         }
         say(action === "delete"

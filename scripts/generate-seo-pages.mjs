@@ -224,12 +224,12 @@ const HUB_SCENE = fs.readFileSync(path.join(ROOT, "content/scenes/hub-live.glsl"
 /**
  * The hub's interactive element (Phase 2d): a Vibresia scene drawn live in
  * the browser by the share-link player. It moves to a synthetic beat until
- * the reader allows the microphone, then to whatever the room is playing.
+ * the reader shares their sound, then to whatever the room is playing.
  * Nothing is recorded or sent anywhere: the analysis happens in the page.
  */
 const LIVE_SCENE = `<figure class="live">
       <canvas width="960" height="540" aria-label="A Vibresia scene, drawn live in your browser"></canvas>
-      <figcaption><button type="button" class="mic" data-track="live_scene_mic" data-placement="seo-hub">Use my microphone</button> <span class="mic-note">Play music near your computer and the scene follows it. The sound stays in this page: nothing is recorded or sent.</span></figcaption>
+      <figcaption><button type="button" class="mic" data-track="live_scene_mic" data-placement="seo-hub">Share my sound</button> <span class="mic-note">Let the scene hear what's playing near your computer, and it follows it. The sound stays in this page: nothing is recorded or sent.</span></figcaption>
     </figure>
     <script src="/share/preview.js"></script>
     <script>
@@ -237,6 +237,7 @@ const LIVE_SCENE = `<figure class="live">
         var canvas = document.querySelector(".live canvas");
         var player = window.vibresiaPreview && window.vibresiaPreview.animate(${JSON.stringify(HUB_SCENE).replace(/</g, "\\u003c")}, canvas);
         var button = document.querySelector(".live .mic");
+        var note = document.querySelector(".live .mic-note");
         if (!player || !player.ok) { document.querySelector(".live").hidden = true; return; }
         button.addEventListener("click", function () {
           if (!navigator.mediaDevices) return;
@@ -269,8 +270,11 @@ const LIVE_SCENE = `<figure class="live">
             button.textContent = "Listening";
             button.disabled = true;
           }).catch(function () {
-            button.textContent = "No microphone, so it's playing a beat of its own";
+            // The button stays short so it fits a phone; the explanation goes
+            // in the note, where it has room to wrap.
+            button.textContent = "Couldn't share your sound";
             button.disabled = true;
+            if (note) note.textContent = "The scene is playing a beat of its own instead. Nothing was recorded or sent.";
           });
         });
       })();
@@ -761,7 +765,7 @@ const STYLE = `  :root {
   .live { margin: 26px 0 0; }
   .live canvas { width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; border: 1px solid var(--line); background: var(--panel); display: block; }
   .live figcaption { color: var(--muted); font-size: 14px; margin-top: 10px; }
-  .mic { font: inherit; font-weight: 700; color: var(--text); background: var(--panel); border: 1px solid var(--magenta); border-radius: 999px; padding: 6px 14px; cursor: pointer; margin-right: 8px; }
+  .mic { font: inherit; font-weight: 700; color: var(--text); background: var(--panel); border: 1px solid var(--magenta); border-radius: 999px; padding: 6px 14px; cursor: pointer; margin-right: 8px; max-width: 100%; }
   .mic:disabled { border-color: var(--line); cursor: default; }
   .avatar { border-radius: 50%; border: 1px solid var(--line); margin: 0 0 18px; display: block; }
   .versus { min-width: 480px; }
