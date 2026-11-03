@@ -460,7 +460,13 @@ final class AppState: ObservableObject {
         // While the scanner is running, remember which scene it is on. That
         // is what the app reopens on, so that it does not snap to Tunnel
         // every time the app is started.
-        if activeVibescape == .builtin(.autoScan), e != .builtin(.autoScan) {
+        //
+        // Not while the renderer is waiting for the saved scene to join the
+        // cycle: the user's own vibescapes are read from disk a moment after
+        // launch, so the scene on screen is still Tunnel, and remembering it
+        // would throw away the scene the app is about to restore.
+        if activeVibescape == .builtin(.autoScan), e != .builtin(.autoScan),
+           !renderer.hasPendingScanStart {
             Self.savedScanScene = e
         }
     }

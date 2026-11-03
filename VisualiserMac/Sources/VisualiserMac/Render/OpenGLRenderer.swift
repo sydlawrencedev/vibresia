@@ -731,10 +731,40 @@ final class OpenGLRenderer: NSObject {
     /// Used when the app is opened: Auto Scan picks up on the scene it was
     /// showing, rather than starting at Tunnel. The scanner still runs —
     /// this is where it starts, not what it does.
+    ///
+    /// The scene may not be in the cycle yet. The user's own vibescapes are
+    /// read from disk after the app has started, so one of those cannot be in
+    /// the cycle at this point. Rather than drop it and leave the scanner on
+    /// Tunnel — the symptom this was meant to fix — it is held until the
+    /// cycle catches up.
     func startAutoScan(on mode: VibescapeID) {
-        guard scanCycle.contains(mode) else { return }
+        guard scanCycle.contains(mode) else {
+            pendingScanStart = mode
+            NSLog("[SCAN] waiting for \(mode.rawValue) to join the cycle")
+            return
+        }
+        beginAutoScan(on: mode)
+    }
+
+    /// The scene the scanner was on when the app was closed, waiting for the
+    /// cycle to catch up with it.
+    private var pendingScanStart: VibescapeID?
+
+    /// True while the scanner is waiting for that scene to join the cycle.
+    ///
+    /// The scene on screen in the meantime is not the one the app is about
+    /// to restore, so it must not be remembered in its place.
+    var hasPendingScanStart: Bool { pendingScanStart != nil }
+
+    /// Puts the scanner on a scene and re-anchors the bar counter, so the
+    /// first change lands a whole number of bars from now rather than firing
+    /// at once.
+    private func beginAutoScan(on mode: VibescapeID) {
+        pendingScanStart = nil
         autoScanTarget = mode
         autoScanStart = CACurrentMediaTime()
+        scanIsMusical = danceActivity > 0.05
+        scanBarIndex = Int(beatClock / (Double(barsPerVibescape) * beatsPerBar))
         NSLog("[SCAN] starting on \(mode.rawValue)")
     }
 
@@ -771,6 +801,24 @@ final class OpenGLRenderer: NSObject {
             // Everything is switched off. Rather than spin on nothing, stay
             // put on whatever is showing.
             scanCycle = [.builtin(.tunnel)]
+        }
+        // The scene the scanner was on may have been one of the user's own
+        // vibescapes, which is only in the cycle now that it has been read
+        // from disk. If it has arrived, start on it.
+        if let pending = pendingScanStart {
+            if scanCycle.contains(pending) {
+                beginAutoScan(on: pending)
+                return
+            }
+            // It is not coming back: the file was deleted. Carry on from
+            // wherever the scanner already is, and say which that is, so
+            // that the fall back reads as a decision rather than a glitch.
+            pendingScanStart = nil
+            if !scanCycle.contains(autoScanTarget) {
+                autoScanTarget = scanCycle.first ?? .builtin(.tunnel)
+            }
+            NSLog("[SCAN] \(pending.rawValue) is gone — carrying on from \(autoScanTarget.rawValue)")
+            return
         }
         if !scanCycle.contains(autoScanTarget) {
             autoScanTarget = scanCycle.first ?? .builtin(.tunnel)
