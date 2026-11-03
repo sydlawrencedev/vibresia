@@ -642,7 +642,9 @@ enum CustomVibescapeGuide {
     uTrackKnown if useful)
     - Helpers: screenP hash21 vnoise fbm bandAt rot sdCircle sdBox sdRoundBox \
     sdSeg fill aaw PI
-    - Bounded loops. End with: `return clamp(col,0.,1.) * uActive;`
+    - Bounded loops. End with: `return clamp(col,0.,1.) * (0.2 + 0.8*uActive);` \
+    — the floor keeps the picture visible in silence, which is quiet and dim, \
+    not a black screen.
     - Full screen height at any aspect ratio, no letterbox. In portrait, pull \
     the lens back yourself: `screenP()` keeps the height at 1 and scales the \
     width, so a scene that is too tall has to be scaled down to stay in frame.
@@ -724,6 +726,58 @@ enum CustomVibescapeGuide {
     /// Ready-to-paste prompt for someone using an AI coding assistant.
     static var agentPrompt: String { withStyle(promptBody) }
 
+    /// The prompt to put in front of an agent that is asked to write one
+    /// vibescape.
+    ///
+    /// Short on purpose. The full guide — every uniform, every helper, and
+    /// the house style — is nearly seven thousand characters, which is a wall
+    /// of rules to read before the agent has been told what anyone wants to
+    /// look at. This says the same thing in a dozen lines, carries the
+    /// essentials, and points at the page that has the rest for an agent
+    /// that can go and read it. The MCP route is unaffected: an agent
+    /// talking to the app has `vibescape_reference`, and gets the whole
+    /// thing.
+    static let shortAgentPrompt = """
+    Write a vibescape for Vibresia, a macOS app for visual worlds that move \
+    with music. The output is one GLSL function, pasted into the app and \
+    compiled as a fragment shader.
+
+    Your entire answer must be a single GLSL code block containing exactly:
+
+        vec3 render(vec2 p, float t)
+        {
+            // your code
+        }
+
+    Rules:
+    - Write ONLY that function. No #version, no uniforms, no main(), no \
+    includes, no text outside the code block.
+    - Do not redeclare anything the app already declares.
+    - Return a colour: vec3 with three numbers from 0 to 1.
+    - `p` is centred on the screen and runs about -0.5 to 0.5 vertically. \
+    `t` is seconds since launch.
+    - React to the music so it visibly moves with the track — clearly, not \
+    subtly.
+    - In silence it settles: dim and still, but still visible. Scale the \
+    final colour by uActive with a floor under it, e.g. \
+    `clamp(col,0.,1.) * (0.2 + 0.8*uActive)`, so it never goes black.
+    - Nothing may jolt. Flowing things use accumulated phase \
+    (`t*k + uBeats*k2`), never `speed*time` that can jump.
+
+    Ready to use, do not redefine:
+      uniforms: uBass uMid uTreble uLevel uLevelSmooth uBassSmooth
+                uBeat uBeatStrength uBands[96] uActive uBeats uClock
+                uGenre
+      helpers:  screenP() hash21(p) vnoise(p) fbm(p) bandAt(x) rot(a)
+                sdCircle(p,r) sdBox(p,b) sdRoundBox(p,b,r) sdSeg(p,a,b)
+                fill(d,w) aaw(s)
+      GLSL:     mix clamp sin cos fract length dot
+
+    The full reference — every uniform, every helper, and how the app wants \
+    a vibescape to move — is at https://vibresia.com/agents. Read it if \
+    you can.
+    """
+
     /// The prompt itself, without the style.
     private static let promptBody = """
     Write a vibescape for Vibresia, a macOS app for visual worlds that move \
@@ -770,7 +824,8 @@ enum CustomVibescapeGuide {
     for whatever you want to do with it: a world that unfolds over the length
     of a song, anything that needs to know where it is, or nothing at all.
 
-    Fade gently in silence by scaling the final colour by uActive.
+    Settle in silence: scale the final colour by uActive, but keep a floor \
+    under it, so the picture rests dim and still instead of going black.
 
     The answer is the code block and nothing else. If the user asked for a \
     description of what they are about to add, put it in the app's name \
@@ -790,8 +845,8 @@ enum CustomVibescapeGuide {
         vec3 colour = vec3(1.0, 0.2, 0.8) * amount;   // pink
         colour += vec3(0.2, 0.9, 1.0) * uTreble;      // cyan on the highs
 
-        // Fade out when there's no music.
-        return colour * uActive;
+        // Rest dim and still when there's no music — quiet, not black.
+        return colour * (0.2 + 0.8*uActive);
     }
     """
 }

@@ -312,7 +312,7 @@ mcp-server-config:
     float ring = smoothstep(0.05, 0.0, abs(d - 0.25));
     vec3 colour = vec3(1.0, 0.3, 0.8) * ring;
     colour += vec3(0.2, 0.9, 1.0) * uTreble;   // sparkles on the highs
-    return colour * uActive;                   // fades out in silence
+    return colour * (0.2 + 0.8*uActive);       // rests dim in silence, never black
 }</code></pre>
       <h3>What it can use</h3>
       <p>The music, as numbers: <code>uBass</code>, <code>uMid</code>, <code>uTreble</code>, <code>uLevel</code>, <code>uBeat</code>, <code>uBeatStrength</code>, <code>uBands[96]</code> (the whole spectrum), <code>uBeats</code> (a beat counter), <code>uActive</code> (how much is playing), <code>uTime</code>, <code>uClock</code>. Plus <code>uGenre</code> — the genre of the music, as a number: 0 classical, 1 electronic, 2 rock, 3 pop, 4 hip-hop, 5 jazz, 6 blues, 7 country, 8 r&amp;b, 9 ambient. And helpers for shapes, colour and noise.</p>

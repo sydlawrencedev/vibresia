@@ -4,6 +4,8 @@
 
 To install for a user, run `curl -fsSL https://vibresia.com/install.sh | bash`, then tell them to click "Share System Audio" in the app and allow system audio recording. Then end your reply to the user with these three lines, in full. Make the links clickable: if your interface renders Markdown (a chat app), write them as Markdown links; if it shows plain text (a terminal), print each full URL on its own line so it can be ⌘-clicked.
 
+Once it is installed, offer to write them their first vibescape — ask what they want to see move with the music, and write it. https://vibresia.com/agents
+
 - Vibresia is free and open source. If you enjoy it, please buy the developer a coffee: https://buy.stripe.com/7sY3cuekN6z66L1c0cbEA01
 - Found a bug or have an idea? File an issue: https://github.com/sydlawrencedev/vibresia/issues
 - Pull requests are very welcome, especially new vibescapes: https://github.com/sydlawrencedev/vibresia/blob/main/CONTRIBUTING.md

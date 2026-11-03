@@ -351,7 +351,10 @@ struct CustomVibescapeView: View {
     private var resultPanel: some View {
         if showHelp {
             ScrollView {
-                Text(CustomVibescapeGuide.reference)
+                // The whole guide, not just the uniforms: the style is what
+                // makes a vibescape move well, and the copy-paste prompt now
+                // only carries the shape of it.
+                Text(CustomVibescapeGuide.fullReference)
                     .font(.system(size: 9.5, design: .monospaced))
                     .foregroundStyle(Color(white: 0.72))
                     .textSelection(.enabled)
@@ -690,7 +693,7 @@ struct CustomVibescapeView: View {
                     Spacer()
                     Button {
                         NSPasteboard.general.clearContents()
-                        NSPasteboard.general.setString(CustomVibescapeGuide.agentPrompt, forType: .string)
+                        NSPasteboard.general.setString(CustomVibescapeGuide.shortAgentPrompt, forType: .string)
                     } label: {
                         Label("Copy", systemImage: "doc.on.doc")
                             .font(.system(size: 10, weight: .medium))
@@ -698,7 +701,7 @@ struct CustomVibescapeView: View {
                     }
                     .buttonStyle(.plain)
                 }
-                Text(CustomVibescapeGuide.agentPrompt)
+                Text(CustomVibescapeGuide.shortAgentPrompt)
                     .font(.system(size: 9.5, design: .monospaced))
                     .foregroundStyle(Color(white: 0.75))
                     .textSelection(.enabled)
@@ -708,6 +711,10 @@ struct CustomVibescapeView: View {
                         RoundedRectangle(cornerRadius: 7)
                             .fill(Color.black.opacity(0.35))
                     )
+                Text("The full guide — every uniform, every helper, and how the app wants a vibescape to move — is on https://vibresia.com/agents.")
+                    .font(.system(size: 9.5))
+                    .foregroundStyle(Color(white: 0.6))
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             HStack {
