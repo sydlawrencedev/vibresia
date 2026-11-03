@@ -53,15 +53,31 @@ until then.
 | 2b referee pairs (`/comparison/{a}-vs-{b}`) | projectm-vs-milkdrop (third option on), nestdrop-vs-milkdrop, resolume-vs-vdmx, resolume-vs-touchdesigner, touchdesigner-vs-vdmx | live |
 | 2b referee pairs, batch 8 | resolume-vs-madmapper, resolume-vs-obs, resolume-vs-millumin, touchdesigner-vs-blender, touchdesigner-vs-vvvv | live |
 | 2b referee pairs, batch 9 | vmix-vs-obs, vmix-vs-resolume, vmix-vs-wirecast, watchout-vs-resolume, qlab-vs-resolume, propresenter-vs-resolume, propresenter-vs-obs, propresenter-vs-vmix, houdini-vs-touchdesigner, madmapper-vs-touchdesigner, madmapper-vs-millumin | live |
+| 2b referee pairs, batch 10 | qlab-vs-propresenter, touchdesigner-vs-notch, touchdesigner-vs-after-effects, vmix-vs-tricaster, vmix-vs-atem, watchout-vs-disguise, watchout-vs-pixera | merged, deploy pending |
 | "Control and connections" table | on the VJ pairs, and the batch 8 and 9 pairs | live |
 
-39 search pages and 29 competitor records. 21 referee pairs in total, all
-from the "third-party X vs Y" template, which the playbook's evidence says
-is the biggest traffic engine.
+## The target: about 50 pages on the site, not 50 of anything
 
-Everything is deployed and checked live on 2026-11-02: 28 search pages and
-the author page return 200, the five new reverse orders 301 to the canonical
-one, and the three sitemaps list 17, 3 and 9 URLs.
+The playbook says "waves of about 50 pages per template", and that was read
+literally for a while, which pushed the site towards comparisons and away from
+everything else. The number that means something is **about 50 pages on the
+site in total**, of whatever kind serve the audience, with the mix leaning
+towards the pages that answer a question rather than the pages that compare
+two rivals.
+
+Current mix, 46 search pages plus three other indexable pages:
+
+| Kind | Pages | Share |
+| --- | --- | --- |
+| Comparisons (2b, 2c) | 34 | 71% |
+| Blog: best-of lists and question pages (2a, 2d) | 12 | 25% |
+| Other indexable (home, agents, author) | 3 | 4% |
+
+The next slots go to blog and question pages, not to more comparisons. The
+comparison set is broad enough: 35 competitor records and 28 referee pairs
+cover the VJ, live production and creative tools space. What is thin is the
+"visualizer for {app}" cluster and the everyday guide questions a person
+actually asks.
 
 Also: author page `/author/syd-lawrence` (from `content/data/author.json`),
 FAQs and the shared Organization node on every indexable page, the demo reel
@@ -125,32 +141,57 @@ on search pages, `/ingest` analytics proxy in the Worker.
 - The next wave of referee pairs came from fresh autocomplete demand rather
   than the URL plan, whose "later" rows are used up. The pairs with demand
   still unbuilt are listed under "Next".
+- Church presentation software is out of scope, like Winamp. ProPresenter
+  against EasyWorship and against Proclaim were researched and dropped: both
+  are church tools, and a church's problem is lyrics and scripture on a
+  screen, not visuals that react to the music. ProPresenter stays, because it
+  is a general live video product used at concerts and events as well as in
+  churches, and it is already in three pages.
+- No separate page for plain "YouTube". Google's own autocomplete ranks
+  "visualizer for youtube music" above "visualizer for youtube", so the
+  YouTube Music page already targets the bigger of the two, and a second
+  page for the same answer would be the thin duplicate the playbook warns
+  about.
+- A referee page is worth building when the searcher's market is one a Mac
+  music visualiser could plausibly serve. That is the test EasyWorship and
+  Proclaim failed, and the reason the comparison set has stopped growing.
 
 ## Next
 
-1. Owner submits `/sitemaps/questions.xml` in Search Console with the
+1. Owner deploys batch 10 (seven referee pairs) and the three new question
+   pages for Plex, Twitch and TikTok, then checks the new pages live and
+   fills in deploy dates in `SEO_CHANGELOG.md`.
+2. Owner submits `/sitemaps/questions.xml` in Search Console with the
    other two, so each template's impressions can be read apart. The monthly
    review reports by template and needs the sitemaps to match.
-2. Stats page (2e) from anonymous usage in PostHog project Shareware. It
+3. Stats page (2e) from anonymous usage in PostHog project Shareware. It
    needs read access to that project: this session had only the public
    ingest key, which cannot read, and there is no personal key on this
    machine. Ask for a personal API key (phx_...) or for the PostHog MCP to
    be connected to OpenCode, which is where it has to be configured.
-3. Resolume alternatives referee list (2a) if the owner wants it.
 4. Owner tries one free tier and says what they saw, so a page can say
    "we tried it" instead of "not confirmed". OBS Studio, Blender, projectM
    and MilkDrop all have a free version that needs no card, and those four
    records are the ones whose first-hand claim a reader would most believe.
-5. The wave after this one, if the numbers say so. The pairs with real
-   demand still unbuilt: touchdesigner-vs-after-effects, touchdesigner-vs-notch,
-   propresenter-vs-easyworship, propresenter-vs-proclaim, vmix-vs-tricaster,
-   vmix-vs-atem, watchout-vs-disguise, watchout-vs-pixera, qlab-vs-propresenter.
-   Each needs its own sourced record first. Adobe and church-software
-   competitors may not be worth it: their searchers want a different tool.
-6. The 2d cluster has demand for pages Vibresia cannot serve: "visualizer for
-   pc", "audio visualizer for rainmeter", "music visualizer for android",
-   "music visualizer for car", "music visualizer for tv". Decided on
-   2026-11-02: skipped, because each is a page saying Vibresia is Mac only
-   and it costs a record each.
+5. The next pages, leaning on blog and questions rather than comparisons.
+   Demand found on 2026-11-03, in rough order of size:
+   - "what is a music visualiser" and "what is a song visualizer": an
+     explainer that answers the plainest question in the category and
+     links to every spoke. "what a goom music visualizer" sits in the same
+     cluster, so GooM is worth a record.
+   - "how to make a music visualizer", and its variants in CapCut, DaVinci
+     Resolve, Blender, After Effects and Premiere Pro: a guide page that
+     shows the long way and then the short way.
+   - "best free music visualizer", "best music visualizer for pc" and
+     "for windows": a page for the platform, answered honestly, which
+     Vibresia cannot serve because it is Mac only. Decide whether a page
+     that says so is worth building before building it.
+   - "best music visualizer for iphone", "for ipad", "for android" and
+     "for apple tv": the site already has MuVis, Butterchurn and Phosphor
+     records for these, so the records are ready.
+6. The Resolume alternatives referee list (2a), which the URL plan has as a
+   "later" row. With 35 records it could list real alternatives now, but
+   the searchers want a VJ tool rather than a visualiser, so it may be a
+   page with no path to Vibresia. The owner's call.
 7. After 8 weeks (from early January 2027): decide what to build more of
    from the monthly review's per-template numbers.
