@@ -35,6 +35,18 @@ const hostOf = (u) => {
     }
 };
 
+/**
+ * Whether two hosts are the same site. A help centre that moves from
+ * support.example.com to www.example.com is the same publisher; a typo that
+ * turns example.com into exarnple.com is not, and that is the failure this
+ * check exists for.
+ */
+function sameSite(a, b) {
+    if (!a || !b) return false;
+    if (a === b) return true;
+    return a.endsWith(`.${b}`) || b.endsWith(`.${a}`);
+}
+
 /** The page as text: no tags, no entities, spaces collapsed. */
 function asText(html) {
     return html
@@ -141,8 +153,11 @@ export async function checkFact(fact, fetchPage) {
 
     // A redirect to another site is the failure this script exists for: the
     // URL looks right, the page answers 200, and it is somebody else's page.
+    // A redirect within the same site is not that — a help centre that
+    // moves from support.example.com to www.example.com is still the same
+    // publisher — so the two are compared both ways round.
     const finalHost = hostOf(finalUrl);
-    if (finalHost && finalHost !== wanted && !finalHost.endsWith(`.${wanted}`)) {
+    if (finalHost && !sameSite(finalHost, wanted)) {
         problems.push(`${fact.where}: ${fact.url} redirects to ${finalHost}, a different site`);
     }
 

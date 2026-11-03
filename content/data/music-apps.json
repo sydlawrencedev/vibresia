@@ -347,16 +347,17 @@
       ],
       "noVisualizerNote": "Twitch's help centre has no visualiser feature of its own, with searches for visualiser returning no articles, so any visuals on a music stream come from the broadcaster or from third-party tools.",
       "macApp": {
-        "text": "There is no native Twitch app for macOS: its App Store listing covers iPhone, iPad and Apple TV.",
+        "text": "There is no native Twitch app for Mac; the App Store listing covers iPhone, iPad, Apple TV and iMessage.",
         "sourceUrl": "https://apps.apple.com/us/app/twitch-live-streaming/id460177396",
         "verifiedISO": "2026-11-03",
-        "quote": "There is no native Twitch app for macOS, as Apple's App Store listing for Twitch: Live Streaming gives the platforms as iPhone, iPad, Apple TV and iMessage, and the app has no Mac App Store page."
+        "quote": "iPhone, iPad, Apple TV, iMessage"
       },
       "webPlayer": {
         "text": "Twitch is watched in a desktop web browser at twitch.tv, which supports the latest Chrome, Firefox, Edge, Safari and Opera.",
         "sourceUrl": "https://help.twitch.tv/s/article/supported-browsers",
         "verifiedISO": "2026-11-03",
-        "quote": "Twitch is watched in a desktop web browser at twitch.tv, and Twitch's help centre says the desktop web browser experience of twitch.tv officially supports the two latest versions of Google Chrome and Mozilla Firefox, the most recent version of Microsoft Edge, the most recent version of Apple Safari and the most recent version of Opera and Opera GX."
+        "needsHandCheck": true,
+        "note": "Twitch's supported-browsers page is rendered by script, so the browser list was read from the rendered page and could not be confirmed from the HTML."
       },
       "other": [
         {
@@ -372,6 +373,77 @@
         {
           "text": "Music on Twitch is made up of broadcaster channels, with the music directory at twitch.tv/music listing live channels such as lofi and DJ streams.",
           "sourceUrl": "https://www.twitch.tv/music",
+          "verifiedISO": "2026-11-03"
+        }
+      ]
+    },
+    {
+      "slug": "tiktok",
+      "name": "TikTok",
+      "hasVisualizer": true,
+      "visualizerFacts": [
+        {
+          "text": "TikTok's own music visuals are effects you apply to videos you record, and its newsroom describes Music Visualizer as running real-time beat tracking to animate a background to the beat of a song.",
+          "sourceUrl": "https://newsroom.tiktok.com/en-us/immersive-music-creative-effects",
+          "quote": "The effect runs real time beat tracking to animate an out-of-this-world, retro greenscreen landscape that will move right to the beat of your favorite space song (or any song you like from our sounds library).",
+          "verifiedISO": "2026-11-03"
+        },
+        {
+          "text": "TikTok's help centre lists visual effects among the effect types a creator can layer onto their own recordings, including flashing, blurring and dissolving.",
+          "sourceUrl": "https://www.tiktok.com/support/faq_detail?id=7581820704207936011",
+          "quote": "Visual effects: Layer dynamic effects like flashing, blurring, dissolving, and more to make your creations stand out.",
+          "verifiedISO": "2026-11-03"
+        },
+        {
+          "text": "The audio visualisers people post on TikTok are made with other apps, and TikTok's own discover page for audio visualisers shows creators working in YouCut, After Effects, Alight Motion, FL Studio, TouchDesigner and Wallpaper Engine.",
+          "sourceUrl": "https://www.tiktok.com/discover/how-to-make-audio-visualizer",
+          "verifiedISO": "2026-11-03",
+          "needsHandCheck": true,
+          "note": "TikTok's discover page is rendered by script, so the list of tools it names was read from the rendered page."
+        }
+      ],
+      "noVisualizerNote": "TikTok has no music visualiser of its own that plays alongside the music: its built-in visuals are effects for videos you record, and the audio visualisers people post are made with third-party apps.",
+      "macApp": {
+        "text": "TikTok publishes no native Mac app: its App Store listing gives the platforms as iPhone, iPad, Apple Vision and iMessage, and the app requires iOS 15.0 or later.",
+        "sourceUrl": "https://apps.apple.com/us/app/tiktok/id835599320",
+        "quote": "iPhone, iPad, Apple Vision, iMessage",
+        "verifiedISO": "2026-11-03"
+      },
+      "webPlayer": {
+        "text": "TikTok is watched in a browser at tiktok.com, and its newsroom describes a desktop web app with a refreshed For You feed, an Explore tab, full-screen live streams and a floating player that works in Google Chrome.",
+        "sourceUrl": "https://newsroom.tiktok.com/en-us/new-features-bring-tiktok-magic-to-desktop",
+        "quote": "This new web-based experience will feature a new modular layout, refreshed For You feed, a new Explore tab, immersive full-screen LIVEs, and a web-exclusive Floating Player.",
+        "verifiedISO": "2026-11-03"
+      },
+      "other": [
+        {
+          "text": "TikTok's download page offers the app for Android and iOS only.",
+          "sourceUrl": "https://www.tiktok.com/download/en",
+          "quote": "Download the TikTok app for Android and iOS",
+          "verifiedISO": "2026-11-03"
+        },
+        {
+          "text": "TikTok's App Store listing describes a free library of sounds and music for use in videos.",
+          "sourceUrl": "https://apps.apple.com/us/app/tiktok/id835599320",
+          "quote": "Use our free library of sounds and music in your videos, plus filters and creative tools that help your content stand out.",
+          "verifiedISO": "2026-11-03"
+        },
+        {
+          "text": "TikTok's help centre says songs from TikTok can be added to playlists in Amazon Music, Apple Music and Spotify.",
+          "sourceUrl": "https://www.tiktok.com/support/faq_detail?id=7581820709165636107",
+          "quote": "You can add songs from TikTok to your playlists on a variety of music apps including Amazon Music, Apple Music, and Spotify.",
+          "verifiedISO": "2026-11-03"
+        },
+        {
+          "text": "TikTok Studio, the creator tool, is available in a web browser as well as in the app.",
+          "sourceUrl": "https://www.tiktok.com/support/faq_detail?id=7581820705491229240",
+          "quote": "You can also access TikTok Studio with limited tools for creators in the TikTok app and web browser.",
+          "verifiedISO": "2026-11-03"
+        },
+        {
+          "text": "Effect House, the tool for building TikTok effects, is offered as a free desktop app for Mac or PC.",
+          "sourceUrl": "https://effecthouse.tiktok.com/",
+          "quote": "Free desktop app for Mac or PC",
           "verifiedISO": "2026-11-03"
         }
       ]
