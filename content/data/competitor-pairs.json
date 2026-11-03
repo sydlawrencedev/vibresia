@@ -169,6 +169,78 @@
       "audience": "Artists mapping video onto surfaces and driving lighting at live events.",
       "whyCompared": "Both warp video onto real surfaces and both control fixtures, and they are the two tools people compare for installation work.",
       "thirdOption": false
+    },
+    {
+      "slug": "touchdesigner-vs-after-effects",
+      "a": "touchdesigner",
+      "b": "after-effects",
+      "audience": "Artists and motion designers choosing between a node-based environment and a compositing application.",
+      "whyCompared": "Both are ways of building a picture that moves, and people making titles, broadcast graphics and installation pieces weigh one against the other.",
+      "thirdOption": false
+    },
+    {
+      "slug": "touchdesigner-vs-notch",
+      "a": "touchdesigner",
+      "b": "notch",
+      "audience": "Visual artists building real-time 3D for installations and live work.",
+      "whyCompared": "Both are real-time 3D engines driven from a graph rather than a timeline, so they get compared directly.",
+      "thirdOption": false
+    },
+    {
+      "slug": "vmix-vs-tricaster",
+      "a": "vmix",
+      "b": "tricaster",
+      "audience": "Broadcasters and churches choosing live video production software.",
+      "whyCompared": "Both switch cameras and send the result out as a stream or a recording, and they are the pair people compare when they are past the free option.",
+      "thirdOption": false
+    },
+    {
+      "slug": "vmix-vs-atem",
+      "a": "vmix",
+      "b": "atem",
+      "audience": "People putting a multi-camera show together and choosing a switcher.",
+      "whyCompared": "One is software and one is hardware, and they are the two names people compare when they are building a small studio.",
+      "thirdOption": false
+    },
+    {
+      "slug": "watchout-vs-disguise",
+      "a": "watchout",
+      "b": "disguise",
+      "audience": "Show producers and AV integrators specifying a media server for a venue.",
+      "whyCompared": "Both drive many synchronised displays from a set of timelines in a venue, and they are the two that come up when a show is being specified.",
+      "thirdOption": false
+    },
+    {
+      "slug": "watchout-vs-pixera",
+      "a": "watchout",
+      "b": "pixera",
+      "audience": "Show producers and AV integrators specifying a media server for a venue.",
+      "whyCompared": "Both are media servers and show control systems for projection and LED, and they are compared when a production is being chosen.",
+      "thirdOption": false
+    },
+    {
+      "slug": "qlab-vs-propresenter",
+      "a": "qlab",
+      "b": "propresenter",
+      "audience": "Mac-based teams running a show, whether a theatre production or a church service.",
+      "whyCompared": "Both cue sound, video and lighting from a timeline on a Mac, and a venue or a church running either kind of show compares them.",
+      "thirdOption": false
+    },
+    {
+      "slug": "propresenter-vs-easyworship",
+      "a": "propresenter",
+      "b": "easyworship",
+      "audience": "Churches and their volunteer or staff media teams choosing presentation software.",
+      "whyCompared": "Both put lyrics and media on the screens in a service, and they are the pair most church tech teams compare.",
+      "thirdOption": false
+    },
+    {
+      "slug": "propresenter-vs-proclaim",
+      "a": "propresenter",
+      "b": "proclaim",
+      "audience": "Churches and their volunteer or staff media teams choosing presentation software.",
+      "whyCompared": "Both show lyrics and media in a church service, and the teams running one compare them before they commit.",
+      "thirdOption": false
     }
   ]
 }

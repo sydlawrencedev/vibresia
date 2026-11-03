@@ -19,6 +19,25 @@ Recurring dates:
 - **Eight weeks after launch**: decide which `later` rows in
   `content/url-plan.csv` to build, from impressions.
 
+## 2026-11-03 (deployed 2026-11-03): "Share my sound"
+
+The button on the question-page hub said "Use my microphone", which reads as
+the site taking the microphone rather than the reader offering it. It says
+"Share my sound" now, which is the word the app already uses for its own
+"Share System Audio". The note under it and the FAQ on that page follow the
+same vocabulary.
+
+- `/blog/apple-music-visualizer`: the button, the note beside it, and the
+  FAQ question, which is now "What happens when I share my sound?".
+- The button cannot overflow its row. The message shown when the browser
+  refuses the microphone was long enough to run off the side of a phone; it
+  is now short, with the explanation in the note beside it, where there is
+  room to wrap.
+- Nothing else on the site changed. The other mentions of a microphone are
+  facts about other products (MilkDrop's line-in, OBS's permission,
+  Shadertoy's inputs) and about the app's own source picker, where "Use
+  Microphone" is the accurate name.
+
 ## 2026-11-02 (deployed 2026-11-02): batch 9, eleven more referee pairs
 
 The URL plan's rows were used up, so this wave came from a wider autocomplete
