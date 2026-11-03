@@ -1,7 +1,7 @@
 # SEO playbook: where we are
 
 Status of running `docs/seo.md` on vibresia.com, written so a new session can
-carry on. Last updated 2026-11-02. Update it at the end of every batch.
+carry on. Last updated 2026-11-03. Update it at the end of every batch.
 
 ## How to continue
 
@@ -159,9 +159,10 @@ on search pages, `/ingest` analytics proxy in the Worker.
 
 ## Next
 
-1. Owner deploys batch 10 (seven referee pairs, and the question pages for
-   Plex and Twitch), then checks the new pages live and fills in deploy dates
-   in `SEO_CHANGELOG.md`.
+1. Batch 10 is deployed and checked live (2026-11-03): the pages return
+   200, the comparisons hub links the new pairs, `llms.txt` lists all 28
+   referee pairs, and the deploy dates are in `SEO_CHANGELOG.md`. The Twitch
+   record's correction went out with it.
 2. Owner submits `/sitemaps/questions.xml` in Search Console with the
    other two, so each template's impressions can be read apart. The monthly
    review reports by template and needs the sitemaps to match.

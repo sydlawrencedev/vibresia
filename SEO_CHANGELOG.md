@@ -19,6 +19,26 @@ Recurring dates:
 - **Eight weeks after launch**: decide which `later` rows in
   `content/url-plan.csv` to build, from impressions.
 
+## 2026-11-03 (deployed 2026-11-03): the Twitch record, corrected
+
+| URL | Target query |
+| --- | --- |
+| `/blog/twitch-visualizer-mac` | visualizer for twitch |
+
+- Twitch's App Store listing covers iPhone, iPad, Apple TV and iMessage, so
+  the page now says there is no native Twitch app for Mac rather than
+  "for macOS".
+- The list of browsers Twitch is watched in is no longer quoted from the
+  page. That page is rendered by script, so the list was read from the
+  rendered page and marked as one to check by hand, rather than quoted from
+  HTML that is not there.
+- The source checker now compares the two hosts of a redirect both ways
+  round, so a help centre that moves from `support.example.com` to
+  `www.example.com` is still the same publisher, and only a redirect to a
+  different site is a failure.
+- Checked live on 2026-11-03: the page returns 200 and the corrected
+  wording is on it.
+
 ## 2026-11-03 (deployed 2026-11-03): batch 10, question pages for Plex and Twitch
 
 The site is heading for about 50 pages in total rather than 50 of one
