@@ -30,6 +30,7 @@ Found a bug or have an idea? [File an issue](https://github.com/sydlawrencedev/v
 | `scripts/check-vibescapes.sh` | Fails if a vibescape is missing from the landing page, or the version in its structured data is stale. |
 | `scripts/check-posthog.sh` | Fails if the site and the app report to different PostHog projects. |
 | `scripts/check-no-webhook-leak.sh` | Fails if a Discord webhook URL, a notify token or a share token is anywhere in the tree. |
+| `scripts/check-plugin-manifests.py` | Fails if the four manifests that describe the public MCP server disagree on the version or the endpoint, or if the Cursor plugin has lost a field its marketplace checklist asks for. |
 | `server.json`, `mcp.json`, `.cursor-plugin/`, `gemini-extension.json`, `glama.json` | The manifests that describe the public MCP server to registries, plugins and clients. See [the manifests](#the-manifests). |
 | `wrangler.toml` | Deploys the Worker (and `site/` through it) to Cloudflare. |
 

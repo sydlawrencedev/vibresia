@@ -51,6 +51,11 @@ node ../scripts/check-schema.mjs
 # the website's public one — have to say the same thing, or an agent is told
 # different things depending on which it asked.
 python3 ../scripts/check-mcp-reference.py
+# The four manifests that describe the public MCP server — the registry's
+# entry, the client config, the Cursor plugin and the Gemini extension —
+# have to agree on the version and the endpoint. A directory that reads one
+# of them would otherwise show a version the server doesn't report.
+python3 ../scripts/check-plugin-manifests.py "$(pwd)/.."
 # Every page's navbar and footer come from site/_partials. Nothing enforces
 # that by itself: three definitions of .brand is survivable, three that drift
 # apart quietly is not.
