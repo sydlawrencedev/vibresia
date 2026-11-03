@@ -19,6 +19,40 @@ Recurring dates:
 - **Eight weeks after launch**: decide which `later` rows in
   `content/url-plan.csv` to build, from impressions.
 
+## 2026-11-03 (deployed 2026-11-03): batch 10, seven more referee pairs
+
+| URL | Target query |
+| --- | --- |
+| `/comparison/touchdesigner-vs-after-effects` | touchdesigner vs after effects |
+| `/comparison/touchdesigner-vs-notch` | touchdesigner vs notch |
+| `/comparison/vmix-vs-tricaster` | vmix vs tricaster |
+| `/comparison/vmix-vs-atem` | vmix vs atem |
+| `/comparison/watchout-vs-disguise` | watchout vs disguise |
+| `/comparison/watchout-vs-pixera` | watchout vs pixera |
+| `/comparison/qlab-vs-propresenter` | qlab vs propresenter |
+
+- Six new records, each researched from the maker's own pages: After Effects
+  (Adobe), Notch, TriCaster (Vizrt), ATEM (Blackmagic Design), disguise and
+  Pixera (AV Stumpfl). Every one of the 362 sources in the file is confirmed
+  by quote.
+- Three of the six homepages in the brief were wrong, which is what the
+  check is for: pixera.com is a maker of microscope cameras rather than the
+  live media software, notch.com belongs to an engineering firm, and
+  vizrt.com's old TriCaster path returns 404.
+- Two pairs were researched and dropped: ProPresenter against EasyWorship
+  and against Proclaim. Both are church presentation software, and a church's
+  problem is lyrics and scripture on a screen, not visuals that react to the
+  music. That is the reasoning that keeps the site off WinAmp, and it
+  applies just as much here.
+- The source checker now retries with a plain user agent when a browser one
+  is refused: Adobe's help server serves plain clients and blocks browsers,
+  which had left a dozen Adobe quotes unconfirmed. It also finds a quote the
+  page renders with different spacing, which is how Notch's "P rojects saved
+  with the Trial" was caught.
+- Checked live on 2026-11-03: the seven pages return 200 with their own
+  canonical and JSON-LD, the seven reverse orders 301 to the canonical one,
+  and `/sitemaps/comparisons.xml` lists 35 URLs.
+
 ## 2026-11-03 (deployed 2026-11-03): "Share my sound"
 
 The button on the question-page hub said "Use my microphone", which reads as
