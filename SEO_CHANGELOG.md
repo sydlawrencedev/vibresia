@@ -19,6 +19,34 @@ Recurring dates:
 - **Eight weeks after launch**: decide which `later` rows in
   `content/url-plan.csv` to build, from impressions.
 
+## 2026-11-03 (deployed 2026-11-03): batch 10, question pages for Plex and Twitch
+
+The site is heading for about 50 pages in total rather than 50 of one
+kind, and these are the kind that were thin: questions people actually
+ask about a service.
+
+| URL | Target query |
+| --- | --- |
+| `/blog/plex-visualizer-mac` | visualizer for plex |
+| `/blog/twitch-visualizer-mac` | visualizer for twitch |
+
+- Plex is the first app in the cluster that actually has visualisers, and
+  the page says where they are: in Plexamp and the mobile apps, behind
+  Plex Pass, and not in the Mac desktop app or the web player, which is
+  where a lot of people play their library on a Mac.
+- Twitch has none. Its animated graphics are alerts for followers, Bits
+  and raids. The page is honest about that and useful anyway, because for a
+  music stream the visual layer comes from another app, and an app that
+  listens to the Mac's system audio can be captured into the streaming
+  software like any other source.
+- The source checker now covers the facts behind the "visualizer for {app}"
+  pages as well as the competitor records, and it caught three Plex quotes
+  that were not on the page as written.
+- `llms.txt` now lists every referee pair from the pairs file, in three
+  groups, rather than a hand-kept list of thirty-five comparisons.
+- Checked live on 2026-11-03: both pages return 200, the comparisons hub
+  links the new pairs, and `llms.txt` lists all 28 referee pairs.
+
 ## 2026-11-03 (deployed 2026-11-03): batch 10, seven more referee pairs
 
 | URL | Target query |
