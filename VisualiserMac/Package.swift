@@ -1,5 +1,18 @@
 // swift-tools-version:5.9
 import PackageDescription
+import Foundation
+
+// The Command Line Tools keep the testing support libraries somewhere the
+// linker does not look for itself, so the tests will not link without being
+// told where they are. A machine with Xcode has them where the linker
+// already looks, and the path is only added when it is there.
+let commandLineToolsLibraries = "/Library/Developer/CommandLineTools/Library/Developer/usr/lib"
+let testingLinkerSettings: [LinkerSetting] = FileManager.default.fileExists(
+    atPath: commandLineToolsLibraries)
+    ? [.unsafeFlags(["-L\(commandLineToolsLibraries)",
+                     "-Xlinker", "-rpath",
+                     "-Xlinker", commandLineToolsLibraries])]
+    : []
 
 let package = Package(
     name: "AudioVane",
@@ -13,7 +26,11 @@ let package = Package(
         .executable(name: "VibresiaWatcher", targets: ["AudioVaneWatcher"])
     ],
     dependencies: [
-        .package(url: "https://github.com/PostHog/posthog-ios.git", from: "3.58.0")
+        .package(url: "https://github.com/PostHog/posthog-ios.git", from: "3.58.0"),
+        // The test framework. It ships with Xcode, but this machine has only
+        // the Command Line Tools, and the minifier's tests are the ones that
+        // have to run.
+        .package(url: "https://github.com/swiftlang/swift-testing.git", from: "6.2.0")
     ],
     targets: [
         // The logo, in one place. The app draws it in its header and on the
@@ -24,11 +41,31 @@ let package = Package(
             name: "VibresiaBrand",
             path: "Sources/VibresiaBrand"
         ),
+        // Shortens a vibescape's code so that a share fits in a link.
+        //
+        // On its own, and with tests of its own, because it is the one piece
+        // of the app that rewrites somebody's code: it has to mean exactly
+        // what the code it was given meant, and the only way to be sure of
+        // that is to keep examples of the ways it used to get it wrong.
+        .target(
+            name: "VibresiaMinify",
+            path: "Sources/VibresiaMinify"
+        ),
+        .testTarget(
+            name: "VibresiaMinifyTests",
+            dependencies: [
+                "VibresiaMinify",
+                .product(name: "Testing", package: "swift-testing")
+            ],
+            path: "Tests/VibresiaMinifyTests",
+            linkerSettings: testingLinkerSettings
+        ),
         .executableTarget(
             name: "AudioVane",
             dependencies: [
                 .product(name: "PostHog", package: "posthog-ios"),
                 "VibresiaBrand",
+                "VibresiaMinify",
             ],
             path: "Sources/VisualiserMac",
             swiftSettings: [

@@ -556,11 +556,25 @@ struct ShareVibescapeView: View {
         // code somebody wrote; a big vibescape is minified rather than
         // refused, because a share that is a little less pretty is much
         // better than a share that does not exist.
-        guard let payload = ShareLinkStore.payload(for: mode) else {
+        guard let outgoing = ShareLinkStore.payload(for: mode) else {
             linkFailure = .tooBig
             NSLog("[SHARE] the code is too big to share")
             return nil
         }
+
+        // What goes out has to work on the other Mac as well as this one.
+        //
+        // The code that goes out is not always the code that is here — a big
+        // vibescape is minified to fit — and minifying is the one step that
+        // can turn working code into code that doesn't compile. So the code
+        // that goes out is the code that gets compiled. A share that doesn't
+        // work is worse than no share: it looks like it worked.
+        if let problem = ShareLinkStore.compileProblem(in: outgoing.shader) {
+            linkFailure = .wontCompile(problem.message)
+            NSLog("[SHARE] the code that would be published does not compile: %@", problem.message)
+            return nil
+        }
+        let payload = outgoing.payload
         let name = mode.name
         let target = vibescape
         // The share this one supersedes, if there is one. Changing your

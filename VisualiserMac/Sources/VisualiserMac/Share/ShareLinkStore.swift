@@ -1,4 +1,5 @@
 import Foundation
+import VibresiaMinify
 
 /// Turns a vibescape into a short link on vibresia.com.
 ///
@@ -59,6 +60,8 @@ actor ShareLinkStore {
         case refused(String)
         /// The vibescape is bigger than the site will hold.
         case tooBig
+        /// The code that would be published doesn't compile.
+        case wontCompile(String)
 
         /// What to tell the person.
         var message: String {
@@ -69,6 +72,8 @@ actor ShareLinkStore {
                 return "The site wouldn't make the link"
             case .tooBig:
                 return "This vibescape is too big to share"
+            case .wontCompile:
+                return "This vibescape doesn't compile"
             }
         }
 
@@ -81,6 +86,8 @@ actor ShareLinkStore {
                 return reason
             case .tooBig:
                 return "The code is larger than the site will store, even minified."
+            case .wontCompile(let reason):
+                return reason
             }
         }
     }
@@ -162,24 +169,59 @@ actor ShareLinkStore {
         }
     }
 
-    /// The payload for the site, small enough for it to take.
+    /// The payload for the site, small enough for it to take, and the code it
+    /// carries.
     ///
-    /// The site will not take a payload over sixteen kilobytes, and a big
-    /// vibescape can be over that even compressed. The code is minified then
-    /// — the comments and the spacing go, the code does not — because a
-    /// share that is a little less pretty is much better than a share that
-    /// does not exist.
+    /// The code comes with it because it is the code that has to work. A share
+    /// is a copy of the vibescape on somebody else's Mac, and the copy that
+    /// goes out is not always the copy that is here: a big vibescape is
+    /// minified to fit, and minifying is the one step that can turn working
+    /// code into code that doesn't compile. So the code that goes out is the
+    /// code that has to be checked.
     ///
     /// Nil when it will not fit at all: a vibescape bigger than the site
     /// will hold, and the sheet says so rather than uploading it to be
     /// refused.
-    static func payload(for mode: CustomVibescape) -> String? {
-        let plain = ShareImporter.encodePayload(mode, minify: false)
-        guard plain.count > maxPayloadChars else { return plain }
-        let minified = ShareImporter.encodePayload(mode, minify: true)
+    static func payload(for mode: CustomVibescape) -> Outgoing? {
+        let plain = ShareImporter.encodePayload(mode, shader: mode.shader)
+        guard plain.count > maxPayloadChars else {
+            return Outgoing(payload: plain, shader: mode.shader)
+        }
+        let minifiedShader = GLSLMinifier.minify(mode.shader)
+        let minified = ShareImporter.encodePayload(mode, shader: minifiedShader)
         NSLog("[SHARE] the code was %d characters, so it was minified to %d",
               plain.count, minified.count)
-        return minified.count <= maxPayloadChars ? minified : nil
+        guard minified.count <= maxPayloadChars else { return nil }
+        return Outgoing(payload: minified, shader: minifiedShader)
+    }
+
+    /// What is about to be sent to the site.
+    struct Outgoing {
+        /// The payload as the site takes it.
+        let payload: String
+        /// The code the payload carries, which is what has to compile.
+        let shader: String
+    }
+
+    /// Why the code that is about to be published does not work, if it does
+    /// not.
+    ///
+    /// A share is a promise that the code works on the other Mac, and the only
+    /// way to know that is to compile it there and then. The compile happens
+    /// on the main thread, because the graphics system's context belongs to the
+    /// thread that made it.
+    ///
+    /// This is the last line of defence. The code on this Mac is checked when
+    /// it is saved, but the copy that goes out may have been minified to fit,
+    /// and that is a different piece of code.
+    @MainActor
+    static func compileProblem(in shader: String) -> ShaderProblem? {
+        switch VibescapeCompiler.compile(body: shader) {
+        case .compiled:
+            return nil
+        case .failed(let problem):
+            return problem
+        }
     }
 
     /// Puts a share in the public gallery, or takes it out.

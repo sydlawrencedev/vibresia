@@ -1,6 +1,7 @@
 import Foundation
 import AppKit
 import Compression
+import VibresiaMinify
 
 /// Decodes a `vibresia://open?...` URL handed in by macOS and acts on it.
 ///
@@ -165,11 +166,20 @@ enum ShareImporter {
     /// it again — and hands the recipient unreadable code, saved verbatim to
     /// their disk. So it is off unless the person sharing asks for it.
     static func encodePayload(_ mode: CustomVibescape, minify: Bool = false) -> String {
+        encodePayload(mode, shader: minify ? GLSLMinifier.minify(mode.shader) : mode.shader)
+    }
+
+    /// The same, with the code given rather than taken from the vibescape.
+    ///
+    /// The caller needs to know exactly which code went in, because that is
+    /// the code that has to work on the other Mac — and it is not always the
+    /// code that is on this one.
+    static func encodePayload(_ mode: CustomVibescape, shader: String) -> String {
         let payload = SharePayload(
             name: mode.name,
             author: mode.author,
             url: mode.url,
-            shader: minify ? GLSLMinifier.minify(mode.shader) : mode.shader
+            shader: shader
         )
         let encoder = JSONEncoder()
         // Keys sorted and whitespace-free so the round-trip is byte-stable.

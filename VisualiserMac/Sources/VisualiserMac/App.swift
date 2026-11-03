@@ -217,6 +217,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
 
+        // Publishing a new version of a share this Mac made — the other half
+        // of the share sheet, without the sheet.
+        if CommandLine.arguments.contains("--publish-update") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                self.runPublishUpdate()
+            }
+        }
+
         // Video export — record the last ten seconds of the vibescape, with
         // the music, and say where it went.
         if CommandLine.arguments.contains("--export-video") {
@@ -750,10 +758,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let author = ShareIdentity.shownAuthor(mode.author)
             let key = ShareIdentity.key(name: mode.name, author: author,
                                         url: mode.url, shader: mode.shader)
-            guard let payload = ShareLinkStore.payload(for: mode) else {
+            guard let outgoing = ShareLinkStore.payload(for: mode) else {
                 NSLog("[SHARE] the code is too big to share")
                 exit(1)
             }
+            // The code that goes out has to work on the other Mac, and it is
+            // not always the code that is here — a big one is minified to fit.
+            // So the code that goes out is the code that gets compiled.
+            if let problem = ShareLinkStore.compileProblem(in: outgoing.shader) {
+                NSLog("[SHARE] the code that would be published does not compile: %@", problem.message)
+                exit(1)
+            }
+            let payload = outgoing.payload
             let image = await ShareImageBuilder.jpeg(
                 renderer: app.renderer, mode: .custom(mode.id),
                 width: 1200, height: 630, time: 6.0,
@@ -767,6 +783,67 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             switch made {
             case .success(let link):
                 NSLog("[SHARE] link %@", link.url)
+                exit(0)
+            case .failure(let why):
+                NSLog("[SHARE] it did not work: %@", why.detail)
+                exit(1)
+            }
+        }
+    }
+
+    /// Publishes a new version of a share this Mac made, and says what
+    /// happened.
+    ///
+    ///   Vibresia --publish-update <slug>
+    ///
+    /// The link stays the same, which is the point: everybody who has the
+    /// vibescape installed gets the new version. The capability that was made
+    /// with the share is what says this Mac is the one that made it, and the
+    /// site keeps only its hash.
+    private func runPublishUpdate() {
+        let args = CommandLine.arguments
+        func value(_ flag: String) -> String {
+            if let i = args.firstIndex(of: flag), i + 1 < args.count { return args[i + 1] }
+            return ""
+        }
+        let slug = value("--publish-update")
+        guard let app = AppState.shared, !slug.isEmpty else { exit(1) }
+        guard let mode = app.customVibescapes.first(where: { $0.id == slug }) else {
+            NSLog("[SHARE] no vibescape called %@", slug); exit(1)
+        }
+        guard let shareID = mode.shareID, let editKey = mode.shareEditKey else {
+            NSLog("[SHARE] %@ was not made on this Mac, so it cannot publish a new version", slug)
+            exit(1)
+        }
+        Task { @MainActor in
+            let author = ShareIdentity.shownAuthor(mode.author)
+            guard let outgoing = ShareLinkStore.payload(for: mode) else {
+                NSLog("[SHARE] the code is too big to share")
+                exit(1)
+            }
+            // The code that goes out has to work on the other Mac, and it is
+            // not always the code that is here — a big one is minified to fit.
+            // So the code that goes out is the code that gets compiled.
+            if let problem = ShareLinkStore.compileProblem(in: outgoing.shader) {
+                NSLog("[SHARE] the code that would be published does not compile: %@", problem.message)
+                exit(1)
+            }
+            let image = await ShareImageBuilder.jpeg(
+                renderer: app.renderer, mode: .custom(mode.id),
+                width: 1200, height: 630, time: 6.0,
+                title: ShareImageBuilder.title(name: app.displayName(for: .custom(mode.id)),
+                                              author: author))
+            NSLog("[SHARE] payload %d chars, picture %d bytes", outgoing.payload.count, image?.count ?? 0)
+            let published = await ShareLinkStore().updateShare(
+                shareID: shareID, editKey: editKey, payload: outgoing.payload,
+                name: mode.name, author: author, image: image)
+            switch published {
+            case .success(let revision):
+                NSLog("[SHARE] %@ is now at version %d", shareID, revision)
+                app.setCustomVibescapeShare(id: mode.id, shareID: shareID,
+                                            key: ShareIdentity.key(name: mode.name, author: author,
+                                                                   url: mode.url, shader: mode.shader),
+                                            revision: revision, editKey: editKey)
                 exit(0)
             case .failure(let why):
                 NSLog("[SHARE] it did not work: %@", why.detail)
