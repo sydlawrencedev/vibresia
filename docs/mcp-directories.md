@@ -10,14 +10,14 @@ directory asks for it. Two servers:
 
 | Directory | Server | How | Status |
 |---|---|---|---|
-| Official MCP Registry | remote | `mcp-publisher publish` | Live as `com.vibresia/music-visualizer` 1.1.0 |
+| Official MCP Registry | remote | `mcp-publisher publish` | Live as `com.vibresia/music-visualizer` 1.1.0. The Worker was redeployed on 2026-11-03, so the server now reports that same 1.1.0 in `serverInfo` — it used to say 1.0.0 |
 | PulseMCP | remote | Copies the official registry | Waiting on their sync |
-| awesome-remote-mcp-servers | remote | PR | To reopen on [punkpeye/awesome-remote-mcp-servers](https://github.com/punkpeye/awesome-remote-mcp-servers) (the active upstream). The first attempt, [jaw9c#1912](https://github.com/jaw9c/awesome-remote-mcp-servers/pull/1912), is on a fork that stopped being maintained in September 2026 and will never merge. Their CI also requires the opening account to have starred the repo first |
+| awesome-remote-mcp-servers | remote | PR | [punkpeye/awesome-remote-mcp-servers#3723](https://github.com/punkpeye/awesome-remote-mcp-servers/pull/3723), opened 2026-11-03. Under **Multimedia**, next to the other music servers. CI green. The first attempt, [jaw9c#1912](https://github.com/jaw9c/awesome-remote-mcp-servers/pull/1912), was against a fork that stopped being maintained in September 2026; it is closed |
 | Claude Connectors Directory | remote | claude.ai/directory/manage, paid plan | In review as "Vibresia Music Visualiser" (slug `vibresia-music-visualiser`), submitted 2026-11-02 |
 | ChatGPT apps | remote | platform.openai.com/plugins, upload a ZIP of `chatgpt-plugin/` | Package ready. Waiting on Minith Labs organisation verification (started 2026-11-02); then a demo video link, the domain token at `/.well-known/openai-apps-challenge`, and the category the checks ask for |
 | Glama (hosted) | remote | Imported from the official registry; claimed via `/.well-known/glama.json` | Ownership verified, healthy since 2026-11-02 (Cloudflare had been blocking its checker with a 403 until the bot setting was changed) |
 | Glama (source) | local | glama.ai, Add Server, Runs from source | Submitted for review 2026-11-02. Glama will ask for a Dockerfile, which a macOS app can't provide |
-| awesome-mcp-servers (punkpeye) | local | PR, under **Art & Culture**, with the Glama badge | Ready to send. The badge is at `glama.ai/mcp/servers/sydlawrencedev/vibresia`, which resolves. Their CI labels an entry with no badge `missing-glama` |
+| awesome-mcp-servers (punkpeye) | local | PR, under **Art & Culture**, with the Glama badge | [punkpeye/awesome-mcp-servers#18447](https://github.com/punkpeye/awesome-mcp-servers/pull/18447), opened 2026-11-03. CI green: `has-glama`, `has-emoji`, `valid-name`. The badge is at `glama.ai/mcp/servers/sydlawrencedev/vibresia`, which resolves |
 | Smithery | — | — | Closed to submissions: since 2026-10-31 it is a curated, read-only directory run by Arcade, with no accounts |
 | mcp.so | remote | Free review request as a GitHub issue (the site's form only offers the $39 option) | [chatmcp/mcpso#6615](https://github.com/chatmcp/mcpso/issues/6615) |
 | mcpservers.org | remote | mcpservers.org/submit, free plan, contact syd@minithlabs.com | Submitted 2026-11-02; review within 2 weeks, approval comes by email |
