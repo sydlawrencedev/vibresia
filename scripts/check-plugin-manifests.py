@@ -49,6 +49,7 @@ def main():
     server = load(root, "server.json")
     cursor = load(root, ".cursor-plugin/plugin.json")
     gemini = load(root, "gemini-extension.json")
+    chatgpt = load(root, "chatgpt-plugin/plugin.json")
     client = load(root, "mcp.json")
     if server is None:
         print("server.json is missing, so there is nothing to compare against")
@@ -67,7 +68,8 @@ def main():
     # Each manifest carries its own version. They are all the same version,
     # because they all describe the same server.
     for path, manifest in ((".cursor-plugin/plugin.json", cursor),
-                           ("gemini-extension.json", gemini)):
+                           ("gemini-extension.json", gemini),
+                           ("chatgpt-plugin/plugin.json", chatgpt)):
         if manifest is None:
             continue
         if manifest.get("version") != version:
@@ -107,6 +109,21 @@ def main():
             url = servers["vibresia"].get("url", "")
             if url != endpoint:
                 fail(f"mcp.json points at {url!r}, but server.json says {endpoint!r}")
+
+    # --- the ChatGPT apps package -----------------------------------------
+    # Uploaded as a ZIP rather than read from the repository, so the copy in
+    # the package is the one that matters. It is built from the files here,
+    # so it is checked here.
+    if chatgpt is not None:
+        package = load(root, "chatgpt-plugin/mcp.json")
+        if package is not None:
+            servers = package.get("mcpServers", {})
+            if "vibresia" not in servers:
+                fail("chatgpt-plugin/mcp.json has no server called vibresia")
+            else:
+                url = servers["vibresia"].get("url", "")
+                if url != endpoint:
+                    fail(f"chatgpt-plugin/mcp.json points at {url!r}, but server.json says {endpoint!r}")
 
     # --- the Gemini extension manifest ------------------------------------
     # Gemini spells the streamable-http endpoint `httpUrl`, and the extension

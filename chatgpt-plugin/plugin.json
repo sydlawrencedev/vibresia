@@ -1,6 +1,6 @@
 {
   "name": "vibresia",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Vibresia is a music visualiser. Describe a look and it writes a live GLSL vibescape that moves with the music, then hands back a link that plays it in any browser.",
   "author": {
     "name": "Minith Labs",

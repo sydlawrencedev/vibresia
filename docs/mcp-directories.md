@@ -14,9 +14,9 @@ directory asks for it. Two servers:
 | PulseMCP | remote | Copies the official registry | Waiting on their sync |
 | awesome-remote-mcp-servers | remote | PR | [punkpeye/awesome-remote-mcp-servers#3723](https://github.com/punkpeye/awesome-remote-mcp-servers/pull/3723), opened 2026-11-03. Under **Multimedia**, next to the other music servers. CI green. The first attempt, [jaw9c#1912](https://github.com/jaw9c/awesome-remote-mcp-servers/pull/1912), was against a fork that stopped being maintained in September 2026; it is closed |
 | Claude Connectors Directory | remote | claude.ai/directory/manage, paid plan | In review as "Vibresia Music Visualiser" (slug `vibresia-music-visualiser`), submitted 2026-11-02 |
-| ChatGPT apps | remote | platform.openai.com/plugins, upload a ZIP of `chatgpt-plugin/` | Package ready. Waiting on Minith Labs organisation verification (started 2026-11-02); then a demo video link, the domain token at `/.well-known/openai-apps-challenge`, and the category the checks ask for |
+| ChatGPT apps | remote | platform.openai.com/plugins, upload a ZIP of `chatgpt-plugin/` | Package ready and rebuilt at 1.1.0 — `chatgpt-plugin/vibresia-chatgpt.zip`, built with `zip -r -X vibresia-chatgpt.zip plugin.json mcp.json assets`. Waiting on Minith Labs organisation verification (started 2026-11-02); then a demo video link, the domain token at `/.well-known/openai-apps-challenge`, and the category the checks ask for |
 | Glama (hosted) | remote | Imported from the official registry; claimed via `/.well-known/glama.json` | Ownership verified, healthy since 2026-11-02 (Cloudflare had been blocking its checker with a 403 until the bot setting was changed) |
-| Glama (source) | local | glama.ai, Add Server, Runs from source | Submitted for review 2026-11-02. Glama will ask for a Dockerfile, which a macOS app can't provide |
+| Glama (source) | local | glama.ai, Add Server, Runs from source | Live as [glama.ai/mcp/servers/sydlawrencedev/vibresia](https://glama.ai/mcp/servers/sydlawrencedev/vibresia), rated A and claimed. The Dockerfile Glama asked for turned out not to be needed: the listing is the hybrid kind, and points at the hosted connector rather than containerising the app binary. Its description still carries the old install prompt, and is edited on Glama rather than in this repository |
 | awesome-mcp-servers (punkpeye) | local | PR, under **Art & Culture**, with the Glama badge | [punkpeye/awesome-mcp-servers#18447](https://github.com/punkpeye/awesome-mcp-servers/pull/18447), opened 2026-11-03. CI green: `has-glama`, `has-emoji`, `valid-name`. The badge is at `glama.ai/mcp/servers/sydlawrencedev/vibresia`, which resolves |
 | Smithery | — | — | Closed to submissions: since 2026-10-31 it is a curated, read-only directory run by Arcade, with no accounts |
 | mcp.so | remote | Free review request as a GitHub issue (the site's form only offers the $39 option) | [chatmcp/mcpso#6615](https://github.com/chatmcp/mcpso/issues/6615) |
@@ -46,6 +46,10 @@ below repeat it — so a bump means editing one file and the copies beside it:
 | `gemini-extension.json` | The Gemini CLI extension manifest. Same endpoint, spelled `httpUrl` because that is Gemini's name for it. |
 | `chatgpt-plugin/` | The ChatGPT apps package, uploaded as a ZIP rather than read from the repository. |
 | `glama.json` | Proves the Glama connector listing is ours. Served with the claim at `/.well-known/glama.json`. |
+
+`scripts/check-plugin-manifests.py` fails the release if any of them says a
+different version or a different endpoint, so a bump is one edit and the
+copies are held to it.
 
 The `v1.1.0` tag is the Gemini extension's version, and it is deliberately not
 the app's version: the app is versioned by the date it was built (`0.11.032`
