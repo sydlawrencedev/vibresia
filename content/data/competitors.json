@@ -3224,5 +3224,1151 @@
         "verifiedISO": "2026-11-02"
       }
     ]
+  },
+  {
+    "slug": "pixera",
+    "name": "Pixera",
+    "category": "vj",
+    "audience": "vj_pro",
+    "homepage": "https://pixera.one/en/",
+    "tagline": "A 64-bit system for real-time media processing, compositing and management, with a show control framework for projection mapping, LED walls and live events.",
+    "bestFor": "Professional projection mapping, LED wall playback and multi-machine show control for live events, fixed installations and broadcast, run on dedicated Windows media servers.",
+    "platforms": [
+      "windows"
+    ],
+    "requirements": "Windows 10 or 11 Pro 64-bit on an Nvidia GPU with at least 4GB VRAM and 8GB of RAM",
+    "strengths": [
+      "Real-time 64-bit render engine that plays video files up to and beyond uncompressed 8K and handles HDR or 12-bit content.",
+      "Built-in show control framework with protocol modules for Art-Net, DMX, MIDI and OSC, plus LUA scripting and custom user interface elements.",
+      "Integrated 2D and 3D mapping with Art-Net, sACN and KiNET pixel mapping that converts screen content into DMX values for LED pixels, tubes and strips.",
+      "Live inputs from capture cards, DirectShow devices and NDI sources, with preview shown as an internal NDI stream.",
+      "Multi-machine operation with a Director master and player clients, plus frame synchronisation through NVIDIA Quadro Sync."
+    ],
+    "ourAngle": "Pixera is a professional media server for Windows that drives projectors and LED walls from its own render engine, while Vibresia is a free Mac app that turns whatever the Mac is playing into live visuals with no plug-in and no video output. Pixera wins on video output to screens, uncompressed 8K playback, multi-server synchronisation, DMX and LED pixel mapping and a LUA scriptable show control framework. Vibresia wins on cost, on needing no server hardware, licence request or content library, and on reacting to whatever audio the Mac is already playing. Vibresia has no MIDI, OSC, NDI, Syphon or Spout output and runs on macOS only, while Pixera is Windows only.",
+    "profile": {
+      "sourceUrl": "https://pixera.one/en/software/overview/",
+      "verifiedISO": "2026-11-03"
+    },
+    "pricing": {
+      "model": "one-time",
+      "freeTier": true,
+      "tiers": [
+        {
+          "name": "PIXERA creator",
+          "price": "0.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Full PIXERA software with four watermarked playback outputs",
+            "Project building and saving without limitation",
+            "Watermarked timeline and parts list export",
+            "PIXERA control GATE and native API"
+          ],
+          "excludes": [
+            "Live production use, because the watermark prevents it",
+            "Networked Director and Client setup connections",
+            "Unwatermarked playback outputs"
+          ]
+        }
+      ],
+      "note": "Pixera publishes no prices. Its own documentation says that for licence prices you should contact your local distributor or the PIXERA sales team, so the Director, Player and Server licences, the PIXERA control GATE, CORE and ENTERPRISE licences and the server hardware are all quoted on request. The URL given in the brief, https://www.pixera.com/, belongs to Pixera Corporation, a maker of microscope cameras, not to the live media and show control software, whose official site is https://pixera.one/en/ and which is run by AV Stumpfl. The names Pixera Live and Pixera Venue do not appear in the current PIXERA documentation, where the software licences are called creator, director, player and server.",
+      "sourceUrl": "https://help.pixera.one/project-management/pixera-licences-",
+      "verifiedISO": "2026-11-03"
+    },
+    "trial": {
+      "limits": "The free PIXERA creator licence watermarks its four outputs and any rendered video, so it cannot be used during a live production, and it cannot connect to a Director and Client setup.",
+      "sourceUrl": "https://help.pixera.one/project-management/pixera-licences-",
+      "verifiedISO": "2026-11-03"
+    },
+    "io": {
+      "sourceUrl": "https://help.pixera.one/control-basic-overview",
+      "verifiedISO": "2026-11-03",
+      "midi": {
+        "status": "yes",
+        "text": "PIXERA Control has a MIDI module that receives MIDI commands, sends MIDI commands and receives MIDI timecode.",
+        "sourceUrl": "https://help.pixera.one/protocols/midi",
+        "quote": "The midi module in PIXERA has several different functionalities",
+        "verifiedISO": "2026-11-03"
+      },
+      "osc": {
+        "status": "yes",
+        "text": "PIXERA Control has an OSC module that sends OSC data out of and receives OSC data into PIXERA.",
+        "sourceUrl": "https://help.pixera.one/protocols/osc_module",
+        "quote": "This Module is used to send and receive OSC data out from and into PIXERA.",
+        "verifiedISO": "2026-11-03"
+      },
+      "syphon": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://help.pixera.one/",
+        "verifiedISO": "2026-11-03",
+        "note": "The PIXERA documentation's protocol index lists Art-Net, sACN, KiNET, MIDI, OSC, NDI and capture devices, with no Syphon entry, and PIXERA is a Windows-only product."
+      },
+      "spout": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://help.pixera.one/",
+        "verifiedISO": "2026-11-03",
+        "note": "The PIXERA documentation's protocol index lists no Spout entry, and PIXERA is a Windows-only product."
+      },
+      "ndi": {
+        "status": "yes",
+        "text": "PIXERA takes live video from NewTek NDI sources on the network and uses an internal NDI stream for preview.",
+        "sourceUrl": "https://help.pixera.one/en_US/managing-resources/live-inputs-20",
+        "quote": "directly via a supported video input card, DirectShow sources or using network technologies like NewTek NDI",
+        "verifiedISO": "2026-11-03"
+      },
+      "dmx": {
+        "status": "yes",
+        "text": "PIXERA converts the colour information of a screen into DMX values and sends it to LED pixels, tubes or strips over Art-Net, sACN or KiNET v1.",
+        "sourceUrl": "https://help.pixera.one/en_US/mapping-/artnet-output-mapping",
+        "quote": "convert the color information of a screen into DMX values and transmit it to LED pixels, LED tubes, or LED strips",
+        "verifiedISO": "2026-11-03"
+      },
+      "video": {
+        "status": "yes",
+        "text": "PIXERA renders to physical video outputs for projectors and LED walls, with four DP1.4a outputs up to 5120x2880 on the PIXERA one server.",
+        "sourceUrl": "https://help.pixera.one/en_US/pixera-one-basic-technical-specifications",
+        "quote": "Physical Video Outputs 4 Video Output Standard DP1.4a Video Output Resolution (Max.) 5120x2880",
+        "verifiedISO": "2026-11-03"
+      }
+    },
+    "limits": [
+      {
+        "text": "PIXERA runs on Windows only and expects an Nvidia GPU, since on AMD and Intel GPUs not all features are supported.",
+        "sourceUrl": "https://help.pixera.one/pixera-server-specifications/pixera-system-requirements",
+        "quote": "on AMD and Intel GPUs not all features are supported (it is recommended to not use an AMD or Intel GPU)",
+        "verifiedISO": "2026-11-03"
+      },
+      {
+        "text": "Every licence except the free creator licence needs a USB dongle as its licence key.",
+        "sourceUrl": "https://help.pixera.one/project-management/pixera-licences-",
+        "quote": "for all of them except the creator licence, a USB dongle as license key is necessary",
+        "verifiedISO": "2026-11-03"
+      },
+      {
+        "text": "PIXERA control GATE, which is included with every PIXERA product, allows up to ten modules or devices in a project.",
+        "sourceUrl": "https://pixera.one/en/control/licenses/",
+        "quote": "You can use up to ten modules/devices in your project to remote control PIXERA itself and other third party devices or protocols.",
+        "verifiedISO": "2026-11-03"
+      },
+      {
+        "text": "The PIXERA player licence is limited to two timelines when it runs stand alone.",
+        "sourceUrl": "https://help.pixera.one/project-management/pixera-licences-",
+        "quote": "Limited to 2 Timelines in stand-alone modus",
+        "verifiedISO": "2026-11-03"
+      }
+    ]
+  },
+  {
+    "slug": "notch",
+    "name": "Notch",
+    "category": "creative-coding",
+    "audience": "creative_coder",
+    "homepage": "https://www.notch.one/",
+    "tagline": "Notch is the 3D motion design tool that brings your imagination to life in real time.",
+    "bestFor": "Professional real-time 3D motion design for concerts and live events, interactive installations, broadcast and delivery to media servers.",
+    "platforms": [
+      "windows"
+    ],
+    "requirements": "Windows 10 or later, 64-bit, with a discrete GPU, minimum NVIDIA RTX 2080 or AMD Radeon VII, and 4GB of VRAM for 4K output",
+    "strengths": [
+      "Four physically based GPU renderers under NURA that can be switched between in real time without changing the scene, lighting or materials.",
+      "Self-contained Notch Blocks and standalone executables that run in all major media servers for live events and installations.",
+      "Live control from OSC, MIDI, Artnet, NDI and Spout, plus depth cameras, Kinect and tracking systems such as Blacktrax and OptiTrack.",
+      "Real-time video compositing and VFX including background removal and keying, with offline render output up to 16k by 16k on the VFX licence."
+    ],
+    "ourAngle": "Notch wins on professional real-time 3D authoring, delivery to media servers as Notch Blocks and standalone executables, multi-head output and live OSC, MIDI, Art-Net, NDI and Spout control, none of which Vibresia has. Vibresia is free, needs no plug-in and turns whatever the Mac is playing into live visuals, but it has no video output, no MIDI, OSC, NDI, Syphon or Spout output and no project export. Notch cannot run on macOS at all, so for Mac users the choice is between a free Mac visualiser and a paid Windows tool.",
+    "profile": {
+      "sourceUrl": "https://www.notch.one/",
+      "verifiedISO": "2026-11-03"
+    },
+    "pricing": {
+      "model": "subscription",
+      "freeTier": false,
+      "tiers": [
+        {
+          "name": "Indie, annual",
+          "price": "279.00",
+          "currency": "USD",
+          "period": "year",
+          "includes": [
+            "Dongle-free software licence for two PCs",
+            "Full Notch creative feature set and NURA renderers",
+            "Live audio and camera input",
+            "OSC, MIDI, TUIO and depth camera support",
+            "Export videos and stills limited to MP4/H.264/H.265 at 1080p"
+          ],
+          "excludes": [
+            "Commercial use: the licence is for hobbyists and non-commercial work",
+            "NDI and Spout",
+            "RTMP and DirectShow features",
+            "Tracking systems such as Blacktrax, Motive/OptiTrack, Stype, NCAM, Hokuyo and MOVIN Tracin",
+            "Notch Blocks and standalone EXE export"
+          ]
+        },
+        {
+          "name": "VFX, annual",
+          "price": "1399.00",
+          "currency": "USD",
+          "period": "year",
+          "includes": [
+            "Everything in Indie",
+            "Support and no commercial revenue limit",
+            "HDR and WCG support",
+            "NDI and Spout support",
+            "Export videos or stills up to 16k by 16k resolution",
+            "VFX Blocks export for offline use in programs such as After Effects",
+            "Native Notch asset file export"
+          ],
+          "excludes": [
+            "Notch Blocks and standalone EXE export",
+            "Tracking systems such as Blacktrax, Motive/OptiTrack, Stype, NCAM, Hokuyo and MOVIN Tracin",
+            "Cannot act as a media server or standalone EXE playback licence",
+            "Turbo Mode enhanced real-time playback in the viewport",
+            "Distributed rendering, which will ship in a future update"
+          ]
+        },
+        {
+          "name": "VFX, month to month",
+          "price": "139.00",
+          "currency": "USD",
+          "period": "month",
+          "includes": [
+            "Everything in Indie",
+            "Support and no commercial revenue limit",
+            "HDR and WCG support",
+            "NDI and Spout support",
+            "Export videos or stills up to 16k by 16k resolution",
+            "VFX Blocks export for offline use in programs such as After Effects"
+          ],
+          "excludes": [
+            "Notch Blocks and standalone EXE export",
+            "Tracking systems such as Blacktrax, Motive/OptiTrack, Stype, NCAM, Hokuyo and MOVIN Tracin",
+            "Cannot act as a media server or standalone EXE playback licence",
+            "Turbo Mode enhanced real-time playback in the viewport"
+          ]
+        },
+        {
+          "name": "RFX, annual",
+          "price": "2589.00",
+          "currency": "USD",
+          "period": "year",
+          "includes": [
+            "Everything in VFX",
+            "Export media server Notch Blocks, Standalone and VR executables",
+            "Edit media server exposed parameters and live network editing of blocks and standalones",
+            "Artnet, NDI and camera tracking systems support",
+            "Multiple video capture devices",
+            "Turbo Mode enhanced real-time playback in the viewport",
+            "Playback of Notch Blocks up to 4096x2160",
+            "One free Render Node included",
+            "Premium support"
+          ],
+          "excludes": [
+            "Software-only licence, a portable USB dongle licence is required"
+          ]
+        },
+        {
+          "name": "Render Node, annual",
+          "price": "249.00",
+          "currency": "USD",
+          "period": "year",
+          "includes": [
+            "Distributed rendering on additional machines",
+            "Command-line or GUI tool",
+            "Works with your own orchestration tool such as Deadline",
+            "Render directly to NotchLC with no transcoding",
+            "Region rendering, splitting large renders into independent tiles",
+            "Scales from a second PC to a full render farm",
+            "Licensed via a physical Codemeter network dongle"
+          ],
+          "excludes": [
+            "Volume discounts"
+          ]
+        },
+        {
+          "name": "Render Node, month to month",
+          "price": "50.00",
+          "currency": "USD",
+          "period": "month",
+          "includes": [
+            "Distributed rendering on additional machines",
+            "Command-line or GUI tool",
+            "Render directly to NotchLC with no transcoding",
+            "Scales from a second PC to a full render farm"
+          ],
+          "excludes": [
+            "Volume discounts",
+            "Annual purchase discounts"
+          ]
+        }
+      ],
+      "note": "Notch now sells subscriptions rather than licences: Indie, VFX and RFX are available monthly or annually, with separate paid playback licences for playing Notch content in media servers and paid render node licences. Older versions were sold as perpetual Base and Pro licences tied to a Codemeter dongle with a commercial revenue limit of 100,000 US dollars a year, and the pricing page still shows that legacy comparison table. Prices are read from notch.one/pricing because the former notch.com domain now belongs to an unrelated engineering firm.",
+      "sourceUrl": "https://www.notch.one/pricing",
+      "verifiedISO": "2026-11-03"
+    },
+    "trial": {
+      "limits": "The trial is free for 60 days with the same functionality as Indie, requires a Notch account login, and projects saved with the trial cannot be opened in VFX or RFX without a paid conversion.",
+      "sourceUrl": "https://www.notch.one/get-started",
+      "verifiedISO": "2026-11-03"
+    },
+    "io": {
+      "sourceUrl": "https://www.notch.one/features",
+      "verifiedISO": "2026-11-03",
+      "midi": {
+        "status": "yes",
+        "text": "Notch reads control change and note data from a selected MIDI device to drive modifier values.",
+        "sourceUrl": "https://manual.notch.one/2026.2/en/docs/reference/nodes/modifiers/midi-modifier/",
+        "quote": "Reads CC values from a MIDI device for modifiers.",
+        "verifiedISO": "2026-11-03"
+      },
+      "osc": {
+        "status": "yes",
+        "text": "Notch sends and receives OSC over the network to control project values and, in standalone, the play head.",
+        "sourceUrl": "https://manual.notch.one/2026.2/en/docs/reference/devices-protocols/osc/",
+        "quote": "Notch allows you to send and receive simple OSC data over the network for interacting with your project.",
+        "verifiedISO": "2026-11-03"
+      },
+      "syphon": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://manual.notch.one/2026.2/en/docs/reference/devices-protocols/",
+        "verifiedISO": "2026-11-03",
+        "note": "The 2026.2 manual's devices and protocols index lists ArtNet, NDI, OSC, Spout, RTMP streaming, the NotchCam virtual webcam and video capture, with no Syphon entry, and Notch is a Windows-only application."
+      },
+      "spout": {
+        "status": "yes",
+        "text": "Notch can act as a Spout sender or receiver to share textures with other programs on the same GPU.",
+        "sourceUrl": "https://manual.notch.one/2026.2/en/docs/reference/devices-protocols/spout/",
+        "quote": "Notch can either send or receive Spout shared textures from another program",
+        "verifiedISO": "2026-11-03"
+      },
+      "ndi": {
+        "status": "yes",
+        "text": "Notch can bring NDI sources into the nodegraph and can output an NDI stream from the viewport or from an NDI Output node.",
+        "sourceUrl": "https://manual.notch.one/2026.2/en/docs/reference/devices-protocols/ndi/",
+        "quote": "Notch accepts NDI sources into the nodegraph via the Video NDI Source node.",
+        "verifiedISO": "2026-11-03"
+      },
+      "dmx": {
+        "status": "yes",
+        "text": "Notch receives DMX over ArtNet to control exposed parameters and transport, though ArtNet does not operate inside a media server.",
+        "sourceUrl": "https://manual.notch.one/2026.2/en/docs/reference/devices-protocols/artnet/",
+        "quote": "you can expose any numerical parameter and basic transport controls to ArtNet (DMX over network)",
+        "verifiedISO": "2026-11-03"
+      },
+      "video": {
+        "status": "yes",
+        "text": "Notch outputs video to displays, to media servers as Notch Blocks and to standalone executables, and can also stream over NDI, Spout, RTMP and a virtual webcam.",
+        "sourceUrl": "https://www.notch.one/pricing",
+        "quote": "Export media server Notch Blocks, Standalone & VR Executables",
+        "verifiedISO": "2026-11-03"
+      }
+    },
+    "limits": [
+      {
+        "text": "The Indie licence is for hobbyists and non-commercial work.",
+        "sourceUrl": "https://www.notch.one/pricing",
+        "quote": "Indie is the license for hobbyists and non-commercial use.",
+        "verifiedISO": "2026-11-03"
+      },
+      {
+        "text": "Indie exports of video and stills are limited to MP4/H.264/H.265 at 1080p.",
+        "sourceUrl": "https://www.notch.one/pricing",
+        "quote": "Export videos and stills (limited to MP4/H.264/H.265, 1080p)",
+        "verifiedISO": "2026-11-03"
+      },
+      {
+        "text": "Indie excludes NDI and Spout, as well as Notch Blocks and standalone EXE export.",
+        "sourceUrl": "https://www.notch.one/pricing",
+        "quote": "No NDI or Spout",
+        "verifiedISO": "2026-11-03"
+      },
+      {
+        "text": "Projects saved with the trial cannot be opened in VFX or RFX unless they are converted.",
+        "sourceUrl": "https://www.notch.one/get-started",
+        "quote": "saved with the Trial cannot be opened in VFX or RFX.",
+        "verifiedISO": "2026-11-03"
+      }
+    ]
+  },
+  {
+    "slug": "disguise",
+    "name": "disguise",
+    "category": "vj",
+    "audience": "vj_pro",
+    "homepage": "https://www.disguise.one/",
+    "tagline": "Designer is the software to design, visualise, sequence and run visual experiences for live, location based experiences and virtual production.",
+    "bestFor": "Programming and delivering live shows, virtual production, broadcast, xR and immersive installations where one showfile carries a production from preview to playback.",
+    "platforms": [
+      "windows"
+    ],
+    "requirements": "Windows 10 or 11 64-bit with a DX11 compatible discrete GPU of at least 16GB of video memory and 16GB of memory",
+    "strengths": [
+      "Designer builds a real-time 3D replica of the production environment so a show can be previewed and tested before it is built.",
+      "Spatial content mapping covers projectors and LED, with camera-based OmniCal calibration to sub-pixel accuracy.",
+      "Device support covers DMX, Art-Net, sACN, OSC, MIDI, CITP, tracking systems and matrix switchers, alongside over 300 integrations and REST APIs.",
+      "The free Designer Starter tier gives the full core software for learning, evaluating and pre-visualising.",
+      "RenderStream is an open protocol for driving Unreal Engine, Unity, Notch, TouchDesigner and Spout content engines from the timeline."
+    ],
+    "ourAngle": "disguise is a Windows-only production platform for programming, previsualising and delivering content to video hardware. It wins on output and control: it drives projectors, LED and broadcast video through DisplayPort, DVI, SDI, HDMI and ST 2110, and it takes MIDI, OSC, DMX and NDI inputs, whereas Vibresia has no video output, no MIDI, OSC, NDI, Syphon or Spout output and runs on Mac only. Vibresia wins on cost and setup: it is free and needs no server, dongle, licence or subscription, while disguise paid tiers run from $159 a month to $15,000 a year and its media servers are sold by quote.",
+    "profile": {
+      "sourceUrl": "https://www.disguise.one/",
+      "verifiedISO": "2026-11-03"
+    },
+    "pricing": {
+      "model": "subscription",
+      "freeTier": true,
+      "tiers": [
+        {
+          "name": "Designer Starter",
+          "price": "0.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "Full core Designer functionality and the plugin framework",
+            "Real-time 3D visualisation, mapping, sequencing and content playback",
+            "Real-time project editing with other Designer Starter instances",
+            "Watermarked RenderStream"
+          ],
+          "excludes": [
+            "Ask AId3n AI workflow assistant",
+            "Joining a session with a Disguise server or a Designer Pro instance",
+            "Unwatermarked feed and stage movies, which are limited to 2K UHD"
+          ]
+        },
+        {
+          "name": "Designer Pro, monthly",
+          "price": "159.00",
+          "currency": "USD",
+          "period": "month",
+          "includes": [
+            "All Designer functionality, including the plugin framework and the Ask AId3n AI workflow assistant",
+            "Programming and pre-visualising projects that run on a Disguise server",
+            "Real-time project editing in session with Disguise servers and other Pro instances"
+          ],
+          "excludes": [
+            "Physical video outputs on a laptop or PC, which need an X Series licence",
+            "Watermark-free feed and stage movies, which are limited to 4K UHD"
+          ]
+        },
+        {
+          "name": "Designer Pro, annual",
+          "price": "1500.00",
+          "currency": "USD",
+          "period": "year",
+          "includes": [
+            "All Designer functionality, including the plugin framework and the Ask AId3n AI workflow assistant",
+            "Programming and pre-visualising projects that run on a Disguise server",
+            "Real-time project editing in session with Disguise servers and other Pro instances"
+          ],
+          "excludes": [
+            "Physical video outputs on a laptop or PC, which need an X Series licence",
+            "Watermark-free feed and stage movies, which are limited to 4K UHD"
+          ]
+        },
+        {
+          "name": "Disguise X1",
+          "price": "6000.00",
+          "currency": "USD",
+          "period": "year",
+          "includes": [
+            "Full Designer functionality and plugins",
+            "One 4K DCI output from compatible Windows hardware",
+            "Portable licence dongle",
+            "Receiving RenderStream"
+          ],
+          "excludes": [
+            "A Disguise media server",
+            "Monthly billing, which is available from $600 per user"
+          ]
+        },
+        {
+          "name": "Disguise X2",
+          "price": "10000.00",
+          "currency": "USD",
+          "period": "year",
+          "includes": [
+            "Full Designer functionality and plugins",
+            "Two 4K DCI outputs from compatible Windows hardware",
+            "Portable licence dongle",
+            "Receiving RenderStream"
+          ],
+          "excludes": [
+            "A Disguise media server",
+            "Monthly billing, which is available from $1,000 per user"
+          ]
+        },
+        {
+          "name": "Disguise X3",
+          "price": "15000.00",
+          "currency": "USD",
+          "period": "year",
+          "includes": [
+            "Full Designer functionality and plugins",
+            "Three 4K DCI outputs from compatible Windows hardware",
+            "Portable licence dongle",
+            "Receiving RenderStream"
+          ],
+          "excludes": [
+            "A Disguise media server",
+            "Monthly billing, which is available as an annual plan only"
+          ]
+        }
+      ],
+      "note": "disguise publishes per-user software prices for Designer and for the X Series, and the X Series page prints X1, X2 and X3 at $6,000, $10,000 and $15,000 per user per year. It publishes no price for its EX, VX, GX and RX media server hardware, where the product pages route buyers to an enquiry form, so hardware and project pricing is quoted. The software product is named Designer on the site today rather than disguise::one.",
+      "sourceUrl": "https://www.disguise.one/en/products/designer/pricing",
+      "verifiedISO": "2026-11-03"
+    },
+    "trial": {
+      "limits": "disguise no longer runs a time-limited trial, because the free Designer Starter tier replaced the former free trial plan. Starter needs a MyDisguise account and an internet connection for authentication, and it cannot join a session with a Disguise server or a Designer Pro instance.",
+      "sourceUrl": "https://www.disguise.one/en/products/designer-starter-vs-pro",
+      "verifiedISO": "2026-11-03"
+    },
+    "io": {
+      "sourceUrl": "https://help.disguise.one/designer/devices/devices-index",
+      "verifiedISO": "2026-11-03",
+      "midi": {
+        "status": "yes",
+        "text": "Designer uses standard MIDI messages for triggering, automation and control, and can send MIDI to and from a control surface.",
+        "sourceUrl": "https://help.disguise.one/designer/devices/midi-device",
+        "quote": "This control surface can then be used to send MIDI to and from Designer.",
+        "verifiedISO": "2026-11-03"
+      },
+      "osc": {
+        "status": "yes",
+        "text": "Designer sends and receives OSC messages for network based control of shows, layers and parameters.",
+        "sourceUrl": "https://help.disguise.one/designer/devices/devices-index",
+        "quote": "Sends and receives OSC messages for flexible, network-based control.",
+        "verifiedISO": "2026-11-03"
+      },
+      "syphon": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://help.disguise.one/designer/devices/devices-index",
+        "verifiedISO": "2026-11-03",
+        "note": "The disguise Devices Index and product pages list no Syphon device or driver, and disguise documents no Syphon output."
+      },
+      "spout": {
+        "status": "yes",
+        "text": "Spout is supported through a third-party RenderStream integration rather than a native Spout device.",
+        "sourceUrl": "https://help.disguise.one/workflows/renderstream/extending-renderstream",
+        "quote": "Spout (implemented by ZeroSpace Studios)",
+        "verifiedISO": "2026-11-03"
+      },
+      "ndi": {
+        "status": "yes",
+        "text": "Designer can capture NDI streams as video inputs, and its documentation lists NDI under video input only.",
+        "sourceUrl": "https://help.disguise.one/designer/networking/network-ports-and-activity",
+        "quote": "Designer supports capturing NDI® streams as video inputs.",
+        "verifiedISO": "2026-11-03"
+      },
+      "dmx": {
+        "status": "yes",
+        "text": "Designer sends and receives DMX over Art-Net, sACN, Enttec, ezDMX, KiNET and SoundLight for lighting, automation and external control.",
+        "sourceUrl": "https://help.disguise.one/designer/devices/devices-index",
+        "quote": "Sends and receives DMX channels for lighting, automation, or external control.",
+        "verifiedISO": "2026-11-03"
+      },
+      "video": {
+        "status": "yes",
+        "text": "Designer plays back NotchLC, ProRes, HAP and uncompressed codecs to projectors, LED and broadcast destinations through DisplayPort, DVI, SDI, HDMI and ST 2110.",
+        "sourceUrl": "https://www.disguise.one/en/products/video-format-conversion-cards",
+        "quote": "Output video in a host of formats and interfaces including SMPTE ST 2110, DisplayPort, DVI, SDI or HDMI.",
+        "verifiedISO": "2026-11-03"
+      }
+    },
+    "limits": [
+      {
+        "text": "Designer runs on Windows only, because it needs DirectX11, and its documentation says virtual machines cannot run it.",
+        "sourceUrl": "https://help.disguise.one/designer/getting-started/system-requirements",
+        "quote": "Virtual Machines like Parallels do not run Designer, since Disguise requires DirectX11.",
+        "verifiedISO": "2026-11-03"
+      },
+      {
+        "text": "Designer Starter watermarks its feed and stage movies and caps them at 2K UHD.",
+        "sourceUrl": "https://help.disguise.one/designer/getting-started/designer-starter",
+        "quote": "Feed and Stage movies have a maximum resolution of 2160×2160 pixels (2K UHD).",
+        "verifiedISO": "2026-11-03"
+      },
+      {
+        "text": "A project saved in Designer Starter cannot then be opened with a Designer Pro licence.",
+        "sourceUrl": "https://help.disguise.one/designer/getting-started/designer-starter",
+        "quote": "Designer projects created or saved with Designer Starter cannot be opened with the Pro license.",
+        "verifiedISO": "2026-11-03"
+      },
+      {
+        "text": "Designer Pro feed outputs still carry an intermittent blue flash watermark.",
+        "sourceUrl": "https://help.disguise.one/designer/getting-started/designer-pro",
+        "quote": "Feed outputs include an intermittent blue flash watermark.",
+        "verifiedISO": "2026-11-03"
+      }
+    ]
+  },
+  {
+    "slug": "tricaster",
+    "name": "TriCaster",
+    "category": "vj",
+    "audience": "vj_pro",
+    "homepage": "https://www.vizrt.com/products/tricaster-family/",
+    "tagline": "All-in-one live video production systems for switching, mixing, recording, streaming and graphics, sold as desktop or rack hardware or as software.",
+    "bestFor": "Schools, houses of worship, corporate teams, live event producers and broadcasters who need one box that switches several camera feeds, mixes audio, plays graphics and streams or records the result.",
+    "platforms": [
+      "windows"
+    ],
+    "requirements": "Microsoft Windows 11 with an Intel i7 or better, an NVIDIA RTX A1000 or 3050 with 8GB, 16GB of RAM and a 512GB SSD",
+    "strengths": [
+      "One unit covers switching, mixing, recording, streaming, graphics and audio, so a single box handles a whole production.",
+      "Sources and mixes travel over the network as NDI, and Vizrt describes every TriCaster connection as IP-native.",
+      "Chroma keying, animated graphics and more than thirty virtual sets are included rather than sold separately.",
+      "A browser on any device on the network can drive switching, audio, media and macros, with LivePanel Pro on the Prizm and Vizion.",
+      "Macros can be attached to control panel buttons, keyboard shortcuts, hotspots, MIDI and X-keys buttons or GPI triggers."
+    ],
+    "ourAngle": "TriCaster is a live production switcher rather than a visualiser: it takes cameras and network feeds in and sends finished programme video out over SDI, NDI and local displays, so it wins on real video output, on input count and on multi-camera switching. Vibresia is a free Mac app that turns whatever the Mac is playing into live visuals with no plug-in, no camera and no switcher, but Vibresia has no video output at all and no MIDI, OSC, NDI, Syphon or Spout output, so it cannot feed a TriCaster, a recorder or a stream, and Vibresia runs on macOS only while TriCaster runs on Windows.",
+    "profile": {
+      "sourceUrl": "https://www.vizrt.com/products/tricaster-family/",
+      "verifiedISO": "2026-11-03"
+    },
+    "pricing": {
+      "model": "one-time",
+      "freeTier": false,
+      "tiers": [
+        {
+          "name": "TriCaster Mini, software only or Mini X desktop hardware",
+          "price": "7995.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "8 inputs over IP, HDMI and USB",
+            "4 video mix outputs",
+            "4 recording channels",
+            "LiveMatte keying, animated graphics and 30 or more LiveSet virtual sets",
+            "LivePanel browser control",
+            "MIDI macro triggering"
+          ],
+          "excludes": [
+            "LivePanel Pro, which Vizrt says is exclusive to the Prizm and Vizion",
+            "SDI input or output",
+            "Session resolution above 2160p/30"
+          ]
+        },
+        {
+          "name": "TriCaster Prizm",
+          "price": "13995.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "2RU rack mounted hardware with onboard audio and dual power redundancy",
+            "16 inputs over IP and SDI",
+            "Up to 8 configurable SDI inputs and outputs",
+            "4 video mix outputs",
+            "Unlimited recording channels",
+            "Sessions up to 2160p/60",
+            "LivePanel Pro"
+          ],
+          "excludes": [
+            "More than 8 configurable SDI ports"
+          ]
+        },
+        {
+          "name": "TriCaster Vizion, rack hardware or cloud",
+          "price": "22995.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "2RU rack mounted hardware or cloud deployment",
+            "44 inputs over IP and SDI",
+            "Up to 16 configurable SDI inputs and outputs",
+            "8 video mix outputs",
+            "Unlimited recording channels",
+            "Sessions up to 2160p/60",
+            "LivePanel Pro",
+            "8 selectable IP outputs via an internal NDI matrix router"
+          ],
+          "excludes": [
+            "TriCaster Vizion AI/R, which is a separate annual subscription"
+          ]
+        }
+      ],
+      "note": "Vizrt prints these as from MSRP prices for the three current models and states that international pricing may vary. The software-only Mini S is sold through a Vizrt reseller as either a one-time perpetual licence or a subscription, and its own page prints no separate price. NewTek was acquired by Vizrt in 2019 and the two were joined under the Vizrt name in 2023, so TriCaster is now sold and supported by Vizrt; the older TriCaster 460 and the Advanced Edition remain downloadable as legacy software and carry no listed price.",
+      "sourceUrl": "https://www.vizrt.com/products/tricaster-family/",
+      "verifiedISO": "2026-11-03"
+    },
+    "trial": {
+      "limits": "A free trial of the software-only TriCaster Mini S is available with a watermark on the outputs, and a full licence then has to be bought through a Vizrt reseller.",
+      "sourceUrl": "https://www.vizrt.com/products/tricaster-mini-s/",
+      "verifiedISO": "2026-11-03"
+    },
+    "io": {
+      "sourceUrl": "https://www.vizrt.com/products/tricaster-mini-s/tech-specs/",
+      "verifiedISO": "2026-11-03",
+      "midi": {
+        "status": "yes",
+        "text": "TriCaster supports the standard MIDI protocol, so macros can be triggered from MIDI devices and third-party control surfaces.",
+        "sourceUrl": "https://www.vizrt.com/products/tricaster-mini-s/tech-specs/",
+        "quote": "Support for standard MIDI protocol enabling third-party device control",
+        "verifiedISO": "2026-11-03"
+      },
+      "osc": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://www.vizrt.com/products/tricaster-mini-s/tech-specs/",
+        "verifiedISO": "2026-11-03",
+        "note": "The TriCaster Mini S technical specifications list MIDI, NDI, IP and audio over IP, and no OSC."
+      },
+      "syphon": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://www.vizrt.com/products/tricaster-mini-s/tech-specs/",
+        "verifiedISO": "2026-11-03",
+        "note": "The TriCaster Mini S technical specifications list no Syphon, and TriCaster is a Windows product."
+      },
+      "spout": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://www.vizrt.com/products/tricaster-mini-s/tech-specs/",
+        "verifiedISO": "2026-11-03",
+        "note": "The TriCaster Mini S technical specifications list no Spout, and TriCaster is a Windows product."
+      },
+      "ndi": {
+        "status": "yes",
+        "text": "NDI carries sources into the switcher and mixes back out over the network, and Vizrt describes every TriCaster connection as IP-native.",
+        "sourceUrl": "https://www.vizrt.com/products/tricaster-mini-s/tech-specs/",
+        "quote": "8 x total IP video inputs via NDI®, resolution-independent NDI inputs",
+        "verifiedISO": "2026-11-03"
+      },
+      "dmx": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://www.vizrt.com/products/tricaster-mini-s/tech-specs/",
+        "verifiedISO": "2026-11-03",
+        "note": "The TriCaster Mini S technical specifications list no DMX, and lighting control on TriCaster is through MIDI macros."
+      },
+      "video": {
+        "status": "yes",
+        "text": "TriCaster sends finished programme video out over NDI and SDI as well as local display outputs, so it can feed a recorder, a stream or a projector.",
+        "sourceUrl": "https://www.vizrt.com/products/tricaster-mini-s/tech-specs/",
+        "quote": "IP video output via NDI, optionally configurable for: 4 x independent video mix outputs",
+        "verifiedISO": "2026-11-03"
+      }
+    },
+    "limits": [
+      {
+        "text": "TriCaster is a Windows product, since the software-only Mini S must run Microsoft Windows 11, and Vizrt publishes no macOS build.",
+        "sourceUrl": "https://www.vizrt.com/products/tricaster-mini/tricaster-mini-s-certified-hardware/",
+        "quote": "Must run Microsoft Windows 11",
+        "verifiedISO": "2026-11-03"
+      },
+      {
+        "text": "The Mini S trial is watermarked on its outputs, so it cannot be used to deliver a clean programme feed.",
+        "sourceUrl": "https://www.vizrt.com/products/tricaster-mini-s/",
+        "quote": "A trial version may be downloaded and run with a watermark on the outputs.",
+        "verifiedISO": "2026-11-03"
+      },
+      {
+        "text": "The TriCaster Mini caps sessions at 2160p/30, while the Prizm and the Vizion run 2160p/60.",
+        "sourceUrl": "https://www.vizrt.com/products/tricaster-family/",
+        "quote": "Max Session Resolution 2160p/30 2160p/60 2160p/60",
+        "verifiedISO": "2026-11-03"
+      },
+      {
+        "text": "Real-time AI keying and augmented reality graphics on the Vizion are a paid annual subscription add-on rather than included features.",
+        "sourceUrl": "https://www.vizrt.com/products/tricaster-family/",
+        "quote": "TriCaster Vizion AI/R pairs real-time AI-keying with augmented reality graphics in one integrated subscription add-on",
+        "verifiedISO": "2026-11-03"
+      }
+    ]
+  },
+  {
+    "slug": "atem",
+    "name": "ATEM",
+    "category": "vj",
+    "audience": "vj_pro",
+    "homepage": "https://www.blackmagicdesign.com/products/atem",
+    "tagline": "Live production switchers for cutting, keying, mixing and streaming multiple video sources, with a free control panel for Mac and Windows.",
+    "bestFor": "Multi-camera live production for presenters, churches, esports, education and small club events, where one box has to cut, key, mix, stream and record.",
+    "platforms": [
+      "windows",
+      "macos"
+    ],
+    "requirements": "Mac 14.0 Sonoma or Mac 15.0 Sequoia or later, or Windows 10 and 11, with an ATEM switcher connected by USB or Ethernet",
+    "strengths": [
+      "The video work happens in the hardware, so the switcher streams from its own engine and does not depend on a fast computer.",
+      "The free ATEM Software Control can be installed on unlimited computers, so several people can work on one show at the same time.",
+      "The ISO models record every input to separate files with matching timecode and save a DaVinci Resolve project file for editing.",
+      "Program and preview switching, DVEs, SuperSource, chroma keyers and the Fairlight mixer are all included with no licence fees or monthly charges.",
+      "Program video leaves the switcher over HDMI, SDI and a USB webcam connection, so it feeds projectors, recorders, Zoom and streaming software."
+    ],
+    "ourAngle": "ATEM is a hardware video switcher that needs cameras, a video source and its own control software, so Vibresia suits a visual set and ATEM suits a broadcast. Vibresia has no video output, no MIDI, OSC, NDI, Syphon or Spout output and runs on Mac only, whereas ATEM Software Control runs on Mac and Windows and accepts MIDI control surfaces. ATEM wins on broadcast video output, ISO recording, SDI connections, camera control and hardware streaming.",
+    "profile": {
+      "sourceUrl": "https://www.blackmagicdesign.com/products/atem",
+      "verifiedISO": "2026-11-03"
+    },
+    "pricing": {
+      "model": "one-time",
+      "freeTier": false,
+      "tiers": [
+        {
+          "name": "ATEM Mini Pro",
+          "price": "445.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "4 standards converted HDMI inputs",
+            "Built in hardware streaming engine for RTMP and SRT",
+            "Direct H.264 recording to USB disks",
+            "USB webcam out, HDMI program out and multiview",
+            "ATEM Software Control included free for Mac and Windows"
+          ],
+          "excludes": [
+            "ISO recording of individual inputs",
+            "Thunderbolt video input and output",
+            "SDI inputs and outputs"
+          ]
+        },
+        {
+          "name": "ATEM Mini Extreme ISO G2",
+          "price": "3479.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "8 standards converted HDMI inputs",
+            "3 HDMI outputs and multi-view",
+            "ISO recording of all 8 inputs to CFexpress",
+            "Thunderbolt for fill key video out and video input",
+            "10G Ethernet access to internal network storage",
+            "4 chroma keyers, SuperSource and 2 DVEs"
+          ],
+          "excludes": [
+            "SDI inputs and outputs",
+            "Built in broadcast control panel"
+          ]
+        },
+        {
+          "name": "ATEM Television Studio HD8",
+          "price": "2965.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "8 standards converted 3G-SDI inputs",
+            "Built in broadcast control panel with T-bar fader",
+            "Hardware streaming engine and recording to USB disks",
+            "Multi-view, 4 chroma keyers and SuperSource",
+            "Talkback and camera control"
+          ],
+          "excludes": [
+            "ISO recording of individual inputs",
+            "Ultra HD video standards"
+          ]
+        },
+        {
+          "name": "ATEM Television Studio 4K8",
+          "price": "6445.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "8 x 12G-SDI inputs",
+            "10 x 12G-SDI aux outputs for external recorders",
+            "Ultra HD program and aux outputs",
+            "4 port 10G Ethernet switch"
+          ],
+          "excludes": [
+            "ISO recording of individual inputs"
+          ]
+        },
+        {
+          "name": "ATEM 4 M/E Constellation 4K",
+          "price": "10515.00",
+          "currency": "USD",
+          "period": "once",
+          "includes": [
+            "40 standards converted 12G-SDI inputs",
+            "24 dedicated 12G-SDI outputs",
+            "4 M/E rows with 16 ATEM Advanced Keyers",
+            "4 multi-views and 2 SuperSource processors",
+            "Built in control panel and LCD"
+          ],
+          "excludes": [
+            "ISO recording of individual inputs",
+            "Built in hardware streaming engine"
+          ]
+        }
+      ],
+      "note": "The ATEM family URL /products/atem redirects to the ATEM Constellation page on the same domain, and the family also spans the ATEM Mini, ATEM SDI and ATEM Television Studio pages. The same pages also list the ATEM Television Studio HD8 ISO at $3,559 and the HD model of the Constellation at $4,455. The ATEM Production Studio 4K is no longer in the current listing, although Blackmagic still publishes the manual for it. ATEM Software Control is free and may be run on unlimited computers, but it controls hardware and does not include a switcher, so the family as a whole has no free tier. Prices are the US MSRP in USD and include duties but exclude sales tax and shipping.",
+      "sourceUrl": "https://www.blackmagicdesign.com/products",
+      "verifiedISO": "2026-11-03"
+    },
+    "trial": {
+      "limits": "There is no time-limited trial: ATEM Software Control is free to download and run on unlimited computers, and switcher features carry no licence fee and no monthly charge.",
+      "sourceUrl": "https://www.blackmagicdesign.com/products/atemmini/techspecs",
+      "verifiedISO": "2026-11-03"
+    },
+    "io": {
+      "sourceUrl": "https://www.blackmagicdesign.com/products/atemmini/techspecs",
+      "verifiedISO": "2026-11-03",
+      "midi": {
+        "status": "yes",
+        "text": "ATEM Software Control reads MIDI, with a MIDI controller mapped to switcher buttons and Mackie Control surfaces driving the audio mixer faders.",
+        "sourceUrl": "https://documents.blackmagicdesign.com/UserManuals/ATEM_Television_Studio_HD_Manual.pdf",
+        "quote": "To operate your ATEM switcher using a MIDI controller, check the box to enable MIDI control.",
+        "verifiedISO": "2026-11-03",
+        "note": "MIDI is input only, for controlling the switcher and the mixer, and the manual describes no MIDI output to other applications."
+      },
+      "osc": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://www.blackmagicdesign.com/products/atemmini/techspecs",
+        "verifiedISO": "2026-11-03",
+        "note": "No OSC support is documented in the ATEM Mini Manual or the ATEM Television Studio Manual, where the documented control paths are USB, Ethernet, MIDI, hardware panels and the ATEM SDK."
+      },
+      "syphon": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://www.blackmagicdesign.com/products/atemmini/techspecs",
+        "verifiedISO": "2026-11-03",
+        "note": "Syphon is not mentioned in the ATEM Mini Manual or the ATEM Television Studio Manual, where the video outputs listed are HDMI, SDI, USB webcam and Thunderbolt."
+      },
+      "spout": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://www.blackmagicdesign.com/products/atemmini/techspecs",
+        "verifiedISO": "2026-11-03",
+        "note": "Spout is not mentioned in the ATEM Mini Manual or the ATEM Television Studio Manual, where the video outputs listed are HDMI, SDI, USB webcam and Thunderbolt."
+      },
+      "ndi": {
+        "status": "no",
+        "text": "ATEM takes video over IP as RTMP or SRT streams from Blackmagic cameras, and NDI is not a supported input or output.",
+        "sourceUrl": "https://www.blackmagicdesign.com/products/atemmini/techspecs",
+        "quote": "Supports direct live streaming using Real Time Messaging Protocol (RTMP) and Secure Reliable Transport (SRT) over ethernet",
+        "verifiedISO": "2026-11-03",
+        "note": "No source states the word NDI, so the status rests on the documented protocol list in the tech specs, where the Constellation IP models use SMPTE 2110 instead."
+      },
+      "dmx": {
+        "status": "unknown",
+        "text": "Not that we could find.",
+        "sourceUrl": "https://www.blackmagicdesign.com/products/atemmini/techspecs",
+        "verifiedISO": "2026-11-03",
+        "note": "No DMX support is documented in the ATEM manuals; the range instead offers GPI, RS-422 and talkback interfaces."
+      },
+      "video": {
+        "status": "yes",
+        "text": "ATEM hardware sends switched program video out over HDMI, SDI and a USB webcam connection, and the Extreme ISO G2 also carries video over Thunderbolt.",
+        "sourceUrl": "https://www.blackmagicdesign.com/products/atemmini/techspecs",
+        "quote": "2 x USB-C supporting 720p or 1080p at PGM frame rate.",
+        "verifiedISO": "2026-11-03",
+        "note": "The video outputs belong to the hardware, since ATEM Software Control is a control panel and does not itself generate visuals."
+      }
+    },
+    "limits": [
+      {
+        "text": "ATEM Software Control cannot be used on its own, because the software control panel must be connected to a switcher to run.",
+        "sourceUrl": "https://documents.blackmagicdesign.com/UserManuals/ATEM_Television_Studio_HD_Manual.pdf",
+        "quote": "The software control panel must be connected to a switcher to run.",
+        "verifiedISO": "2026-11-03"
+      },
+      {
+        "text": "ATEM Software Control is built for macOS and Windows only, so there is no Linux version.",
+        "sourceUrl": "https://www.blackmagicdesign.com/products/atemmini/techspecs",
+        "quote": "Mac 14.0 Sonoma, Mac 15.0 Sequoia or later. Windows 10 and 11.",
+        "verifiedISO": "2026-11-03"
+      },
+      {
+        "text": "The ATEM Mini line is HD only, since Blackmagic lists no Ultra HD video standards for these switchers.",
+        "sourceUrl": "https://www.blackmagicdesign.com/products/atemmini/techspecs",
+        "quote": "Ultra HD Video Standards None",
+        "verifiedISO": "2026-11-03"
+      },
+      {
+        "text": "Graphics storage in ATEM Mini is small, because the media pool can hold 20 HD or Ultra HD resolution stills.",
+        "sourceUrl": "https://www.blackmagicdesign.com/products/atemmini",
+        "quote": "The media pool can hold 20 HD or Ultra HD resolution stills.",
+        "verifiedISO": "2026-11-03"
+      }
+    ]
+  },
+  {
+    "slug": "after-effects",
+    "name": "After Effects",
+    "category": "creative-coding",
+    "audience": "creative_coder",
+    "homepage": "https://www.adobe.com/products/aftereffects.html",
+    "tagline": "Motion design and visual effects software for animating text, graphics and illustrations for film, TV, video and the web.",
+    "bestFor": "Producing animated title sequences, broadcast graphics and composited visual effects for film, TV, video and the web.",
+    "platforms": [
+      "macos",
+      "windows"
+    ],
+    "requirements": "macOS Sonoma (version 14) or later with 16GB of RAM and 8GB of free disk space, or Windows 11 v24H2 or later with 16GB of RAM",
+    "strengths": [
+      "Motion graphics and compositing in one timeline, covering 2D animation, 3D animation and visual effects.",
+      "A true 3D workspace in which 3D objects are animated right alongside 2D graphics.",
+      "A large plug-in ecosystem, with plug-ins from over 400 partners.",
+      "Built-in AI tools such as AI Object Matte for isolating a moving subject and Content-Aware Fill for removing unwanted elements.",
+      "Close integration with the rest of Creative Cloud, including layered PSD import and Dynamic Link to Premiere Pro."
+    ],
+    "ourAngle": "After Effects is a paid subscription compositor for authored work that is delivered as rendered files. It wins on layered compositing, keyframe and expression control, 3D, its plug-in ecosystem and support for Windows as well as macOS. Vibresia wins on how quickly it reacts to playback, on there being no render step, and on price: it is free and needs no plug-in. Vibresia has no video output, no MIDI, OSC, NDI, Syphon or Spout output, and it is Mac only.",
+    "profile": {
+      "sourceUrl": "https://www.adobe.com/products/aftereffects.html",
+      "verifiedISO": "2026-11-03"
+    },
+    "pricing": {
+      "model": "subscription",
+      "freeTier": false,
+      "tiers": [
+        {
+          "name": "After Effects, Creative Cloud Single App",
+          "price": "22.99",
+          "currency": "USD",
+          "period": "month",
+          "includes": [
+            "After Effects desktop app with the latest updates",
+            "Adobe Express included with the membership",
+            "7-day free trial of Adobe Stock"
+          ],
+          "excludes": [
+            "Other Creative Cloud apps such as Photoshop and Premiere Pro",
+            "Student discounts"
+          ]
+        },
+        {
+          "name": "Creative Cloud Pro, individuals",
+          "price": "69.99",
+          "currency": "USD",
+          "period": "month",
+          "includes": [
+            "20 or more Creative Cloud apps including Photoshop, Illustrator, Premiere and After Effects",
+            "Adobe Firefly creative AI with generative credits",
+            "7-day free trial of Adobe Stock"
+          ],
+          "excludes": [
+            "Student and teacher pricing"
+          ]
+        },
+        {
+          "name": "Creative Cloud Pro, students and teachers",
+          "price": "19.99",
+          "currency": "USD",
+          "period": "month",
+          "includes": [
+            "20 or more Creative Cloud apps including After Effects, Photoshop, Illustrator and Premiere",
+            "Generative credits for Firefly creative AI"
+          ],
+          "excludes": [
+            "Non student and teacher subscriptions, priced at US$69.99 a month",
+            "Availability limited to qualified students and teachers"
+          ]
+        },
+        {
+          "name": "Creative Cloud Pro, teams",
+          "price": "99.99",
+          "currency": "USD",
+          "period": "month",
+          "includes": [
+            "20 or more Creative Cloud apps including Acrobat Pro",
+            "Adobe Firefly creative AI for images, video and audio",
+            "Licence management and dedicated business support"
+          ],
+          "excludes": [
+            "Individual promotional pricing",
+            "Educational pricing"
+          ]
+        }
+      ],
+      "note": "Prices are the US figures Adobe prints for the US region in US dollars on its Creative Cloud plans page, and prices vary by region and currency. Creative Cloud Pro for individuals is currently promoted at US$34.99 a month for the first three months, and the student plan is US$19.99 a month for the first year and US$39.99 a month after that.",
+      "sourceUrl": "https://www.adobe.com/creativecloud/plans.html",
+      "verifiedISO": "2026-11-03"
+    },
+    "trial": {
+      "limits": "Seven days, one trial per person, converting automatically to a paid Creative Cloud Single App membership unless cancelled, with a 14-day refund window after the trial ends.",
+      "sourceUrl": "https://www.adobe.com/products/aftereffects/free-trial-download.html",
+      "verifiedISO": "2026-11-03"
+    },
+    "io": {
+      "sourceUrl": "https://helpx.adobe.com/after-effects/desktop/render-and-export/basics-of-rendering-and-exporting/basics-rendering-exporting.html",
+      "verifiedISO": "2026-11-03",
+      "midi": {
+        "status": "no",
+        "text": "After Effects has no built-in MIDI input, and Adobe lists expressions, scripts, plug-ins and network rendering as its automation methods.",
+        "sourceUrl": "https://helpx.adobe.com/after-effects/desktop/automate-in-after-effects/automate-animation/automation.html",
+        "quote": "You can automate animation and image processing within After Effects with expressions, scripts, and plug-ins.",
+        "verifiedISO": "2026-11-03",
+        "note": "Adobe documents no MIDI input, and MIDI control of After Effects is added by third-party plug-ins."
+      },
+      "osc": {
+        "status": "no",
+        "text": "After Effects has no built-in OSC input, and OSC control of parameters is added by third-party plug-ins.",
+        "sourceUrl": "https://helpx.adobe.com/after-effects/desktop/automate-in-after-effects/automate-animation/automation.html",
+        "quote": "You can automate animation and image processing within After Effects with expressions, scripts, and plug-ins.",
+        "verifiedISO": "2026-11-03",
+        "note": "Adobe documents no OSC input, and OSC control of After Effects is added by third-party plug-ins."
+      },
+      "syphon": {
+        "status": "no",
+        "text": "After Effects has no built-in Syphon output, and its documented outputs are movie, image, audio and project files.",
+        "sourceUrl": "https://helpx.adobe.com/after-effects/desktop/render-and-export/basics-of-rendering-and-exporting/basics-rendering-exporting.html",
+        "quote": "You can add the ability to export other kinds of data by installing plug-ins or scripts provided by parties other than Adobe.",
+        "verifiedISO": "2026-11-03",
+        "note": "Adobe lists no Syphon output, and Syphon output of After Effects compositions comes from third-party plug-ins."
+      },
+      "spout": {
+        "status": "no",
+        "text": "After Effects has no built-in Spout output, and its documented outputs are movie, image, audio and project files.",
+        "sourceUrl": "https://helpx.adobe.com/after-effects/desktop/render-and-export/basics-of-rendering-and-exporting/basics-rendering-exporting.html",
+        "quote": "You can add the ability to export other kinds of data by installing plug-ins or scripts provided by parties other than Adobe.",
+        "verifiedISO": "2026-11-03",
+        "note": "Adobe lists no Spout output, and Spout output of After Effects compositions comes from third-party plug-ins."
+      },
+      "ndi": {
+        "status": "no",
+        "text": "After Effects has no built-in NDI output, and its documented outputs are movie, image, audio and project files.",
+        "sourceUrl": "https://helpx.adobe.com/after-effects/desktop/render-and-export/basics-of-rendering-and-exporting/basics-rendering-exporting.html",
+        "quote": "You can add the ability to export other kinds of data by installing plug-ins or scripts provided by parties other than Adobe.",
+        "verifiedISO": "2026-11-03",
+        "note": "Adobe lists no NDI output, and NDI output of After Effects compositions comes from third-party plug-ins."
+      },
+      "dmx": {
+        "status": "no",
+        "text": "After Effects has no built-in DMX input, and DMX control of parameters is added by third-party plug-ins.",
+        "sourceUrl": "https://helpx.adobe.com/after-effects/desktop/automate-in-after-effects/automate-animation/automation.html",
+        "quote": "You can automate animation and image processing within After Effects with expressions, scripts, and plug-ins.",
+        "verifiedISO": "2026-11-03",
+        "note": "Adobe documents no DMX input, and DMX control of After Effects is added by third-party plug-ins."
+      },
+      "video": {
+        "status": "yes",
+        "text": "After Effects outputs video as rendered files through the Render Queue or Adobe Media Encoder, and sending live video to a screen or capture device needs third-party plug-ins.",
+        "sourceUrl": "https://helpx.adobe.com/after-effects/desktop/render-and-export/basics-of-rendering-and-exporting/basics-rendering-exporting.html",
+        "quote": "You can also export After Effects compositions directly into Adobe Media Encoder",
+        "verifiedISO": "2026-11-03",
+        "note": "Adobe documents rendering and export to files rather than live video output to hardware."
+      }
+    },
+    "limits": [
+      {
+        "text": "On macOS the minimum is macOS Sonoma (version 14) with 16GB of RAM and 8GB of free disk space for installation.",
+        "sourceUrl": "https://helpx.adobe.com/after-effects/desktop/get-started/technical-requirements/system-requirements.html",
+        "quote": "macOS Sonoma (version 14)",
+        "verifiedISO": "2026-11-03"
+      },
+      {
+        "text": "On Windows the minimum is Windows 11 v24H2 with 16GB of RAM and an Intel 6th Generation or newer or AMD Ryzen 1000 Series or newer CPU.",
+        "sourceUrl": "https://helpx.adobe.com/after-effects/desktop/get-started/technical-requirements/system-requirements.html",
+        "quote": "Windows 11 v24H2",
+        "verifiedISO": "2026-11-03"
+      },
+      {
+        "text": "Only 64-bit plug-ins work, so any 32-bit plug-in for After Effects needs a new 64-bit version.",
+        "sourceUrl": "https://helpx.adobe.com/after-effects/desktop/get-started/after-effects-faq/faq.html",
+        "quote": "Any 32-bit plug-ins for After Effects need new versions designed for 64-bit computing.",
+        "verifiedISO": "2026-11-03"
+      },
+      {
+        "text": "There is no free version of After Effects: the trial is seven days, it needs a free Creative Cloud membership, and it becomes a paid membership unless it is cancelled.",
+        "sourceUrl": "https://helpx.adobe.com/after-effects/desktop/get-started/after-effects-faq/faq.html",
+        "quote": "With a free Creative Cloud membership, you can download a 7-day trial version of After Effects",
+        "verifiedISO": "2026-11-03"
+      }
+    ]
   }
 ]

@@ -225,22 +225,6 @@
       "audience": "Mac-based teams running a show, whether a theatre production or a church service.",
       "whyCompared": "Both cue sound, video and lighting from a timeline on a Mac, and a venue or a church running either kind of show compares them.",
       "thirdOption": false
-    },
-    {
-      "slug": "propresenter-vs-easyworship",
-      "a": "propresenter",
-      "b": "easyworship",
-      "audience": "Churches and their volunteer or staff media teams choosing presentation software.",
-      "whyCompared": "Both put lyrics and media on the screens in a service, and they are the pair most church tech teams compare.",
-      "thirdOption": false
-    },
-    {
-      "slug": "propresenter-vs-proclaim",
-      "a": "propresenter",
-      "b": "proclaim",
-      "audience": "Churches and their volunteer or staff media teams choosing presentation software.",
-      "whyCompared": "Both show lyrics and media in a church service, and the teams running one compare them before they commit.",
-      "thirdOption": false
     }
   ]
 }

@@ -158,17 +158,27 @@ async function pdfText(body) {
 }
 
 async function fetchPage(url) {
+    // Most sites want to look like a browser. Some, like Adobe's help
+    // server, refuse a browser and serve a plain client instead, so a
+    // refusal is retried the other way round. Neither is a human check:
+    // there is no puzzle to solve, only a filter on what you look like.
+    const AGENTS = [
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36",
+        "curl/8.7.1",
+    ];
     let res;
     try {
-        res = await fetch(url, {
-            redirect: "follow",
-            signal: AbortSignal.timeout(TIMEOUT_MS),
-            headers: {
-                // A plain reader, not a scraper pretending to be a browser.
-                "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36",
-                accept: "text/html,application/xhtml+xml,application/pdf",
-            },
-        });
+        for (let attempt = 0; ; attempt++) {
+            res = await fetch(url, {
+                redirect: "follow",
+                signal: AbortSignal.timeout(TIMEOUT_MS),
+                headers: {
+                    "user-agent": AGENTS[attempt],
+                    accept: "text/html,application/xhtml+xml,application/pdf",
+                },
+            });
+            if (![401, 403, 429].includes(res.status) || attempt >= AGENTS.length - 1) break;
+        }
     } catch (e) {
         // A slow site is not a broken citation. A timeout is reported and
         // the check carries on; the source may well be perfectly good.
@@ -181,7 +191,7 @@ async function fetchPage(url) {
     }
     // A site that refuses to be read is not the same as a link that died.
     // The first is a fact about the site; the second is a broken citation.
-    if (res.status === 401 || res.status === 403 || res.status === 429) {
+    if (res.status === 401 || res.status === 403 || res.status === 429 || res.status >= 500) {
         const err = new Error(`HTTP ${res.status} (the site refused to be read)`);
         err.blocked = true;
         throw err;
