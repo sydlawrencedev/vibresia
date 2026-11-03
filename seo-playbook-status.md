@@ -53,7 +53,8 @@ until then.
 | 2b referee pairs (`/comparison/{a}-vs-{b}`) | projectm-vs-milkdrop (third option on), nestdrop-vs-milkdrop, resolume-vs-vdmx, resolume-vs-touchdesigner, touchdesigner-vs-vdmx | live |
 | 2b referee pairs, batch 8 | resolume-vs-madmapper, resolume-vs-obs, resolume-vs-millumin, touchdesigner-vs-blender, touchdesigner-vs-vvvv | live |
 | 2b referee pairs, batch 9 | vmix-vs-obs, vmix-vs-resolume, vmix-vs-wirecast, watchout-vs-resolume, qlab-vs-resolume, propresenter-vs-resolume, propresenter-vs-obs, propresenter-vs-vmix, houdini-vs-touchdesigner, madmapper-vs-touchdesigner, madmapper-vs-millumin | live |
-| 2b referee pairs, batch 10 | qlab-vs-propresenter, touchdesigner-vs-notch, touchdesigner-vs-after-effects, vmix-vs-tricaster, vmix-vs-atem, watchout-vs-disguise, watchout-vs-pixera | merged, deploy pending |
+| 2b referee pairs, batch 10 | qlab-vs-propresenter, touchdesigner-vs-notch, touchdesigner-vs-after-effects, vmix-vs-tricaster, vmix-vs-atem, watchout-vs-disguise, watchout-vs-pixera | live |
+| 2d question pages, batch 10 | plex (has visualisers, behind Plex Pass), twitch (has none: its overlays are stream alerts) | merged, deploy pending |
 | "Control and connections" table | on the VJ pairs, and the batch 8 and 9 pairs | live |
 
 ## The target: about 50 pages on the site, not 50 of anything
@@ -65,13 +66,13 @@ site in total**, of whatever kind serve the audience, with the mix leaning
 towards the pages that answer a question rather than the pages that compare
 two rivals.
 
-Current mix, 46 search pages plus three other indexable pages:
+Current mix, 48 search pages plus three other indexable pages:
 
 | Kind | Pages | Share |
 | --- | --- | --- |
-| Comparisons (2b, 2c) | 34 | 71% |
-| Blog: best-of lists and question pages (2a, 2d) | 12 | 25% |
-| Other indexable (home, agents, author) | 3 | 4% |
+| Comparisons (2b, 2c) | 34 | 70% |
+| Blog: best-of lists and question pages (2a, 2d) | 14 | 29% |
+| Other indexable (home, agents, author) | 3 | 1% |
 
 The next slots go to blog and question pages, not to more comparisons. The
 comparison set is broad enough: 35 competitor records and 28 referee pairs
@@ -158,9 +159,9 @@ on search pages, `/ingest` analytics proxy in the Worker.
 
 ## Next
 
-1. Owner deploys batch 10 (seven referee pairs) and the three new question
-   pages for Plex, Twitch and TikTok, then checks the new pages live and
-   fills in deploy dates in `SEO_CHANGELOG.md`.
+1. Owner deploys batch 10 (seven referee pairs, and the question pages for
+   Plex and Twitch), then checks the new pages live and fills in deploy dates
+   in `SEO_CHANGELOG.md`.
 2. Owner submits `/sitemaps/questions.xml` in Search Console with the
    other two, so each template's impressions can be read apart. The monthly
    review reports by template and needs the sitemaps to match.
