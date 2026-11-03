@@ -508,7 +508,7 @@ enum CustomVibescapeGuide {
         float n = fbm(p * 7.0 + vec2(0.0, -t * 0.5));
         n = fbm(p * 7.0 + vec2(n * 1.6, n * 1.6));
         float glow = 1.0 - smoothstep(0.0, 0.2, length(p));
-        return mix(vec3(0.05, 0.1, 0.3), vec3(0.6, 0.8, 1.0), n * glow) * uActive;
+        return mix(vec3(0.05, 0.1, 0.3), vec3(0.6, 0.8, 1.0), n * glow) * (0.2 + 0.8*uActive);
     }
 
     Scale is what catches people out. `fbm(p)` sampled at the screen's scale is
@@ -537,7 +537,9 @@ enum CustomVibescapeGuide {
       aaw(s)           the right edge softness so shapes aren't jaggy
       mix, clamp, sin, cos, fract, length, dot — the usual
 
-    To fade out in silence, multiply by `uActive` near the end.
+    To settle in silence, multiply by `uActive` near the end — but keep a
+    floor under it, so the picture rests dim and still rather than going
+    black.
 
     ## Look at it before you believe it
 
