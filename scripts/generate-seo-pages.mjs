@@ -444,6 +444,34 @@ export function helpers(records) {
 }
 
 /**
+ * The referee pairs in llms.txt, so an AI assistant reading it finds every
+ * one. Generated from the pairs file, because a hand-kept list of thirty-five
+ * comparisons is thirty-five chances to leave one out.
+ */
+export function llmsReferees(pairs, records) {
+    const recordOf = (slug) => records.find((r) => r.slug === slug) || {};
+    const nameOf = (slug) => recordOf(slug).name || slug;
+    const link = (p) => `[${nameOf(p.a)} vs ${nameOf(p.b)}](https://vibresia.com/comparison/${p.slug})`;
+    // The group is the first product's world, which is the one the reader
+    // came for: a pair is filed under the product they typed first.
+    const GROUPS = {
+        visualiser: "in the music visualiser world",
+        vj: "in the live video and VJ world",
+        "creative-coding": "in the creative tools world",
+    };
+    const byGroup = new Map();
+    for (const p of pairs) {
+        const key = recordOf(p.a).category || "vj";
+        if (!byGroup.has(key)) byGroup.set(key, []);
+        byGroup.get(key).push(p);
+    }
+    return Object.entries(GROUPS)
+        .filter(([key]) => byGroup.has(key))
+        .map(([key, label]) => `- Other apps side by side, as a referee, ${label}: ${byGroup.get(key).map(link).join(", ")}`)
+        .join("\n");
+}
+
+/**
  * The redirects for the referee pairs: one canonical order per pair, and the
  * reverse 301s to it, so a pair never has two URLs for one query. Generated
  * from the pairs file, so a new pair cannot be forgotten here.
@@ -1124,6 +1152,21 @@ async function main() {
             console.log(`  wrote ${path.relative(ROOT, file)}`);
         }
     }
+    // The referee list in llms.txt, from the pairs file.
+    const llmsPath = path.join(ROOT, "site/llms.txt");
+    const llmsNow = fs.readFileSync(llmsPath, "utf8");
+    const llmsWanted = llmsNow.replace(
+        /<!-- chrome:referees -->\n[\s\S]*?<!-- \/chrome:referees -->/,
+        `<!-- chrome:referees -->\n${llmsReferees(PAIRS, records)}\n<!-- /chrome:referees -->`,
+    );
+    if (llmsWanted !== llmsNow) {
+        if (check) stale.push(path.relative(ROOT, llmsPath));
+        else {
+            fs.writeFileSync(llmsPath, llmsWanted);
+            console.log(`  wrote ${path.relative(ROOT, llmsPath)}`);
+        }
+    }
+
     // The referee redirects, from the pairs file. A pair added to
     // competitor-pairs.json gets its reverse 301 with it, so a pair never
     // ends up with two URLs for one query.

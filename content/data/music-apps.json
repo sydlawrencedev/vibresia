@@ -266,6 +266,115 @@
         "needsHandCheck": "An Amazon-owned help domain, not the usual amazon.com help URL."
       },
       "other": []
+    },
+    {
+      "slug": "plex",
+      "name": "Plex",
+      "hasVisualizer": true,
+      "visualizerFacts": [
+        {
+          "text": "Plex lists visualisers as a Plex Pass premium music feature, in the apps that support them.",
+          "sourceUrl": "https://support.plex.tv/articles/205744257-getting-started-with-plex-music/",
+          "quote": "Visualizers: Turn on one of multiple visualizers available in supported apps to re-live your old WinAmp days.",
+          "verifiedISO": "2026-11-03"
+        },
+        {
+          "text": "Plex's own music player Plexamp advertises over a dozen visualisers alongside four visual themes.",
+          "sourceUrl": "https://apps.apple.com/us/app/plexamp/id1500797510",
+          "quote": "MUSIC TO YOUR EYES Experience your music collection like you've never seen it before, with our UltraBlur backgrounds, over a dozen hypnotic visualizers, and four visual themes to satisfy every taste.",
+          "verifiedISO": "2026-11-03"
+        },
+        {
+          "text": "Plex says its visualisers are driven straight from the audio engine, so they react to the music with low latency.",
+          "sourceUrl": "https://forums.plex.tv/t/plexamp-v4-50-3-ready-or-not/942338",
+          "quote": "Visualizers are driven straight from the audio engine, at lower latency.",
+          "verifiedISO": "2026-11-03"
+        }
+      ],
+      "macApp": {
+        "text": "Plex has a native Mac desktop app, with more robust playback than its web app.",
+        "sourceUrl": "https://support.plex.tv/articles/windows-and-macos-intro-installation/",
+        "quote": "Our Plex app for Windows and Mac computers is a standalone application that has the layout of our regular web app, but pairs it with much more robust playback capabilities as well as the ability to download items for offline use.",
+        "verifiedISO": "2026-11-03"
+      },
+      "webPlayer": {
+        "text": "Plex plays in a browser through the Plex Web App player, which comes with Plex Media Server and needs no extra software.",
+        "sourceUrl": "https://support.plex.tv/articles/200392226-plex-web-app-player/",
+        "quote": "Plex Web App includes a player App, which allows you to access and play content directly inside a browser window. Because it's included with the Plex Media Server there's no additional software to download or install, making it a convenient way to watch your media.",
+        "verifiedISO": "2026-11-03"
+      },
+      "other": [
+        {
+          "text": "Plex's own list of the Plex Web App Player controls covers playback, quality, audio, subtitles, chapters and the play queue, and no visualiser option appears among them.",
+          "sourceUrl": "https://support.plex.tv/articles/200392226-plex-web-app-player/",
+          "quote": "Choose the streaming quality to use",
+          "verifiedISO": "2026-11-03"
+        },
+        {
+          "text": "Searching Plex's own support library for visualizer returns only the iOS playback, Plex music, licence information and Plex Pass feature overview articles, so no document describes a visualiser for the web or Mac players.",
+          "sourceUrl": "https://support.plex.tv/?s=visualizer",
+          "quote": "Search Results for visualizer",
+          "verifiedISO": "2026-11-03"
+        },
+        {
+          "text": "Plex's iOS player documentation describes the visualiser as dynamic and based on the music being played back, with some visualisers such as Soundprint needing loudness data for the track.",
+          "sourceUrl": "https://support.plex.tv/articles/205671108-media-playback/",
+          "quote": "Visualizer - Enable a visualizer for your music. Most are dynamic and based on the music being played back. Some, like the Soundprint, require the track to have loudness data. (Plex Pass feature)",
+          "verifiedISO": "2026-11-03"
+        }
+      ]
+    },
+    {
+      "slug": "twitch",
+      "name": "Twitch",
+      "hasVisualizer": false,
+      "visualizerFacts": [
+        {
+          "text": "Twitch's player shows the broadcaster's own broadcast rather than a visual Twitch draws itself, since the channel page guide describes the video screen as where the broadcast is displayed.",
+          "sourceUrl": "https://help.twitch.tv/s/article/a-tour-of-your-channel-page",
+          "verifiedISO": "2026-11-03"
+        },
+        {
+          "text": "The animated overlays Twitch ships are alerts for stream events such as followers, subscriptions, Bits, raids and Hype Trains, with no alert type tied to the audio of the stream.",
+          "sourceUrl": "https://help.twitch.tv/s/article/alerts-by-twitch-events",
+          "verifiedISO": "2026-11-03"
+        },
+        {
+          "text": "Extra visuals in a Twitch stream come from third-party Extensions, because Twitch states that most Extensions are built by third-party developers even though the underlying technology is Twitch's.",
+          "sourceUrl": "https://help.twitch.tv/s/article/how-to-use-extensions",
+          "verifiedISO": "2026-11-03"
+        }
+      ],
+      "noVisualizerNote": "Twitch's help centre has no visualiser feature of its own, with searches for visualiser returning no articles, so any visuals on a music stream come from the broadcaster or from third-party tools.",
+      "macApp": {
+        "text": "There is no native Twitch app for macOS: its App Store listing covers iPhone, iPad and Apple TV.",
+        "sourceUrl": "https://apps.apple.com/us/app/twitch-live-streaming/id460177396",
+        "verifiedISO": "2026-11-03",
+        "quote": "There is no native Twitch app for macOS, as Apple's App Store listing for Twitch: Live Streaming gives the platforms as iPhone, iPad, Apple TV and iMessage, and the app has no Mac App Store page."
+      },
+      "webPlayer": {
+        "text": "Twitch is watched in a desktop web browser at twitch.tv, which supports the latest Chrome, Firefox, Edge, Safari and Opera.",
+        "sourceUrl": "https://help.twitch.tv/s/article/supported-browsers",
+        "verifiedISO": "2026-11-03",
+        "quote": "Twitch is watched in a desktop web browser at twitch.tv, and Twitch's help centre says the desktop web browser experience of twitch.tv officially supports the two latest versions of Google Chrome and Mozilla Firefox, the most recent version of Microsoft Edge, the most recent version of Apple Safari and the most recent version of Opera and Opera GX."
+      },
+      "other": [
+        {
+          "text": "Twitch's developer documentation describes an Extension as a webpage that sits inside Twitch and communicates with Twitch to provide extra functionality, with an overlay type that displays on top of the whole video as a transparent overlay.",
+          "sourceUrl": "https://dev.twitch.tv/extensions/",
+          "verifiedISO": "2026-11-03"
+        },
+        {
+          "text": "Searching the Twitch help centre for visualiser returns no articles, so the service documents no visualiser of its own.",
+          "sourceUrl": "https://help.twitch.tv/s/global-search/visualizer?language=en_US",
+          "verifiedISO": "2026-11-03"
+        },
+        {
+          "text": "Music on Twitch is made up of broadcaster channels, with the music directory at twitch.tv/music listing live channels such as lofi and DJ streams.",
+          "sourceUrl": "https://www.twitch.tv/music",
+          "verifiedISO": "2026-11-03"
+        }
+      ]
     }
   ]
 }

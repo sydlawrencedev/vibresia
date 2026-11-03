@@ -22,6 +22,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DATA = path.join(ROOT, "content/data/competitors.json");
+const APPS = path.join(ROOT, "content/data/music-apps.json");
 
 /** How long to wait for a source before giving up on it. */
 const TIMEOUT_MS = 20000;
@@ -97,6 +98,25 @@ export function factsOf(record) {
         }
     }
     for (const [i, q] of (record.quotes || []).entries()) add(`${record.slug}.quotes[${i}]`, q);
+    return facts;
+}
+
+/**
+ * The facts behind the "visualizer for {app}" pages. They are read from the
+ * app's own support pages and its store listing, so the same checks apply:
+ * the source has to still be where it was, and still be the same site.
+ */
+export function appFacts(apps) {
+    const facts = [];
+    for (const app of apps) {
+        const add = (where, fact) => {
+            if (fact && fact.sourceUrl) facts.push({ where: `${app.slug}.${where}`, url: fact.sourceUrl, quote: fact.quote });
+        };
+        (app.visualizerFacts || []).forEach((f, i) => add(`visualizerFacts[${i}]`, f));
+        add("macApp", app.macApp);
+        add("webPlayer", app.webPlayer);
+        (app.other || []).forEach((f, i) => add(`other[${i}]`, f));
+    }
     return facts;
 }
 
@@ -211,7 +231,8 @@ async function fetchPage(url) {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const records = JSON.parse(fs.readFileSync(DATA, "utf8"));
-    const facts = records.flatMap(factsOf);
+    const apps = fs.existsSync(APPS) ? JSON.parse(fs.readFileSync(APPS, "utf8")).apps : [];
+    const facts = [...records.flatMap(factsOf), ...appFacts(apps)];
     const problems = [];
     const blocked = [];
     let checked = 0;
