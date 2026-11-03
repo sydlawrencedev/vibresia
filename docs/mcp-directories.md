@@ -23,8 +23,8 @@ directory asks for it. Two servers:
 | mcpservers.org | remote | mcpservers.org/submit, free plan, contact syd@minithlabs.com | Submitted 2026-11-02; review within 2 weeks, approval comes by email |
 | Cursor directory | remote | cursor.directory, Submit a plugin, Manual, MCP Server component | Submitted 2026-11-02 at [cursor.directory/plugins/vibresia-music-visualiser](https://cursor.directory/plugins/vibresia-music-visualiser); hidden until its security scan finishes. No logo yet |
 | Cursor Marketplace | remote | cursor.com/marketplace/publish, submit the repo URL | Manifest committed at `.cursor-plugin/plugin.json` with `mcp.json` at the repository root. Not submitted yet; reviews are slow |
-| Docker MCP Catalog | remote | docker/mcp-registry, remote route, `task remote-wizard` | Not started. The remote route needs no Dockerfile: `type: remote`, `transport_type: streamable-http`, no OAuth |
-| Gemini CLI extension gallery | remote | The `gemini-cli-extension` topic plus `gemini-extension.json` at the repository root | Committed. The topic is on the repo, so the daily crawler will find it. It appears once a tag is pushed |
+| Docker MCP Catalog | remote | docker/mcp-registry, remote route, `task remote-wizard` | [docker/mcp-registry#6539](https://github.com/docker/mcp-registry/pull/6539), opened 2026-11-03. `validate`, `build` and `catalog` all pass locally. Waiting on the Docker team's review |
+| Gemini CLI extension gallery | remote | The `gemini-cli-extension` topic plus `gemini-extension.json` at the repository root | Committed, and the repository is tagged `v1.1.0` so the daily crawler can find it. It appears once it passes their validation |
 
 To publish a new version to the official registry, bump `version` in
 `server.json`, then:
@@ -46,6 +46,12 @@ below repeat it — so a bump means editing one file and the copies beside it:
 | `gemini-extension.json` | The Gemini CLI extension manifest. Same endpoint, spelled `httpUrl` because that is Gemini's name for it. |
 | `chatgpt-plugin/` | The ChatGPT apps package, uploaded as a ZIP rather than read from the repository. |
 | `glama.json` | Proves the Glama connector listing is ours. Served with the claim at `/.well-known/glama.json`. |
+
+The `v1.1.0` tag is the Gemini extension's version, and it is deliberately not
+the app's version: the app is versioned by the date it was built (`0.11.032`
+is the 3rd of November 2026), while the extension is versioned with the MCP
+server. It is a tag and not a release, so nothing that reads
+`releases/latest` — the installer, the update check — is affected by it.
 
 ## Copy
 
