@@ -113,7 +113,7 @@ enum MCPTools {
               ],
               "required": ["id"]]),
         tool("delete_vibescape",
-             "Remove one of the user's own vibescapes. It cannot be undone.",
+             "Remove one of the user's own vibescapes. It goes to the Trash, so it can be put back.",
              ["type": "object",
               "properties": ["id": ["type": "string", "description": "The vibescape's id, from list_vibescapes."]],
               "required": ["id"]]),
@@ -982,7 +982,8 @@ enum MCPTools {
         guard CustomVibescapeStore.delete(id: id) else {
             return errorResult("Couldn't delete \(id).")
         }
-        return textResult("Deleted \"\(mode.name)\". It can't be undone.")
+        NSLog("[CUSTOM] deleted %@ by an agent", id)
+        return textResult("Deleted \"\(mode.name)\". It is in the Trash, so it can be put back.")
     }
 
     // MARK: - What the app is hearing

@@ -819,7 +819,7 @@ private struct VibescapeCard: View {
                         }
                         Button("Cancel", role: .cancel) {}
                     } message: {
-                        Text("The vibescape and its code are removed from this Mac. This can't be undone.")
+                        Text("The vibescape and its code go to the Trash, so they can be put back.")
                     }
                 }
                 if !entry.isNewVibescapeCard {

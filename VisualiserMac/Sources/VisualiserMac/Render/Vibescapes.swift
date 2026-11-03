@@ -366,9 +366,29 @@ enum CustomVibescapeStore {
         try encoder.encode(mode).write(to: url(for: mode.id), options: .atomic)
     }
 
+    /// Removes a user's vibescape.
+    ///
+    /// Into the Trash rather than gone. A vibescape is somebody's work, and
+    /// the things that remove one are a menu item and an agent's tool call —
+    /// either of which can be aimed at the wrong thing by mistake. The Trash
+    /// is where a person looks for something that has gone missing, and a
+    /// file put there can be put back.
     @discardableResult
     static func delete(id: String) -> Bool {
-        (try? FileManager.default.removeItem(at: url(for: id))) != nil
+        let file = url(for: id)
+        guard FileManager.default.fileExists(atPath: file.path) else { return false }
+        do {
+            try FileManager.default.trashItem(at: file, resultingItemURL: nil)
+            NSLog("[CUSTOM] moved %@ to the Trash", id)
+            return true
+        } catch {
+            NSLog("[CUSTOM] could not trash %@: %@", id, error.localizedDescription)
+        }
+        // The Trash is not always available — a disk without one, a folder
+        // the Finder would not touch. Removing it is the last resort, and
+        /// only after saying so.
+        NSLog("[CUSTOM] deleting %@ for good", id)
+        return (try? FileManager.default.removeItem(at: file)) != nil
     }
 
     /// Filesystem-safe slug from a display name. Falls back to a timestamp if

@@ -888,9 +888,14 @@ final class AppState: ObservableObject {
         return nil
     }
 
-    /// When the vibescapes folder last changed. Cheap to ask for; the folder is
-    /// small and the file system is good at this.
-    private static var customVibescapesStamp: Date {
+    /// The state of the vibescapes folder, in a form that can be compared.
+    ///
+    /// The names are in it as well as the dates, because a file that is
+    /// deleted does not make the folder's newest file any newer. A folder
+    /// watched only by its dates never notices that a vibescape has gone, so
+    /// the app goes on showing one that is no longer there — and the next
+    /// edit of it puts the file back, as if nothing had happened.
+    private static var customVibescapesStamp: String {
         let folder = CustomVibescapeStore.folder
         let contents = (try? FileManager.default.contentsOfDirectory(
             at: folder, includingPropertiesForKeys: [.contentModificationDateKey])) ?? []
@@ -898,10 +903,11 @@ final class AppState: ObservableObject {
             let values = try? url.resourceValues(forKeys: [.contentModificationDateKey])
             return values?.contentModificationDate
         }.max() ?? .distantPast
-        return newest
+        let names = contents.map(\.lastPathComponent).sorted().joined(separator: ",")
+        return "\(newest.timeIntervalSince1970)|\(names)"
     }
 
-    private var lastCustomVibescapesStamp: Date = .distantPast
+    private var lastCustomVibescapesStamp: String = ""
 
     /// Re-reads the user's vibescapes from disk and recompiles them.
     func reloadCustomVibescapes() {
@@ -1126,7 +1132,16 @@ final class AppState: ObservableObject {
 
     /// Brings one copy up to date, if it is behind and if it can be.
     private func applyShareUpdateIfBehind(mode: CustomVibescape, shareID: String) async {
-        guard let details = await ShareLinkStore().details(shareID: shareID) else { return }
+        guard let details = await ShareLinkStore().details(shareID: shareID) else {
+            // The share is not on the site, or the site could not be reached.
+            // Either way there is nothing to bring forward, and the copy on
+            // this Mac stays as it is. Said out loud, because a share that
+            // has quietly gone is otherwise impossible to tell from one that
+            // is simply up to date.
+            NSLog("[SYNC] could not ask the site about %@ (share %@), so the copy was left alone",
+                  mode.id, shareID)
+            return
+        }
         let installed = mode.shareRevision ?? 1
         guard details.revision > installed else { return }
         guard !details.payload.isEmpty,
@@ -1138,11 +1153,18 @@ final class AppState: ObservableObject {
 
         // A copy that has been changed since it was installed is a fork. The
         // new version would throw away somebody's work, so it is not put in.
-        let incomingKey = ShareIdentity.key(name: incoming.name,
-                                             author: ShareIdentity.shownAuthor(incoming.author),
-                                             url: incoming.url,
-                                             shader: incoming.shader)
-        if let key = mode.shareKey, key != incomingKey {
+        //
+        // The comparison is between the key recorded when the copy was
+        // installed and the key of the copy on this Mac now — not the key of
+        // the new version, which is *meant* to differ from the installed
+        // one, since that is the whole reason there is an update at all.
+        // Comparing against the incoming version instead meant every update
+        // the site published was read as a local edit and refused.
+        let localKey = ShareIdentity.key(name: mode.name,
+                                          author: ShareIdentity.shownAuthor(mode.author),
+                                          url: mode.url,
+                                          shader: mode.shader)
+        if let key = mode.shareKey, key != localKey {
             NSLog("[SYNC] %@ has been changed here, so the new version was left alone", mode.id)
             return
         }
@@ -1228,6 +1250,7 @@ final class AppState: ObservableObject {
         customVibescapes.removeAll { $0.id == id }
         renderer.removeCustomShader(id: id)
         CustomVibescapeStore.delete(id: id)
+        NSLog("[CUSTOM] deleted %@", id)
         // If the deleted vibescape was on screen, fall back to something real.
         if activeVibescape == .custom(id) {
             let fallback = enabledVibescapes.first?.id ?? .builtin(.tunnel)
