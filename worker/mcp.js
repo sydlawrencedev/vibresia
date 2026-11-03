@@ -26,6 +26,10 @@
 
 import { VIBESCAPE_REFERENCE } from "./mcp-reference.js";
 import { VIBESCAPE_STYLE } from "./mcp-style.js";
+// The official MCP Registry's entry for this server, from the repository
+// root. mcp-publisher publishes the same file, so the version the registry
+// shows and the version the server reports cannot drift apart.
+import SERVER_JSON from "../server.json" with { type: "json" };
 
 /// The version of the protocol this server speaks, newest first. A client
 /// that asks for one of these gets it; anything else gets the newest.
@@ -491,7 +495,7 @@ async function dispatch(message, env, request) {
                 result: {
                     protocolVersion: version,
                     capabilities: { tools: { listChanged: false } },
-                    serverInfo: { name: "vibresia", version: "1.0.0" },
+                    serverInfo: { name: "vibresia", version: SERVER_JSON.version },
                     instructions: SERVER_INSTRUCTIONS,
                 },
             };

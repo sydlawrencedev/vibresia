@@ -12,16 +12,19 @@ directory asks for it. Two servers:
 |---|---|---|---|
 | Official MCP Registry | remote | `mcp-publisher publish` | Live as `com.vibresia/music-visualizer` 1.1.0 |
 | PulseMCP | remote | Copies the official registry | Waiting on their sync |
-| awesome-remote-mcp-servers | remote | PR | [jaw9c/awesome-remote-mcp-servers#1912](https://github.com/jaw9c/awesome-remote-mcp-servers/pull/1912) |
+| awesome-remote-mcp-servers | remote | PR | To reopen on [punkpeye/awesome-remote-mcp-servers](https://github.com/punkpeye/awesome-remote-mcp-servers) (the active upstream). The first attempt, [jaw9c#1912](https://github.com/jaw9c/awesome-remote-mcp-servers/pull/1912), is on a fork that stopped being maintained in September 2026 and will never merge. Their CI also requires the opening account to have starred the repo first |
 | Claude Connectors Directory | remote | claude.ai/directory/manage, paid plan | In review as "Vibresia Music Visualiser" (slug `vibresia-music-visualiser`), submitted 2026-11-02 |
 | ChatGPT apps | remote | platform.openai.com/plugins, upload a ZIP of `chatgpt-plugin/` | Package ready. Waiting on Minith Labs organisation verification (started 2026-11-02); then a demo video link, the domain token at `/.well-known/openai-apps-challenge`, and the category the checks ask for |
 | Glama (hosted) | remote | Imported from the official registry; claimed via `/.well-known/glama.json` | Ownership verified, healthy since 2026-11-02 (Cloudflare had been blocking its checker with a 403 until the bot setting was changed) |
 | Glama (source) | local | glama.ai, Add Server, Runs from source | Submitted for review 2026-11-02. Glama will ask for a Dockerfile, which a macOS app can't provide |
-| awesome-mcp-servers (punkpeye) | local | PR, with the Glama badge | After Glama |
+| awesome-mcp-servers (punkpeye) | local | PR, under **Art & Culture**, with the Glama badge | Ready to send. The badge is at `glama.ai/mcp/servers/sydlawrencedev/vibresia`, which resolves. Their CI labels an entry with no badge `missing-glama` |
 | Smithery | — | — | Closed to submissions: since 2026-10-31 it is a curated, read-only directory run by Arcade, with no accounts |
 | mcp.so | remote | Free review request as a GitHub issue (the site's form only offers the $39 option) | [chatmcp/mcpso#6615](https://github.com/chatmcp/mcpso/issues/6615) |
 | mcpservers.org | remote | mcpservers.org/submit, free plan, contact syd@minithlabs.com | Submitted 2026-11-02; review within 2 weeks, approval comes by email |
 | Cursor directory | remote | cursor.directory, Submit a plugin, Manual, MCP Server component | Submitted 2026-11-02 at [cursor.directory/plugins/vibresia-music-visualiser](https://cursor.directory/plugins/vibresia-music-visualiser); hidden until its security scan finishes. No logo yet |
+| Cursor Marketplace | remote | cursor.com/marketplace/publish, submit the repo URL | Manifest committed at `.cursor-plugin/plugin.json` with `mcp.json` at the repository root. Not submitted yet; reviews are slow |
+| Docker MCP Catalog | remote | docker/mcp-registry, remote route, `task remote-wizard` | Not started. The remote route needs no Dockerfile: `type: remote`, `transport_type: streamable-http`, no OAuth |
+| Gemini CLI extension gallery | remote | The `gemini-cli-extension` topic plus `gemini-extension.json` at the repository root | Committed. The topic is on the repo, so the daily crawler will find it. It appears once a tag is pushed |
 
 To publish a new version to the official registry, bump `version` in
 `server.json`, then:
@@ -30,6 +33,19 @@ To publish a new version to the official registry, bump `version` in
 mcp-publisher login http --domain vibresia.com --private-key "$(security find-generic-password -s vibresia-mcp-registry -a vibresia.com -w)"
 mcp-publisher publish
 ```
+
+`server.json` is the one place the server's version is written down. The
+Worker reads it and reports it in `serverInfo`, and the plugin manifests
+below repeat it — so a bump means editing one file and the copies beside it:
+
+| File | What it is |
+|---|---|
+| `server.json` | The official MCP Registry's entry. Also served at `/.well-known/mcp.json`. The source of the version. |
+| `mcp.json` | The client config: how a cursor or an editor connects to `https://vibresia.com/mcp`. |
+| `.cursor-plugin/plugin.json` | The Cursor plugin manifest. Cursor finds `mcp.json` at the repository root on its own. |
+| `gemini-extension.json` | The Gemini CLI extension manifest. Same endpoint, spelled `httpUrl` because that is Gemini's name for it. |
+| `chatgpt-plugin/` | The ChatGPT apps package, uploaded as a ZIP rather than read from the repository. |
+| `glama.json` | Proves the Glama connector listing is ours. Served with the claim at `/.well-known/glama.json`. |
 
 ## Copy
 

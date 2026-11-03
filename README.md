@@ -30,6 +30,7 @@ Found a bug or have an idea? [File an issue](https://github.com/sydlawrencedev/v
 | `scripts/check-vibescapes.sh` | Fails if a vibescape is missing from the landing page, or the version in its structured data is stale. |
 | `scripts/check-posthog.sh` | Fails if the site and the app report to different PostHog projects. |
 | `scripts/check-no-webhook-leak.sh` | Fails if a Discord webhook URL, a notify token or a share token is anywhere in the tree. |
+| `server.json`, `mcp.json`, `.cursor-plugin/`, `gemini-extension.json`, `glama.json` | The manifests that describe the public MCP server to registries, plugins and clients. See [the manifests](#the-manifests). |
 | `wrangler.toml` | Deploys the Worker (and `site/` through it) to Cloudflare. |
 
 ## Developing
@@ -313,6 +314,32 @@ agent is not told different things depending on which one it asked.
 ```bash
 npx wrangler secret put SHARE_TOKEN    # only for the app's own sharing
 python3 scripts/check-mcp-reference.py  # and --write to copy the app's text over
+```
+
+### The manifests
+
+The remote server is described in the places that expect a description, so a
+client can find it without being told:
+
+| File | Who reads it |
+|---|---|
+| `server.json` | The official MCP Registry. Served at `/.well-known/mcp.json`. |
+| `mcp.json` | A client that wants the endpoint. This is the file Cursor, and anything else that speaks the same format, looks for. |
+| `.cursor-plugin/plugin.json` | The Cursor plugin manifest. Cursor finds `mcp.json` at the repository root on its own. |
+| `gemini-extension.json` | The Gemini CLI extension manifest. Same endpoint, spelled `httpUrl` because that is Gemini's name for it. |
+| `chatgpt-plugin/` | The ChatGPT apps package, uploaded as a ZIP rather than read from the repository. |
+| `glama.json` | Proves the Glama connector listing is ours. Served with the claim at `/.well-known/glama.json`. |
+
+To connect a client by hand, it is one entry:
+
+```json
+{
+  "mcpServers": {
+    "vibresia": {
+      "url": "https://vibresia.com/mcp"
+    }
+  }
+}
 ```
 
 ## Changelog and open issues

@@ -9,6 +9,7 @@ import assert from "node:assert/strict";
 
 import worker, { resetRateLimiter } from "./index.js";
 import { handleMcp, lintVibescape, resetMcpRateLimiters } from "./mcp.js";
+import SERVER_JSON from "../server.json" with { type: "json" };
 
 const PAYLOAD = "TZDNbsMgEIRfZcUJYoqIU6dtqjxCT63USy8oIcESBosfK1GUd-8CVZWLBd_M7oy5EZWT8YHsyGfSs9GOcOLUpBF8XOF";
 
@@ -121,6 +122,9 @@ test("it says hello, and says what it is for", async () => {
     const answer = await rpc(env, "initialize", { protocolVersion: "2025-06-18" });
     assert.equal(answer.result.protocolVersion, "2025-06-18");
     assert.equal(answer.result.serverInfo.name, "vibresia");
+    // The version the server reports is the one in the registry's entry, so
+    // a directory that shows it agrees with the registry.
+    assert.equal(answer.result.serverInfo.version, SERVER_JSON.version);
     assert.ok(answer.result.instructions.includes("music visualisation"));
 });
 

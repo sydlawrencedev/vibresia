@@ -1,0 +1,25 @@
+{
+  "name": "vibresia",
+  "version": "1.1.0",
+  "description": "Music visualiser (visualizer): AI agents write, compile, preview and save audio-reactive GLSL shaders (vibescapes) that move with live music, shared as playable links.",
+  "author": {
+    "name": "Minith Labs",
+    "email": "syd@minithlabs.com"
+  },
+  "homepage": "https://vibresia.com",
+  "repository": "https://github.com/sydlawrencedev/vibresia",
+  "license": "MIT",
+  "keywords": [
+    "music visualiser",
+    "music visualizer",
+    "audio visualizer",
+    "audio-reactive",
+    "GLSL",
+    "shader",
+    "music visualization",
+    "vibescape",
+    "generative art",
+    "MCP"
+  ],
+  "logo": "site/favicon.svg"
+}
