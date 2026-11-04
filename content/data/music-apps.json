@@ -447,6 +447,60 @@
           "verifiedISO": "2026-11-03"
         }
       ]
+    },
+    {
+      "slug": "parachord",
+      "name": "Parachord",
+      "hasVisualizer": null,
+      "visualizerFacts": [
+        {
+          "text": "Parachord's own README lists its features, and no visualiser is among them: it names multi-source playback, the plug-in architecture, the AI companion, library sync, artist discovery, playlists and queue, sharing, the browser extension, social features, scrobbling, deep links, application menu and auto-updates.",
+          "sourceUrl": "https://github.com/Parachord/parachord",
+          "quote": "Unified Library - Search and play from multiple services simultaneously",
+          "verifiedISO": "2026-11-04"
+        },
+        {
+          "text": "Parachord plays each service through the service's own stream or its own player, and Spotify plays in Spotify's own app through Spotify Connect.",
+          "sourceUrl": "https://github.com/Parachord/parachord",
+          "quote": "Spotify plays in Spotify's own app through Spotify Connect.",
+          "verifiedISO": "2026-11-04"
+        },
+        {
+          "text": "Parachord is built on castlabs Electron for Content Security, a fork of Electron with the Widevine CDM, so DRM-protected services can play.",
+          "sourceUrl": "https://github.com/Parachord/parachord",
+          "quote": "castlabs Electron for Content Security - Electron fork with the Widevine CDM, for DRM-protected streaming",
+          "verifiedISO": "2026-11-04"
+        }
+      ],
+      "noVisualizerNote": "We couldn't find a visualiser mentioned in Parachord's own README or documentation.",
+      "macApp": {
+        "text": "Parachord has a native desktop app for the Mac: a .dmg or .zip from its GitHub Releases, for macOS 13 (Ventura) or later, on Intel or Apple silicon.",
+        "sourceUrl": "https://github.com/Parachord/parachord",
+        "quote": "macOS 13 (Ventura) or later",
+        "verifiedISO": "2026-11-04"
+      },
+      "webPlayer": null,
+      "other": [
+        {
+          "text": "Parachord is a multi-source player that resolves each track to the best available source across Spotify, Apple Music, Amazon Music, YouTube, Bandcamp, SoundCloud, a Subsonic server and local files.",
+          "sourceUrl": "https://github.com/Parachord/parachord",
+          "quote": "Play music from Spotify, Apple Music, Amazon Music, YouTube, Bandcamp, SoundCloud, your own Subsonic server, local files, and more",
+          "verifiedISO": "2026-11-04"
+        },
+        {
+          "text": "Parachord's source is on GitHub under the MIT licence, and its plug-ins run in the app's own renderer rather than in a sandbox.",
+          "sourceUrl": "https://github.com/Parachord/parachord",
+          "quote": "Trusted Code - Plug-ins are not sandboxed: they run in the app's renderer with the same access as Parachord's own code, so install only plug-ins you trust",
+          "verifiedISO": "2026-11-04"
+        },
+        {
+          "text": "Vibresia is Parachord's built-in visualiser: Parachord draws Vibresia scenes with the audio it is already playing, so the visuals follow the music without another app.",
+          "sourceUrl": "https://github.com/Parachord/parachord",
+          "quote": "Multi-source music player with cross-platform resolver support.",
+          "verifiedISO": "2026-11-04",
+          "note": "The integration is Vibresia's side of the partnership: Vibresia renders its scenes inside Parachord."
+        }
+      ]
     }
   ]
 }
