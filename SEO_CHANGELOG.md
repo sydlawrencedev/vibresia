@@ -19,6 +19,33 @@ Recurring dates:
 - **Eight weeks after launch**: decide which `later` rows in
   `content/url-plan.csv` to build, from impressions.
 
+## 2026-11-04 (deployed 2026-11-04): Parachord, on the list and with a page
+
+| URL | Target query |
+| --- | --- |
+| `/blog/parachord-visualizer-mac` | parachord visualizer |
+| `/blog/apple-music-visualizer` | does apple music have a visualizer |
+
+- Parachord is on the list of music apps: it is in `content/data/music-apps.json`
+  with facts from its own README, so it appears in the table of apps on the hub
+  page and in the list of spokes below it.
+- It has a page of its own. Parachord is a multi-source player, in the lineage
+  of Tomahawk, and its own feature list has no visualiser in it — so the page
+  says that plainly, and says that Vibresia is the visualiser built into it
+  rather than a second app to install.
+- The page sets out Parachord's copy-protection rules, because they shape what
+  any visualiser can do: the scene reads audio that is already playing, in
+  Parachord's own renderer, and never touches a key or intercepts a stream.
+- Demand evidence: owner request 2026-11-04, no autocomplete suggestions. The
+  page is built because the owner asked for it, not because search data asked
+  for it.
+- Every fact about Parachord is quoted from its own GitHub page, and the
+  source checker confirms the quotes are there.
+- Checked live on 2026-11-04: the page returns 200 with its own canonical and
+  FAQPage; the hub page lists Parachord; `/sitemaps/questions.xml` lists the
+  new page; Googlebot and GPTBot get 200; a `.html` URL redirects to the clean
+  URL with a 307.
+
 ## 2026-11-03 (deployed 2026-11-03): the Twitch record, corrected
 
 | URL | Target query |
