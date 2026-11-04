@@ -416,7 +416,10 @@ enum FunShaders {
     }
 
     // User-supplied sprites (see SpriteAtlas); uSpriteKinds == 0 means draw our own.
-    uniform sampler2DArray uSprites;
+    // The precision is stated because GLSL ES (which a browser's WebGL2
+    // context speaks) has no default precision for a sampler array, and
+    // without one the shader will not compile there.
+    uniform highp sampler2DArray uSprites;
     uniform int uSpriteKinds;
     uniform float uSpriteFirst[16];
     uniform float uSpriteFrames[16];
@@ -3106,10 +3109,12 @@ extension FunShaders {
         float grain = step(0.74, gh) * (0.4 + 2.2 * fluxSq(fract(gh * 7.3)))
                     * smoothstep(0.5, 0.1, abs(fract(gq) - 0.5)) * smoothstep(1.2 + 1.2 * fract(gh * 3.1), 0.2, abs(fract(c * 0.34) - 0.5) * 3.4);
         // the light gathers and thins in broad smeared patches
-        float patch = fluxNoise1(lr * 3.0 / sm - travel * 0.9 + floor(c * 0.1) * 3.7 + seed);
-        float s = env * (0.1 + 0.35 * patch + line * (0.2 + 0.8 * st) * (0.35 + 0.7 * fh) * (0.4 + 0.9 * patch)) + rim * (0.25 + 0.6 * st);
+        // ("patch" is a reserved word in GLSL ES, which is what a browser's
+        // WebGL2 context speaks, so the name here is sheetPatch.)
+        float sheetPatch = fluxNoise1(lr * 3.0 / sm - travel * 0.9 + floor(c * 0.1) * 3.7 + seed);
+        float s = env * (0.1 + 0.35 * sheetPatch + line * (0.2 + 0.8 * st) * (0.35 + 0.7 * fh) * (0.4 + 0.9 * sheetPatch)) + rim * (0.25 + 0.6 * st);
         vec3 hot = mix(tint, vec3(1.0, 0.88, 0.72), 0.55);
-        vec3 col = tint * s + hot * (grain * env * (0.6 + 1.6 * uTreble) + rim * line * st * 0.5 + fluxSq(st * patch) * env * 0.35);
+        vec3 col = tint * s + hot * (grain * env * (0.6 + 1.6 * uTreble) + rim * line * st * 0.5 + fluxSq(st * sheetPatch) * env * 0.35);
         // the strands thin out into the vanishing point
         float depth = smoothstep(0.012, 0.2, r);
         return vec4(col * lit * depth, env * 0.55 * depth);
