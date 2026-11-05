@@ -26,6 +26,13 @@
 
 import { VIBESCAPE_REFERENCE } from "./mcp-reference.js";
 import { VIBESCAPE_STYLE } from "./mcp-style.js";
+// The capability that proves a share is yours. It lives in its own file
+// because the share API needs it too, and the share API is imported by the
+// Worker — importing back from `index.js` would make a cycle.
+import { hashEditKey } from "./share-capability.js";
+// The caps on what one share can be — the same ones the HTTP share API
+// uses, because it is the same table.
+import { MAX_PAYLOAD_CHARS, MAX_NAME_CHARS, MAX_AUTHOR_CHARS } from "./share-limits.js";
 // The official MCP Registry's entry for this server, from the repository
 // root. mcp-publisher publishes the same file, so the version the registry
 // shows and the version the server reports cannot drift apart.
@@ -95,13 +102,17 @@ const MCP_TOOLS = [
     tool(
         "share_vibescape",
         "Share a vibescape",
-        "Use this when a vibescape should be listed in the public gallery, where anybody can find it at vibresia.com/vibescapes. A vibescape is created unlisted; this is the separate act of putting it in front of people. The name and the author go with it, so make sure they are right before calling this.",
+        "Use this when a vibescape should be listed in the public gallery, where anybody can find it at vibresia.com/vibescapes. A vibescape is created unlisted; this is the separate act of putting it in front of people. The name and the author go with it, so make sure they are right before calling this. Only the vibescape's own capability can list it: a vibescape made here has none, so a person has to share it from the app.",
         {
             type: "object",
             properties: {
                 id: {
                     type: "string",
                     description: "The share's id — the last part of the link, six characters. It is what `create_vibescape` returns.",
+                },
+                editKey: {
+                    type: "string",
+                    description: "The capability that came with the vibescape, if it has one. A vibescape made by an agent has none and cannot be listed from here — say so rather than pretending.",
                 },
             },
             required: ["id"],
@@ -259,6 +270,15 @@ function randomShareId() {
     let id = "";
     for (const byte of bytes) id += "abcdefghijkmnopqrstuvwxyz23456789"[byte % 32];
     return id;
+}
+
+/// A capability: thirty-two bytes of randomness, made once and kept by
+/// whoever made the vibescape. The site keeps only its hash, so the table
+/// cannot be used to list anything.
+function newEditKey() {
+    const bytes = crypto.getRandomValues(new Uint8Array(32));
+    return btoa(String.fromCharCode(...bytes))
+        .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
 /// How often one address may make a vibescape. Generous for a person,
@@ -423,25 +443,39 @@ async function callTool(params, env, request) {
         case "create_vibescape": {
             const code = typeof args.code === "string" ? args.code : "";
             const name = typeof args.name === "string" ? args.name.trim() : "";
+            const author = typeof args.author === "string" ? args.author.trim() : "";
             if (code.trim() === "") return textResult("Give it some code to draw with.", true);
             if (name === "") return textResult("Give it a name.", true);
+            if (name.length > MAX_NAME_CHARS) {
+                return textResult(`That name is too long — ${MAX_NAME_CHARS} characters is the most.`, true);
+            }
+            if (author.length > MAX_AUTHOR_CHARS) {
+                return textResult(`That author is too long — ${MAX_AUTHOR_CHARS} characters is the most.`, true);
+            }
             if (rateLimited(createLogs, clientAddress(request), CREATE_SECONDS_BETWEEN, CREATE_MAX_PER_HOUR)) {
                 return textResult("That is a lot of vibescapes in a short time. Try again in a moment.", true);
             }
-            const payload = await encodePayload({
-                name,
-                author: typeof args.author === "string" ? args.author.trim() : "",
-                url: null,
-                shader: code,
-            });
+            const payload = await encodePayload({ name, author, url: null, shader: code });
+            // The encoded size is what the row costs, and compression makes
+            // the relationship between the source and the stored size
+            // unpredictable in both directions. So the stored size is what is
+            // checked.
+            if (payload.length > MAX_PAYLOAD_CHARS) {
+                return textResult("That vibescape is too big to publish.", true);
+            }
             const id = randomShareId();
+            // A capability for this vibescape, so the agent can list it and
+            // nobody else can. The site keeps only the hash, the same as it
+            // does for a share made in the app.
+            const editKey = newEditKey();
             try {
                 // The gallery flag is zero: a new vibescape is unlisted until
                 // somebody shares it, which is a separate, deliberate act.
                 await env.SHARES.prepare(
-                    "INSERT INTO shares (id, payload, name, author, is_public, created_at) VALUES (?, ?, ?, ?, ?, ?)"
-                ).bind(id, payload, name, typeof args.author === "string" ? args.author.trim() : "",
-                    0, Date.now()).run();
+                    "INSERT INTO shares (id, payload, name, author, is_public, created_at, edit_key, revision) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, 1)"
+                ).bind(id, payload, name, author, 0, Date.now(),
+                    await hashEditKey(editKey)).run();
             } catch (error) {
                 console.log(`[mcp] could not create a vibescape: ${error}`);
                 return textResult("The vibescape could not be saved. Try again.", true);
@@ -456,7 +490,10 @@ async function callTool(params, env, request) {
                     ? "A few things worth knowing before you share it:\n\n" + warnings.map((w) => "• " + w).join("\n")
                     : "It looks good to me.",
                 "",
-                "It is not in the public gallery yet. Call `share_vibescape` with the id when you want it listed.",
+                "It is not in the public gallery yet. Call `share_vibescape` with the id and the capability below when you want it listed.",
+                "",
+                `id: ${id}`,
+                `editKey: ${editKey}`,
             ].join("\n"));
         }
         case "share_vibescape": {
@@ -467,8 +504,18 @@ async function callTool(params, env, request) {
             if (rateLimited(shareLogs, clientAddress(request), 1, SHARE_MAX_PER_HOUR)) {
                 return textResult("That is a lot of shares in a short time. Try again in a moment.", true);
             }
-            const row = await env.SHARES.prepare("SELECT id FROM shares WHERE id = ?").bind(id).first();
+            const row = await env.SHARES.prepare("SELECT id, edit_key FROM shares WHERE id = ?")
+              .bind(id).first();
             if (!row) return textResult("There is no vibescape with that id.", true);
+            // The gallery is a public index of names and authors, so listing
+            // one is the maker's decision and nobody else's. The capability
+            // is what says this is the maker: the app's token is in the
+            // bundle, so it cannot.
+            const supplied = typeof args.editKey === "string" ? args.editKey : "";
+            if (!supplied || !row.edit_key
+                || (await hashEditKey(supplied)) !== row.edit_key) {
+                return textResult("That is not yours to list. Open it in the app and share it from there.", true);
+            }
             await env.SHARES.prepare("UPDATE shares SET is_public = 1 WHERE id = ?").bind(id).run();
             return textResult(
                 `Listed: https://vibresia.com/s/${id}\n\nIt is in the public gallery now, at https://vibresia.com/vibescapes, where anybody can find it.`);

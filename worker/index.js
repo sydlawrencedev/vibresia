@@ -21,6 +21,11 @@ import { handleMcp } from "./mcp.js";
 // because the public MCP server needs it too, and the MCP server is
 // imported here — importing back would make a cycle.
 import { editKeyMatches, hashEditKey } from "./share-capability.js";
+// The caps on what one share can be. The public MCP server writes to the
+// same table, so it uses the same ones.
+import {
+  MAX_PAYLOAD_CHARS, MAX_NAME_CHARS, MAX_AUTHOR_CHARS, MAX_IMAGE_BYTES, MAX_KEY_CHARS,
+} from "./share-limits.js";
 // The official MCP Registry's entry for this server. mcp-publisher reads the
 // same file from the repository root, so what is published and what is served
 // here cannot drift apart.
@@ -523,12 +528,10 @@ const SHARE_ID_PATTERN = new RegExp(`^[${SHARE_ID_ALPHABET}]{${SHARE_ID_LENGTH}}
 // it. The short link stores the payload instead, so the cap is now about
 // what the database will hold and about the long form still being a URL
 // somebody can open — which is now only ever a fallback.
-const MAX_PAYLOAD_CHARS = 16384;
-const MAX_NAME_CHARS = 120;
-const MAX_AUTHOR_CHARS = 120;
-const MAX_IMAGE_BYTES = 400 * 1024;
-const MAX_KEY_CHARS = 128;
-
+//
+// The numbers themselves live in share-limits.js, because the public MCP
+// server writes to the same table and has to use the same caps.
+//
 // The key is a hash the app sends: hex, usually. Checking the shape is not
 // much, but it is enough to keep anything that is not a key out of the
 // database.
