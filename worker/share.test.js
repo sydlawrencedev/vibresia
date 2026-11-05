@@ -604,15 +604,19 @@ test("sharing it again with the tickbox on puts it in the gallery", async () => 
   resetRateLimiter();
   await run("https://vibresia.com/api/share", {
     env,
-    ...shareRequest({ payload: PAYLOAD, name: "Later", author: "Stephen", key: "later1" }),
+    ...shareRequest({ payload: PAYLOAD, name: "Later", author: "Stephen", key: "later1",
+                      editKey: "the-capability" }),
   });
   let body = await (await run("https://vibresia.com/api/gallery", { env })).json();
   assert.equal(sharedIn(body).length, 0);
 
+  // The maker shares it again with the tickbox on. The capability is what
+  // says this is their share, so the flag follows them in.
   resetRateLimiter();
   await run("https://vibresia.com/api/share", {
     env,
-    ...shareRequest({ payload: PAYLOAD, name: "Later", author: "Stephen", key: "later1", public: true }),
+    ...shareRequest({ payload: PAYLOAD, name: "Later", author: "Stephen", key: "later1",
+                      public: true, editKey: "the-capability" }),
   });
   body = await (await run("https://vibresia.com/api/gallery", { env })).json();
   assert.equal(sharedIn(body).length, 1);
@@ -817,17 +821,19 @@ test("the gallery tickbox reaches the site", async () => {
   resetRateLimiter();
   const created = await run("https://vibresia.com/api/share", {
     env,
-    ...shareRequest({ payload: PAYLOAD, name: "Ticked", author: "Stephen", key: "ticked1", public: true }),
+    ...shareRequest({ payload: PAYLOAD, name: "Ticked", author: "Stephen", key: "ticked1",
+                      public: true, editKey: "the-capability" }),
   });
   const { id } = await created.json();
 
   // Unticking it takes the share out of the gallery, which it never used to
-  // do: the tickbox was only read when a share was made.
+  // do: the tickbox was only read when a share was made. The capability is
+  // what says this is the maker's share.
   const patched = await run(`https://vibresia.com/api/share/${id}`, {
     env,
     method: "PATCH",
     headers: { "x-av-token": SHARE_TOKEN, "Content-Type": "application/json" },
-    body: JSON.stringify({ public: false }),
+    body: JSON.stringify({ public: false, editKey: "the-capability" }),
   });
   assert.equal(patched.status, 200);
 
@@ -839,6 +845,79 @@ test("the gallery tickbox reaches the site", async () => {
   assert.equal(details.ok, true);
   assert.equal(details.public, false);
   assert.equal(details.name, "Ticked");
+});
+
+test("the share token alone cannot list somebody else's share", async () => {
+  const { env } = makeEnv();
+  resetRateLimiter();
+  const created = await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: PAYLOAD, name: "Private", author: "Stephen", key: "private1",
+                      public: false, editKey: "the-capability" }),
+  });
+  const { id } = await created.json();
+
+  // The token ships in the app bundle, so it is not proof of anything about
+  // this particular share.
+  const patched = await run(`https://vibresia.com/api/share/${id}`, {
+    env,
+    method: "PATCH",
+    headers: { "x-av-token": SHARE_TOKEN, "Content-Type": "application/json" },
+    body: JSON.stringify({ public: true }),
+  });
+  assert.equal(patched.status, 403);
+
+  const details = await (await run(`https://vibresia.com/api/share/${id}`, { env })).json();
+  assert.equal(details.public, false, "the share was listed anyway");
+});
+
+test("the maker can still list their own share", async () => {
+  const { env } = makeEnv();
+  resetRateLimiter();
+  const created = await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: PAYLOAD, name: "Mine", author: "Stephen", key: "mine1",
+                      public: false, editKey: "the-capability" }),
+  });
+  const { id } = await created.json();
+
+  const patched = await run(`https://vibresia.com/api/share/${id}`, {
+    env,
+    method: "PATCH",
+    headers: { "x-av-token": SHARE_TOKEN, "Content-Type": "application/json" },
+    body: JSON.stringify({ public: true, editKey: "the-capability" }),
+  });
+  assert.equal(patched.status, 200);
+  const details = await (await run(`https://vibresia.com/api/share/${id}`, { env })).json();
+  assert.equal(details.public, true);
+});
+
+test("sharing an existing vibescape cannot list somebody else's share", async () => {
+  const { env } = makeEnv();
+  resetRateLimiter();
+  const created = await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: PAYLOAD, name: "Theirs", author: "Somebody", key: "theirs1",
+                      public: false, editKey: "their-capability" }),
+  });
+  const { id } = await created.json();
+
+  // Somebody else, with the app's token, shares the same vibescape with the
+  // gallery ticked on. The share that is already there is not theirs, so the
+  // tickbox must not follow them in.
+  resetRateLimiter();
+  const second = await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: PAYLOAD, name: "Theirs", author: "Somebody", key: "theirs1",
+                      public: true }),
+  });
+  assert.equal(second.status, 200);
+  const body = await second.json();
+  assert.equal(body.existing, true);
+  assert.equal(body.public, false, "the share was listed anyway");
+
+  const details = await (await run(`https://vibresia.com/api/share/${id}`, { env })).json();
+  assert.equal(details.public, false, "the share is in the gallery");
 });
 
 test("the gallery tickbox needs the token", async () => {
@@ -1093,13 +1172,15 @@ test("a share that was kept private and is then shared publicly is announced", a
   resetRateLimiter();
   await runCatchingDiscord("https://vibresia.com/api/share", {
     env,
-    ...shareRequest({ payload: PAYLOAD, name: "Later", author: "Stephen", key: "later1", public: false }),
+    ...shareRequest({ payload: PAYLOAD, name: "Later", author: "Stephen", key: "later1",
+                      public: false, editKey: "the-capability" }),
   });
 
   resetRateLimiter();
   const { posts } = await runCatchingDiscord("https://vibresia.com/api/share", {
     env,
-    ...shareRequest({ payload: PAYLOAD, name: "Later", author: "Stephen", key: "later1", public: true }),
+    ...shareRequest({ payload: PAYLOAD, name: "Later", author: "Stephen", key: "later1",
+                      public: true, editKey: "the-capability" }),
   });
   assert.equal(posts.length, 1, "joining the gallery is the news");
 });

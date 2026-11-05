@@ -234,20 +234,23 @@ actor ShareLinkStore {
     }
 
     /// Puts a share in the public gallery, or takes it out.
-    /// Puts a share in the public gallery, or takes it out.
     ///
-    /// The tickbox in the share sheet has to reach the site. It used to be
-    /// read only when a share was made, so unticking it on a share that
-    /// already existed did nothing at all.
-    func setGallery(shareID: String, inGallery: Bool) async -> Bool {
-        guard !shareID.isEmpty, !ShareLinkStore.token.isEmpty else { return false }
+    /// The capability is what says this Mac is the one that made the share.
+    /// The app's token is in the bundle, so it cannot: anybody who downloads
+    /// the app can read it out. The capability is kept on the share, and the
+    /// site checks it against the hash it stored.
+    func setGallery(shareID: String, editKey: String, inGallery: Bool) async -> Bool {
+        guard !shareID.isEmpty, !editKey.isEmpty, !ShareLinkStore.token.isEmpty else { return false }
         guard let url = URL(string: "\(ShareLinkStore.site)/api/share/\(shareID)") else { return false }
 
         var request = URLRequest(url: url)
         request.httpMethod = "PATCH"
         request.setValue(ShareLinkStore.token, forHTTPHeaderField: "x-av-token")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONSerialization.data(withJSONObject: ["public": inGallery])
+        request.httpBody = try? JSONSerialization.data(withJSONObject: [
+            "public": inGallery,
+            "editKey": editKey,
+        ])
 
         do {
             let (_, response) = try await URLSession.shared.data(for: request)

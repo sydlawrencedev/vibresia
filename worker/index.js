@@ -17,6 +17,10 @@
 // `ctx.waitUntil` so Discord can never delay a download.
 
 import { handleMcp } from "./mcp.js";
+// The capability that proves a share is yours. It lives in its own file
+// because the public MCP server needs it too, and the MCP server is
+// imported here — importing back would make a cycle.
+import { editKeyMatches, hashEditKey } from "./share-capability.js";
 // The official MCP Registry's entry for this server. mcp-publisher reads the
 // same file from the repository root, so what is published and what is served
 // here cannot drift apart.
@@ -776,25 +780,6 @@ async function deflateRaw(bytes) {
   return new Uint8Array(await new Response(stream).arrayBuffer());
 }
 
-/// The hash of a capability, which is what the server keeps.
-///
-/// The capability itself is a random string the maker of a share keeps on
-/// their own Mac. Only its hash is stored, so the table cannot be used to
-/// change anything.
-async function hashEditKey(editKey) {
-  if (!editKey) return null;
-  return hashPayload(editKey);
-}
-
-/// Whether a capability is the one this share's maker has.
-async function editKeyMatches(env, id, editKey) {
-  if (!editKey) return false;
-  const row = await env.SHARES.prepare("SELECT edit_key FROM shares WHERE id = ?")
-    .bind(id).first();
-  if (!row || !row.edit_key) return false;
-  return row.edit_key === await hashEditKey(editKey);
-}
-
 /// The revision of a share, or zero when it has none.
 async function shareRevision(env, id) {
   const row = await env.SHARES.prepare("SELECT revision FROM shares WHERE id = ?")
@@ -873,6 +858,11 @@ async function handleShareGet(request, url, env) {
 /// The tickbox in the app's share sheet has to do something. It used to be
 /// read only when a share was made, so a share that was already made kept
 /// whatever it was made with — and unticking it did nothing at all.
+///
+/// The app's token says the request came from an app. It does not say the
+/// share is the caller's: the token ships inside the bundle, so anybody can
+/// read it out. The capability is what says "this is the share I made", and
+/// it is what the gallery flag turns on.
 async function handleSharePatch(request, url, env) {
   const token = request.headers.get("x-av-token") || "";
   if (!env.SHARE_TOKEN || token !== env.SHARE_TOKEN) {
@@ -890,7 +880,13 @@ async function handleSharePatch(request, url, env) {
   if (typeof body?.public !== "boolean") {
     return Response.json({ ok: false, error: "public must be true or false" }, { status: 400 });
   }
-  await setPublic(env, id, body.public);
+  const editKey = typeof body?.editKey === "string" ? body.editKey : "";
+  if (!(await editKeyMatches(env, id, editKey))) {
+    return Response.json({ ok: false, error: "not yours to change" }, { status: 403 });
+  }
+  const wrote = await setPublic(env, id, body.public);
+  // A write that failed must not be reported as one that worked.
+  if (!wrote.ok) return Response.json({ ok: false, error: wrote.error }, { status: 500 });
   return Response.json({ ok: true, id, public: body.public });
 }
 
@@ -990,13 +986,20 @@ async function handleShareCreate(request, env, ctx) {
     // A share made while the picture was missing gets one now, if this
     // request has it. The link stays the same either way.
     await ensureImage(env, existing, image);
-    // And the gallery follows the tickbox, so a share that was kept out of
-    // it can be put in by sharing it again. Whether it is *new* to the
-    // gallery is asked before the flag is set: a share that was already in
-    // it and is shared again is not news.
+    // The gallery flag belongs to the maker of the share. The app's token is
+    // in the bundle, so it proves nothing about this particular share: only
+    // the capability does. Without one, the flag is left as it is and the
+    // caller is told what it is — a share somebody else made, listed or not
+    // by their choice, not by whoever happened to share the same vibescape.
+    const ownsExisting = await editKeyMatches(env, existing.id, editKey);
     const wasInGallery = await isInGallery(env, existing.id);
-    await setPublic(env, existing.id, isPublic);
-    if (isPublic && !wasInGallery) {
+    if (ownsExisting) {
+      await setPublic(env, existing.id, isPublic);
+    }
+    const inGallery = ownsExisting ? isPublic : wasInGallery;
+    // Whether it is *new* to the gallery is asked before the flag is set: a
+    // share that was already in it and is shared again is not news.
+    if (inGallery && !wasInGallery) {
       await announceGalleryShare(env, ctx, {
         id: existing.id,
         name,
@@ -1009,7 +1012,7 @@ async function handleShareCreate(request, env, ctx) {
       id: existing.id,
       url: `${CANONICAL_SITE}s/${existing.id}`,
       imageUrl: existing.image ? `${CANONICAL_SITE}og/${existing.id}.jpg` : null,
-      public: isPublic,
+      public: inGallery,
       existing: true,
       // Which version this share is at. The app records it, and compares it
       // with what the site says later to decide whether the copy on the Mac
@@ -1062,8 +1065,14 @@ async function handleShareCreate(request, env, ctx) {
           // picture, so it goes in.
           await ensureImage(env, raced, image);
           const racedWasInGallery = await isInGallery(env, raced.id);
-          await setPublic(env, raced.id, isPublic);
-          if (isPublic && !racedWasInGallery) {
+          // The gallery flag is the maker's to set, and only the capability
+          // says this is the maker.
+          const ownsRaced = await editKeyMatches(env, raced.id, editKey);
+          if (ownsRaced) {
+            await setPublic(env, raced.id, isPublic);
+          }
+          const inGallery = ownsRaced ? isPublic : racedWasInGallery;
+          if (inGallery && !racedWasInGallery) {
             await announceGalleryShare(env, ctx, {
               id: raced.id,
               name,
@@ -1076,6 +1085,7 @@ async function handleShareCreate(request, env, ctx) {
             id: raced.id,
             url: `${CANONICAL_SITE}s/${raced.id}`,
             imageUrl: raced.image ? `${CANONICAL_SITE}og/${raced.id}.jpg` : null,
+            public: inGallery,
             existing: true,
             revision: await shareRevision(env, raced.id),
           });
