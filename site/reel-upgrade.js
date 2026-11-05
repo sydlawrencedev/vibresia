@@ -76,11 +76,11 @@
     hq.load();
 
     var swap = function () {
-      // Freeze the small clip before reading its playhead. Leaving it playing
-      // means the position we aim for is already stale by the time the seek on
-      // the other one lands, which is a smaller version of the same bug.
+      // The playhead to aim for. The small clip keeps playing while the
+      // full one is being seeked: pausing it first and pausing it again
+      // afterwards leaves a frozen frame for as long as the seek takes, and
+      // on a slow connection that is seconds of a dead-looking reel.
       var wanted = lq.currentTime || 0;
-      lq.pause();
 
       // Only revealed once the two are showing the same frame. Fading earlier
       // is worse than not fading: the full clip is still on frame 0 while the
@@ -90,12 +90,13 @@
       var reveal = function () {
         if (shown) return;
         shown = true;
-        // The small clip was paused to read its playhead. If the full one
+        // The small clip is still painting at this point. If the full one
         // does not actually start — the browser refused, or it has no
         // decoder — the small one has to come back, or the page is left
         // with a paused frame where the reel should be.
         var hqStarted = function () {
           hq.classList.add("upgraded");
+          lq.pause();
           // Leave the small one alone rather than tearing it down mid-frame: it is
           // the thing still painting if the full one is blocked or has no decoder.
           lq.removeAttribute("src");
@@ -113,6 +114,7 @@
         // A clip that never fires `playing` is not going to take over.
         hq.addEventListener("playing", function () {
           hq.classList.add("upgraded");
+          lq.pause();
           lq.removeAttribute("src");
           lq.load();
         }, { once: true });
@@ -143,7 +145,9 @@
         if (Math.abs(hq.currentTime - target) < 0.08) { reveal(); return; }
         if (Date.now() > deadline) {
           // Out of patience. Whatever the playhead is, better to show the sharp
-          // version from there than to sit on the small one forever.
+          // version from there than to sit on the small one forever. The
+          // small one keeps playing until the full one has actually taken
+          // over, so there is no frozen frame in the meantime.
           lq.play().catch(function () {});
           reveal();
           return;
