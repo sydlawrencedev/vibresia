@@ -29,6 +29,11 @@ TAG="v$VERSION"
 # published, and it has broken a share twice by changing what the code
 # meant; these are the examples of how.
 swift test
+# The Worker's tests. The Worker owns the share API, the gallery, the MCP
+# server and the admin surface — all of it ships with the app, because the
+# app talks to it. These are the release gate for that, so they run here
+# rather than when somebody remembers.
+(cd .. && npm test)
 node ../scripts/check-admin-page.mjs
 # Every fact a comparison page states about another product has a source and
 # a date, and none of them is over a year old. See docs/seo.md, Phase 1b.
