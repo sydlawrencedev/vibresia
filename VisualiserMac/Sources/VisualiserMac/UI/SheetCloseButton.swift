@@ -29,6 +29,12 @@ struct SheetCloseButton: View {
         .buttonStyle(.plain)
         .onHover { hovering = $0 }
         .help("Close")
+        // The ✕ is a drawing, so VoiceOver has nothing to read without this.
+        // Without a label it announces "button", and the person using it has
+        // to guess which of the several ✕-shaped things on screen is the one
+        // that closes the sheet.
+        .accessibilityLabel("Close")
+        .accessibilityHint("Closes this panel")
     }
 }
 

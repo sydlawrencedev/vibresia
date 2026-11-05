@@ -198,6 +198,11 @@ struct VibescapesView: View {
                             .fill(self.tab == tab ? Color(white: 0.9) : Color.clear)
                     )
                     .pointingHand()
+                    // A hand-rolled picker has no selected state of its own,
+                    // so VoiceOver does not say which tab is showing. The
+                    // trait is what makes the selected one announce itself
+                    // as selected.
+                    .accessibilityAddTraits(self.tab == tab ? [.isButton, .isSelected] : .isButton)
             }
         }
         .padding(3)
@@ -205,6 +210,8 @@ struct VibescapesView: View {
             RoundedRectangle(cornerRadius: 8)
                 .fill(Color.white.opacity(0.06))
         )
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Vibescapes")
     }
 
     /// The order the gallery is in. The site decides what that means —
@@ -787,6 +794,11 @@ private struct VibescapeCard: View {
                         .buttonStyle(.plain)
                         .pointingHand()
                         .help("Make a copy of this vibescape that you can change")
+                        // An SF Symbol is a picture, so VoiceOver reads the
+                        // symbol's name: "square on square", "pencil",
+                        // "xmark". The label says what the button does, and
+                        // says which vibescape it does it to.
+                        .accessibilityLabel("Make a copy of \(entry.title)")
                     } else {
                         Button {
                             onEdit?(entry)
@@ -798,6 +810,7 @@ private struct VibescapeCard: View {
                         .buttonStyle(.plain)
                         .pointingHand()
                         .help("Edit this vibescape")
+                        .accessibilityLabel("Edit \(entry.title)")
                     }
                     Button {
                         pendingDelete = true
@@ -809,6 +822,7 @@ private struct VibescapeCard: View {
                     .buttonStyle(.plain)
                     .pointingHand()
                     .help("Delete this vibescape")
+                    .accessibilityLabel("Delete \(entry.title)")
                     .confirmationDialog(
                         "Delete “\(entry.title)”?",
                         isPresented: $pendingDelete,
@@ -1031,6 +1045,13 @@ struct VibescapeSwitch: View {
         .buttonStyle(.plain)
         .pointingHand()
         .help(isOn ? "Switch off" : "Switch on")
+        // The switch is drawn, so it has no name and no state to a screen
+        // reader without these. The state matters as much as the name: a
+        // switch that does not say whether it is on leaves the person
+        // guessing whether the tap they just made worked.
+        .accessibilityLabel("Use this vibescape")
+        .accessibilityValue(isOn ? "On" : "Off")
+        .accessibilityAddTraits(isOn ? [.isButton, .isSelected] : .isButton)
     }
 }
 

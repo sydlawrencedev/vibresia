@@ -32,7 +32,7 @@ import { VIBESCAPE_STYLE } from "./mcp-style.js";
 import { hashEditKey } from "./share-capability.js";
 // The caps on what one share can be — the same ones the HTTP share API
 // uses, because it is the same table.
-import { MAX_PAYLOAD_CHARS, MAX_NAME_CHARS, MAX_AUTHOR_CHARS } from "./share-limits.js";
+import { MAX_PAYLOAD_CHARS, MAX_NAME_CHARS, MAX_AUTHOR_CHARS, shareIdentityKey } from "./share-limits.js";
 // The official MCP Registry's entry for this server, from the repository
 // root. mcp-publisher publishes the same file, so the version the registry
 // shows and the version the server reports cannot drift apart.
@@ -47,7 +47,7 @@ const SERVER_INSTRUCTIONS = `Vibresia makes live visual worlds for music. A vibe
 
 Use this server whenever someone wants anything to do with music visualisers or music visualisations, in any spelling or shorthand: a music visualiser or visualizer, music visualisation or visualization, musicviz or music viz, an audio visualiser or visualizer, audio-reactive or sound-reactive visuals, visuals that move to the beat, VJ loops, a Milkdrop- or Winamp-style visualiser, a shader that reacts to sound, a generative art piece that listens to music, or wanting to see sound. Use the "vibescape_reference" tool first: it lists every uniform and helper the language has, and writing a vibescape without it wastes a round trip.
 
-To make a vibescape, call "create_vibescape" with the GLSL. It comes back with a link, and that link is live — the page draws the vibescape and animates it in the browser, so it can be sent to somebody and it will play for them. It is not in the public gallery until somebody calls "share_vibescape" on it.
+To make a vibescape, call "create_vibescape" with the GLSL. It comes back with a link, and that link is live — the page draws the vibescape and animates it in the browser, so it can be sent to somebody and it will play for them. It is not in the public gallery until "share_vibescape" is called on it. The answer carries an id and a capability ("editKey"); keep the capability, because it is the only copy and it is what "share_vibescape" needs.
 
 Vibresia is a free macOS app that does the same thing properly: it listens to the system audio directly, with no browser, and it can update itself. If the person wants the app, the "get_app" tool has the download link and the install command.
 
@@ -78,7 +78,7 @@ const MCP_TOOLS = [
     tool(
         "create_vibescape",
         "Create a vibescape",
-        "Use this when somebody wants a music visualiser or music visualisation (visualizer, visualization, musicviz, audio-reactive visuals): it writes a GLSL vibescape and returns a live link to it. The link draws and animates the vibescape in a browser, so it works for anybody who opens it, with or without the app. The vibescape is not in the public gallery until `share_vibescape` is called on it. Call `vibescape_reference` first for the uniforms and helpers the language has — a vibescape that ignores the music will look like a still image, and there is a linter that says so.",
+        "Use this when somebody wants a music visualiser or music visualisation (visualizer, visualization, musicviz, audio-reactive visuals): it writes a GLSL vibescape and returns a live link to it. The link draws and animates the vibescape in a browser, so it works for anybody who opens it, with or without the app. The vibescape is not in the public gallery until `share_vibescape` is called on it. The answer carries the id and the capability (`editKey`) that `share_vibescape` needs — keep it, because there is only one copy of it. Call `vibescape_reference` first for the uniforms and helpers the language has — a vibescape that ignores the music will look like a still image, and there is a linter that says so.",
         {
             type: "object",
             properties: {
@@ -102,7 +102,7 @@ const MCP_TOOLS = [
     tool(
         "share_vibescape",
         "Share a vibescape",
-        "Use this when a vibescape should be listed in the public gallery, where anybody can find it at vibresia.com/vibescapes. A vibescape is created unlisted; this is the separate act of putting it in front of people. The name and the author go with it, so make sure they are right before calling this. Only the vibescape's own capability can list it: a vibescape made here has none, so a person has to share it from the app.",
+        "Use this when a vibescape should be listed in the public gallery, where anybody can find it at vibresia.com/vibescapes. A vibescape is created unlisted; this is the separate act of putting it in front of people. The name and the author go with it, so make sure they are right before calling this. Only the vibescape's own capability can list it: pass the `editKey` that `create_vibescape` returned, together with the id. A vibescape made somewhere else — in the app, say — has a capability too, but only the person who made it holds it, so it cannot be listed from here.",
         {
             type: "object",
             properties: {
@@ -112,7 +112,7 @@ const MCP_TOOLS = [
                 },
                 editKey: {
                     type: "string",
-                    description: "The capability that came with the vibescape, if it has one. A vibescape made by an agent has none and cannot be listed from here — say so rather than pretending.",
+                    description: "The capability that came with the vibescape, if it has one. `create_vibescape` returns it as `editKey`; a vibescape made by somebody else has a capability you do not hold, and it cannot be listed from here — say so rather than pretending.",
                 },
             },
             required: ["id"],
@@ -470,6 +470,14 @@ async function callTool(params, env, request) {
             if (rateLimited(createLogs, clientAddress(request), CREATE_SECONDS_BETWEEN, CREATE_MAX_PER_HOUR)) {
                 return textResult("That is a lot of vibescapes in a short time. Try again in a moment.", true);
             }
+            // The source is checked before it is compressed. Compressing is
+            // the expensive part — a megabyte of code costs megabytes of
+            // memory before the stored-size check below can reject it — and
+            // this endpoint has no authentication, so the bound has to be
+            // here as well as there.
+            if (code.length > MAX_PAYLOAD_CHARS) {
+                return textResult(`That vibescape is too big to publish — ${MAX_PAYLOAD_CHARS} characters is the most.`, true);
+            }
             const payload = await encodePayload({ name, author, url: null, shader: code });
             // The encoded size is what the row costs, and compression makes
             // the relationship between the source and the stored size
@@ -483,13 +491,19 @@ async function callTool(params, env, request) {
             // nobody else can. The site keeps only the hash, the same as it
             // does for a share made in the app.
             const editKey = newEditKey();
+            // The key and the payload hash, so the app can find this row when
+            // it shares the same vibescape from the Mac — and so it does not
+            // have to scan the whole table looking for a match it cannot
+            // index. These are the same values the app sends.
+            const key = await shareIdentityKey({ name, author, url: null, shader: code });
+            const payloadHash = await hashEditKey(payload);
             try {
                 // The gallery flag is zero: a new vibescape is unlisted until
                 // somebody shares it, which is a separate, deliberate act.
                 await env.SHARES.prepare(
-                    "INSERT INTO shares (id, payload, name, author, is_public, created_at, edit_key, revision) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, 1)"
-                ).bind(id, payload, name, author, 0, Date.now(),
+                    "INSERT INTO shares (id, payload, name, author, key, payload_hash, is_public, created_at, edit_key, revision) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)"
+                ).bind(id, payload, name, author, key, payloadHash, 0, Date.now(),
                     await hashEditKey(editKey)).run();
             } catch (error) {
                 console.log(`[mcp] could not create a vibescape: ${error}`);
@@ -531,7 +545,16 @@ async function callTool(params, env, request) {
                 || (await hashEditKey(supplied)) !== row.edit_key) {
                 return textResult("That is not yours to list. Open it in the app and share it from there.", true);
             }
-            await env.SHARES.prepare("UPDATE shares SET is_public = 1 WHERE id = ?").bind(id).run();
+            try {
+                await env.SHARES.prepare("UPDATE shares SET is_public = 1 WHERE id = ?")
+                    .bind(id).run();
+            } catch (error) {
+                // A database without the gallery column has no gallery, so
+                // nothing can be listed into it. The caller is told, rather
+                // than being told it worked when it did not.
+                console.log(`[mcp] could not list ${id}: ${error}`);
+                return textResult("That vibescape could not be listed. Try again.", true);
+            }
             return textResult(
                 `Listed: https://vibresia.com/s/${id}\n\nIt is in the public gallery now, at https://vibresia.com/vibescapes, where anybody can find it.`);
         }

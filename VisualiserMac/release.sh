@@ -19,10 +19,45 @@
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 REPO="sydlawrencedev/vibresia"
+
+# The release has to describe something real. The tag points at HEAD, so HEAD
+# has to be committed, and the app in the zip has to be the app in that
+# commit. A dirty tree means the artefact would carry code that is in no
+# commit, and a local-only HEAD means the tag would point at nothing on
+# GitHub. Both are checked before anything is built, so the failure is a
+# sentence rather than a half-finished release.
+if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+    echo "ERROR: the working tree has uncommitted changes. Commit them first." >&2
+    git status --short --untracked-files=no >&2
+    exit 1
+fi
+git fetch origin --quiet
+if ! git merge-base --is-ancestor HEAD origin/main; then
+    echo "ERROR: HEAD is not on origin/main. Push it first." >&2
+    echo "       HEAD is $(git rev-parse --short HEAD), origin/main is $(git rev-parse --short origin/main)" >&2
+    exit 1
+fi
+
 # --write records the version in VERSION and in the landing page's
 # structured data, so the site and the app agree.
 VERSION="$(./version.sh --write)"
 TAG="v$VERSION"
+
+# The version bump is a change to two tracked files, and it has to be in the
+# commit the tag points at. The release used to tag HEAD — the commit from
+# before the bump — so the tag named a version that was not in it, and the
+# app in the zip carried a version that no commit held. The commit is made
+# here, and the tag points at it, so the artefact, the tag and the commit all
+# say the same thing.
+#
+# Only the two files the version bump touches are committed. Anything else
+# that appeared while the release was running would have been caught by the
+# clean-tree check at the top, so this is the whole of the difference.
+git add VERSION ../site/index.html
+if ! git diff --cached --quiet; then
+    git commit -m "Release $TAG" >/dev/null
+    echo "==> Committed the version bump as $(git rev-parse --short HEAD)"
+fi
 
 ../scripts/check-vibescapes.sh
 # The app's own tests. The minifier rewrites somebody's code before it is
@@ -47,8 +82,17 @@ node ../scripts/check-links.mjs
 # Every indexable page has the shared Organization and WebSite nodes and
 # FAQs that are on the page (docs/seo.md, Phase 4).
 node ../scripts/check-schema.mjs
+# The Worker and the database agree: every column the Worker asks for is
+# added by a migration in migrations/. This cannot tell whether the
+# migrations have been *applied* to production — that needs the live
+# database — but it catches the Worker and the schema drifting apart, and
+# it names the command that applies them.
+node ../scripts/check-d1-schema.mjs
 ../scripts/check-posthog.sh
 ../scripts/check-no-webhook-leak.sh
+# The leak check's own test, so a change to the check itself cannot quietly
+# stop it finding things.
+../scripts/check-no-webhook-leak.test.sh
 # The share page embeds a copy of the app's shaders, because a browser can't
 # reach the app to ask for them. That copy has to move with the original.
 ../scripts/check-preview-glsl.py
@@ -208,6 +252,14 @@ trap - EXIT
 #   gh release view <tag> -R sydlawrencedev/vibresia --json assets \
 #     --jq '.assets[] | select(.name=="AudioVane.zip") | .downloadCount'
 cp dist/Vibresia.zip dist/AudioVane.zip
+
+# The version-bump commit has to be on GitHub before the release can point at
+# it — `gh release create --target` names a commit, and a commit that only
+# exists on this machine is not one anybody can check out. So it is pushed
+# first, and the push is what makes the release reproducible: the tag, the
+# artefact and the commit all name the same tree.
+git push origin HEAD:main
+echo "==> Pushed the version bump to origin/main"
 
 gh release create "$TAG" dist/Vibresia.zip dist/AudioVane.zip -R "$REPO" \
     --title "Vibresia $VERSION" \

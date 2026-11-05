@@ -36,8 +36,15 @@
       grid.innerHTML = recent.map(function (item) {
         // The name, and who made it. A share with nobody's name on it has
         // no author line rather than an empty one.
-        return '<a class="recent-card" href="' + item.url + '">' +
-          '<img src="' + item.imageUrl + '" alt="" loading="lazy">' +
+        //
+        // The link and the picture are escaped too. They are built by the
+        // Worker from its own canonical URL and the share's id, so they are
+        // not attacker-controlled today — but every other value on this row
+        // goes through the escaper, and leaving two of them out means the
+        // next change to the shape of the response is the one that turns
+        // this into an injection. The whole row is escaped or none of it is.
+        return '<a class="recent-card" href="' + escapeText(item.url) + '">' +
+          '<img src="' + escapeText(item.imageUrl) + '" alt="" loading="lazy">' +
           '<span class="recent-name">' + escapeText(item.name) + "</span>" +
           (item.author ? '<span class="recent-by">by ' + escapeText(item.author) + "</span>" : "") +
           "</a>";

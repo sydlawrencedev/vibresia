@@ -154,8 +154,13 @@ def render(slug: str, title: str, desc: str) -> str:
          vibescape rather than a picture of it. The poster is the same render as
          a JPEG, so there is a frame there from the first paint and for anyone
          whose browser won't play it — and it stays the og:image, because a
-         crawler that fetches a link has no video and no JavaScript. -->
-    <video autoplay muted loop playsinline preload="metadata"
+         crawler that fetches a link has no video and no JavaScript.
+
+         No autoplay attribute: the clip is started by the script below, and
+         only when the visitor has not asked their system for less motion.
+         An autoplay attribute cannot be taken back, so somebody who has
+         asked for less motion would still get a moving picture. -->
+    <video id="reel-{slug}" muted loop playsinline preload="metadata"
            poster="/share/{slug}.jpg"
            width="1200" height="630"
            aria-label="{safe_title}, a Vibresia vibescape by Minith Labs">

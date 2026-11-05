@@ -280,6 +280,28 @@ deploy the Worker. The Worker survives a database that hasn't been migrated
 — it falls back to storing every share on its own, which is what it used to
 do — but the same-link behaviour needs the new columns.
 
+**Before deploying the Worker, apply the migrations.** A Worker that asks
+for a column the database does not have still answers — and the answer is
+wrong in a way nobody notices until a share cannot be found again. So:
+
+```bash
+# 1. The migrations, always before the Worker that uses them.
+npx wrangler d1 migrations apply vibresia-shares --remote
+
+# 2. The backfill, for the rows that predate the hash column.
+node scripts/backfill-share-payload-hashes.mjs
+
+# 3. The Worker.
+npx wrangler deploy
+```
+
+`scripts/check-d1-schema.mjs` checks that the Worker and the migrations
+agree — every column the Worker asks for is added by a migration. It runs in
+CI and in `release.sh`, and it fails with the command above when they have
+drifted apart. It cannot tell whether the migrations have been *applied* to
+production, because that needs the live database; step 1 is still a
+person's job.
+
 `SHARE_TOKEN` is a credential in the same class as `NOTIFY_TOKEN`, so
 `scripts/check-no-webhook-leak.sh` fails if it ends up in the tree.
 
@@ -490,3 +512,7 @@ scripts/band-eval.py --only jazz
 1. Add any new vibescape to `site/index.html` (a card with `data-vibescape="<case name>"`).
 2. `VisualiserMac/release.sh` runs both site checks, decides the version from the date, records it in `VisualiserMac/VERSION` and the landing page, builds, zips `Vibresia.app` and publishes GitHub release `v<VERSION>`. The installer and the app's update check always use the latest release. If a Developer ID certificate is in the keychain, the release is notarized as part of this — the ticket is stapled onto the app between the build and the zip, because signing the bundle again would invalidate it. See [Signing and notarization](VisualiserMac/README.md#signing-and-notarization).
 3. `npx wrangler deploy` if the site or worker changed, then re-submit the sitemap. First deploy after cloning needs `npx wrangler secret put DISCORD_WEBHOOK_URL` (see [Download notifications](#download-notifications-discord)).
+
+If a release has to be taken back — the app, the Worker, or the commit
+itself — see [Rolling back a release](docs/rollback.md). It says which lever
+pulls for which kind of bad release, and which order to pull them in.

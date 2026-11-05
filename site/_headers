@@ -23,3 +23,22 @@
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN
   Permissions-Policy: geolocation=(), camera=(), microphone=(), interest-cohort=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+  # The content security policy.
+  #
+  # `'unsafe-inline'` for scripts is there because three pages carry an
+  # inline script — the admin page, the vibe page and the custom share
+  # page — and the rest are generated or static with only a JSON-LD block.
+  # Moving those three to files is the way to drop it, and it is worth
+  # doing, but until then this still stops the thing it is most useful
+  # for: a script from somewhere else being run on the page.
+  #
+  # `https:` in connect-src is for PostHog, which is proxied through
+  # /ingest on this site but also has its own host for the pages that talk
+  # to it directly. `https://fonts.googleapis.com` is the stylesheet, and
+  # `https://fonts.gstatic.com` is the font files it pulls in.
+  #
+  # The share page draws the vibescape with WebGL, so it needs a blob: URL
+  # for the shader source it compiles.
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https:; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'

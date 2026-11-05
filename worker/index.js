@@ -20,7 +20,7 @@ import { handleMcp } from "./mcp.js";
 // The capability that proves a share is yours. It lives in its own file
 // because the public MCP server needs it too, and the MCP server is
 // imported here — importing back would make a cycle.
-import { editKeyMatches, hashEditKey } from "./share-capability.js";
+import { editKeyMatches, hashEditKey, shareHasNoCapability, claimShareCapability } from "./share-capability.js";
 // The caps on what one share can be. The public MCP server writes to the
 // same table, so it uses the same ones.
 import {
@@ -630,7 +630,7 @@ async function findExistingShare(env, { key, payloadHash, payload }) {
       "SELECT id, image FROM shares WHERE key = ?",
       [key],
     );
-    if (byKey) return byKey;
+    if (byKey.row) return byKey.row;
   }
   // By payload hash, for a share made before the key existed — or by an app
   // version that doesn't send one. The hash rather than the payload itself:
@@ -642,16 +642,31 @@ async function findExistingShare(env, { key, payloadHash, payload }) {
       "SELECT id, image FROM shares WHERE payload_hash = ?",
       [payloadHash],
     );
-    if (byHash) return byHash;
+    if (byHash.row) return byHash.row;
+    // The hash column is not there yet, so the rows that exist have no hash
+    // to be found by. This is the only case where looking for the payload
+    // itself is worth doing.
+    if (!byHash.missingColumn) return null;
   }
-  // Last resort: the payload itself. Only for rows made before the hash
-  // column existed, which is a handful of rows for the life of the site.
+  // Last resort: the payload itself.
+  //
+  // Only when the hash column does not exist yet — a database that has not
+  // been migrated. The payload cannot be indexed (SQLite caps an index key
+  // at about a page, and a payload is longer than that), so this query
+  // reads every row in the table, and D1 charges for the rows it reads.
+  // Running it on every share — which is what it used to do, because the
+  // hash lookup simply returned nothing and the scan was the next step —
+  // spent the whole day's read quota at a few thousand shares.
+  //
+  // Once the migration has been applied and
+  // `scripts/backfill-share-payload-hashes.mjs` has filled in the hashes,
+  // every row is found by its hash, and this never runs.
   const byPayload = await query(
     env,
     "SELECT id, image FROM shares WHERE payload = ?",
     [payload],
   );
-  return byPayload || null;
+  return byPayload.row || null;
 }
 
 /// Runs a query, treating a failure as "not found".
@@ -659,12 +674,17 @@ async function findExistingShare(env, { key, payloadHash, payload }) {
 /// The columns this asks about are added by a migration. If the migration
 /// hasn't been applied yet, the query throws, and a share that can still be
 /// made is better than no sharing at all.
+///
+/// The answer says whether the column was missing, because the caller can
+/// only decide whether a slower fallback is worth running if it knows the
+/// fast query could not have failed for another reason.
 async function query(env, sql, bindings) {
   try {
-    return await env.SHARES.prepare(sql).bind(...bindings).first();
+    return { row: await env.SHARES.prepare(sql).bind(...bindings).first(), missingColumn: false };
   } catch (error) {
+    const missingColumn = String(error).includes("no such column");
     console.log(`[share] query failed (${sql.split(" ").slice(0, 3).join(" ")}…): ${error}`);
-    return null;
+    return { row: null, missingColumn };
   }
 }
 
@@ -783,11 +803,34 @@ async function deflateRaw(bytes) {
   return new Uint8Array(await new Response(stream).arrayBuffer());
 }
 
-/// The revision of a share, or zero when it has none.
+/// The revision of a share, or one when it has none.
+///
+/// The share page and the GET endpoint both say `COALESCE(revision, 1)`, and
+/// this has to say the same thing: the app records the revision it is given
+/// and compares it with the site's later, so two different numbers for one
+/// row make it think it is behind for ever.
 async function shareRevision(env, id) {
-  const row = await env.SHARES.prepare("SELECT revision FROM shares WHERE id = ?")
-    .bind(id).first();
-  return row?.revision ?? 0;
+  try {
+    const row = await env.SHARES.prepare(
+      "SELECT COALESCE(revision, 1) AS revision FROM shares WHERE id = ?"
+    ).bind(id).first();
+    return row?.revision ?? 1;
+  } catch (error) {
+    // A database without the revision column yet: the share is still a
+    // share, it is just at the first version.
+    console.log(`[share] could not read the revision of ${id}: ${error}`);
+    return 1;
+  }
+}
+
+/// The longest base64 string that can hold a picture within the cap.
+///
+/// Base64 is four characters for every three bytes, so the string is
+/// checked before it is decoded — decoding is what costs the memory, and a
+/// body that is mostly a picture would otherwise cost megabytes before the
+/// byte count could refuse it.
+function maxImageBase64Chars() {
+  return Math.ceil(MAX_IMAGE_BYTES / 3) * 4 + 4;
 }
 
 /// Whether a share is in the public gallery.
@@ -948,6 +991,13 @@ async function handleShareCreate(request, env, ctx) {
   // has the generic preview, which is what every custom share used to have.
   let image = null;
   if (typeof body?.image === "string" && body.image.length > 0) {
+    // The string is checked before it is decoded. Decoding is what costs:
+    // base64 expands to three bytes for every four characters, so a body
+    // that is mostly a picture costs the Worker megabytes of memory before
+    // the byte count below can refuse it.
+    if (body.image.length > maxImageBase64Chars()) {
+      return Response.json({ ok: false, error: "image too large" }, { status: 400 });
+    }
     let bytes;
     try {
       bytes = Uint8Array.from(atob(body.image), (c) => c.charCodeAt(0));
@@ -994,12 +1044,28 @@ async function handleShareCreate(request, env, ctx) {
     // the capability does. Without one, the flag is left as it is and the
     // caller is told what it is — a share somebody else made, listed or not
     // by their choice, not by whoever happened to share the same vibescape.
+    //
+    // A share that has no capability at all is a share made before
+    // capabilities did. There is no owner to take the capability away from,
+    // and the request that finds the row is holding the content key that
+    // finds it — so this is the maker claiming their own share. Without
+    // that, every share made by an older build of the app would be
+    // permanently unlistable and unpublishable.
+    if (editKey && await shareHasNoCapability(env, existing.id)) {
+      await claimShareCapability(env, existing.id, editKey);
+    }
     const ownsExisting = await editKeyMatches(env, existing.id, editKey);
     const wasInGallery = await isInGallery(env, existing.id);
+    // A gallery write that failed must not be reported as one that worked.
+    // The share is still a share; what it is not is in the gallery, and the
+    // answer has to say so — otherwise the app caches a lie and shows a
+    // tickbox that is not true.
+    let galleryWriteFailed = false;
     if (ownsExisting) {
-      await setPublic(env, existing.id, isPublic);
+      const wrote = await setPublic(env, existing.id, isPublic);
+      galleryWriteFailed = !wrote.ok;
     }
-    const inGallery = ownsExisting ? isPublic : wasInGallery;
+    const inGallery = ownsExisting ? (galleryWriteFailed ? wasInGallery : isPublic) : wasInGallery;
     // Whether it is *new* to the gallery is asked before the flag is set: a
     // share that was already in it and is shared again is not news.
     if (inGallery && !wasInGallery) {
@@ -1010,6 +1076,14 @@ async function handleShareCreate(request, env, ctx) {
         hasImage: !!image || !!existing.image,
       });
     }
+    // The share this one replaces goes now that the new one is in place —
+    // and only now, and only if it is a different share, and only if the
+    // capability said it was the maker's own. This is the same rule the
+    // new-share path below follows; without it, sharing a vibescape that
+    // already has a row would leave the old one behind in the gallery.
+    if (replaced && replaces !== existing.id) {
+      await deleteShare(env, replaces);
+    }
     return Response.json({
       ok: true,
       id: existing.id,
@@ -1017,6 +1091,7 @@ async function handleShareCreate(request, env, ctx) {
       imageUrl: existing.image ? `${CANONICAL_SITE}og/${existing.id}.jpg` : null,
       public: inGallery,
       existing: true,
+      replaced,
       // Which version this share is at. The app records it, and compares it
       // with what the site says later to decide whether the copy on the Mac
       // is behind. Leaving it out would make the app record the first
@@ -1070,11 +1145,24 @@ async function handleShareCreate(request, env, ctx) {
           const racedWasInGallery = await isInGallery(env, raced.id);
           // The gallery flag is the maker's to set, and only the capability
           // says this is the maker.
-          const ownsRaced = await editKeyMatches(env, raced.id, editKey);
-          if (ownsRaced) {
-            await setPublic(env, raced.id, isPublic);
+          //
+          // A share with no capability at all was made before capabilities
+          // did, so the maker claims it here rather than being locked out
+          // of their own share for ever.
+          if (editKey && await shareHasNoCapability(env, raced.id)) {
+            await claimShareCapability(env, raced.id, editKey);
           }
-          const inGallery = ownsRaced ? isPublic : racedWasInGallery;
+          const ownsRaced = await editKeyMatches(env, raced.id, editKey);
+          // A failed gallery write is not reported as one that worked: see
+          // the same note on the existing-share path above.
+          let racedWriteFailed = false;
+          if (ownsRaced) {
+            const wrote = await setPublic(env, raced.id, isPublic);
+            racedWriteFailed = !wrote.ok;
+          }
+          const inGallery = ownsRaced
+            ? (racedWriteFailed ? racedWasInGallery : isPublic)
+            : racedWasInGallery;
           if (inGallery && !racedWasInGallery) {
             await announceGalleryShare(env, ctx, {
               id: raced.id,
@@ -1164,6 +1252,10 @@ async function handleShareUpdate(request, url, env) {
 
   let image = null;
   if (typeof body?.image === "string" && body.image.length > 0) {
+    // Checked before it is decoded: see the same check on the create path.
+    if (body.image.length > maxImageBase64Chars()) {
+      return Response.json({ ok: false, error: "image too large" }, { status: 400 });
+    }
     try {
       image = Uint8Array.from(atob(body.image), (c) => c.charCodeAt(0));
     } catch {
@@ -1183,17 +1275,21 @@ async function handleShareUpdate(request, url, env) {
     || (image !== null);
 
   if (changed) {
-    const revision = await shareRevision(env, id) + 1;
+    // The revision goes up in the same statement as the content, rather
+    // than being read first and written after. Two publishes at the same
+    // moment would otherwise both read the same revision and both write
+    // the next one, and one of the two versions would be lost: the
+    // installed copies would be told "version 4" for both.
     try {
       await env.SHARES.prepare(
-        "UPDATE shares SET payload = ?, name = ?, author = ?, payload_hash = ?, revision = ?, " +
-        "image = COALESCE(?, image) WHERE id = ?"
-      ).bind(finalPayload, finalName, finalAuthor, payloadHash, revision, image, id).run();
+        "UPDATE shares SET payload = ?, name = ?, author = ?, payload_hash = ?, " +
+        "revision = COALESCE(revision, 1) + 1, image = COALESCE(?, image) WHERE id = ?"
+      ).bind(finalPayload, finalName, finalAuthor, payloadHash, image, id).run();
     } catch (error) {
       console.log(`[share] could not update ${id}: ${error}`);
       return Response.json({ ok: false, error: "could not save" }, { status: 500 });
     }
-    return Response.json({ ok: true, id, revision, changed: true,
+    return Response.json({ ok: true, id, revision: await shareRevision(env, id), changed: true,
                            name: finalName, author: finalAuthor });
   }
 

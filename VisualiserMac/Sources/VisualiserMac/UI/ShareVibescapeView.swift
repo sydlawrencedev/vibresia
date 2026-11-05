@@ -271,9 +271,7 @@ struct ShareVibescapeView: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text("Public gallery")
                     .font(.system(size: 12, weight: .semibold, design: .monospaced))
-                Text(canChangeGallery
-                     ? "Lists it at vibresia.com/vibescapes, where anybody can find it."
-                     : "Only the person who made this vibescape can list it.")
+                Text(galleryHint)
                     .font(.system(size: 11))
                     .foregroundStyle(Color(white: 0.55))
                     .fixedSize(horizontal: false, vertical: true)
@@ -305,6 +303,11 @@ struct ShareVibescapeView: View {
     private func pushGallery(_ wanted: Bool) {
         guard let shareID = currentShareID else { return }
         guard let editKey = currentShareEditKey else { return }
+        // The value the tickbox had before this change. A failure puts that
+        // back, rather than flipping the current one: two toggles in a row
+        // would otherwise undo each other's rollback and leave the tick
+        // showing something that isn't true.
+        let previous = !wanted
         Task {
             let ok = await ShareLinkStore().setGallery(shareID: shareID,
                                                        editKey: editKey,
@@ -313,8 +316,12 @@ struct ShareVibescapeView: View {
                 ShareLinkCache.remember(shareID: shareID, for: currentKey, isPublic: wanted)
             } else {
                 // The site didn't take it. Put the tick back, rather than
-                // leaving it showing something that isn't true.
-                await MainActor.run { inGallery = !wanted }
+                // leaving it showing something that isn't true. Only if the
+                // tick is still where the user left it: a later change has
+                // already moved it, and undoing that would be worse.
+                await MainActor.run {
+                    if inGallery == wanted { inGallery = previous }
+                }
             }
         }
     }
@@ -380,6 +387,24 @@ struct ShareVibescapeView: View {
     /// offered and then refused.
     private var canChangeGallery: Bool {
         currentShareEditKey != nil
+    }
+
+    /// What the tickbox says about itself.
+    ///
+    /// The honest wording matters here. "Only the person who made this
+    /// vibescape can list it" is wrong for a share this Mac made before
+    /// capabilities existed: this Mac *is* the person who made it, but the
+    /// share was written before there was a capability to prove it, so the
+    /// site has no way to tell. Re-sharing it claims the share and gives it
+    /// one, and after that the tickbox works.
+    private var galleryHint: String {
+        if canChangeGallery {
+            return "Lists it at vibresia.com/vibescapes, where anybody can find it."
+        }
+        if isShared {
+            return "Only the person who made this vibescape can list it."
+        }
+        return "This share was made before it had one. Share it again and it can be listed."
     }
 
     /// The name on the vibescape as it stands.
@@ -644,8 +669,12 @@ struct ShareVibescapeView: View {
             switch updated {
             case .success(let revision):
                 shortLink = "\(ShareLinkStore.site)/s/\(shareID)"
+                // The capability is passed explicitly, rather than left to
+                // whatever happens to be stored: this is the same capability
+                // that was just used, and saying so keeps the record and
+                // the request in step.
                 app.setCustomVibescapeShare(id: id, shareID: shareID, key: key,
-                                            revision: revision)
+                                            revision: revision, editKey: editKey)
                 return shortLink
             case .failure(let why):
                 NSLog("[SHARE] could not publish the new version: %@", why.detail)

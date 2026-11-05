@@ -73,6 +73,11 @@ struct ShareVibescapeButton: View {
         .offset(x: -padding, y: -2)
         .onHover { hovering = $0 }
         .help("Share this vibescape with someone")
+        // At the narrow tier the word "Share" is dropped and only the symbol
+        // is left, and a symbol is not a name: VoiceOver would read
+        // "square and arrow up". The label says what the button does at
+        // every width, so the narrow layout does not cost anything to hear.
+        .accessibilityLabel("Share this vibescape")
         .sheet(isPresented: $showingSheet) {
             ShareVibescapeView(vibescape: app.activeVibescape)
                 .environmentObject(app)

@@ -7,13 +7,31 @@ import Foundation
 ///
 /// Releases are published by `release.sh` as `Vibresia.zip` on
 /// github.com/sydlawrencedev/vibresia. Builds are signed with a Developer ID
-/// certificate and notarized, so the downloaded copy opens on its own; the
-/// quarantine flag is still cleared before relaunching, which costs nothing
-/// and is a fallback for a Mac that cannot validate the ticket.
+/// certificate and notarized, so the downloaded copy opens on its own.
+///
+/// Before the new app is put in place, it is checked: the signature has to
+/// verify, and it has to be *our* Developer ID. Downloading a zip over HTTPS
+/// only proves that it came from the release — it does not prove what is in
+/// it. If the release account were ever compromised, or the download were
+/// tampered with on the way, an unchecked update would run whatever the
+/// attacker put in it, on every Mac that checked for updates. So the
+/// signature is checked before anything is replaced, and a copy that does
+/// not verify is thrown away rather than installed.
+///
+/// The quarantine flag is cleared after the swap, which costs nothing and is
+/// a fallback for a Mac that cannot validate the ticket.
 final class UpdateChecker: ObservableObject {
     static let shared = UpdateChecker()
     static let repo = "sydlawrencedev/vibresia"
     private static let assetName = "Vibresia.zip"
+
+    /// The team that signs the release.
+    ///
+    /// The certificate is `Developer ID Application: Stephen Lawrence
+    /// (CQQ33F2CDJ)` — see VisualiserMac/README.md. An update signed by
+    /// anybody else is refused, even if the signature itself is valid: a
+    /// valid signature by the wrong team is not our release.
+    private static let expectedTeamID = "CQQ33F2CDJ"
 
     /// How often the automatic check runs.
     private static let hourlyInterval: TimeInterval = 3600
@@ -295,11 +313,54 @@ final class UpdateChecker: ObservableObject {
                 try Self.run("/usr/bin/ditto", ["-x", "-k", zip.path, work.path])
                 guard let newApp = try FileManager.default.contentsOfDirectory(at: work, includingPropertiesForKeys: nil)
                         .first(where: { $0.pathExtension == "app" }) else { throw URLError(.cannotDecodeContentData) }
+                // Nothing is replaced until the new copy has proved it is our
+                // release. A copy that does not verify is thrown away with
+                // the scratch directory, and the installed app is left alone.
+                try Self.verifySignature(of: newApp)
                 DispatchQueue.main.async { self.swapAndRelaunch(newApp: newApp, scratch: work) }
             } catch {
                 DispatchQueue.main.async { self.alert("Update failed", error.localizedDescription) }
             }
         }.resume()
+    }
+
+    /// Checks that an app bundle carries our Developer ID signature.
+    ///
+    /// Two things have to be true: the signature verifies — the bundle has
+    /// not been changed since it was signed — and it is signed by the team
+    /// that signs the releases. A valid signature by somebody else would be
+    /// somebody else's app, so the team is checked too.
+    ///
+    /// `codesign --verify --deep --strict` does the first; `codesign -dv`
+    /// prints the authority, which carries the team id. The check is done
+    /// with the `codesign` tool rather than Security.framework so it reads
+    /// the same way as the release script's own check.
+    static func verifySignature(of app: URL) throws {
+        try run("/usr/bin/codesign", ["--verify", "--deep", "--strict", app.path])
+
+        let details = try capture("/usr/bin/codesign", ["-dv", "--verbose=4", app.path])
+        let authority = details.split(separator: "\n")
+            .first { $0.contains("Authority=Developer ID Application") }
+        guard let authority,
+              authority.contains(expectedTeamID) else {
+            throw UpdateError.notSignedByUs
+        }
+    }
+
+    /// Runs a tool and returns what it printed.
+    private static func capture(_ tool: String, _ args: [String]) throws -> String {
+        let p = Process()
+        p.executableURL = URL(fileURLWithPath: tool)
+        p.arguments = args
+        let pipe = Pipe()
+        p.standardError = pipe
+        p.standardOutput = pipe
+        try p.run()
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        p.waitUntilExit()
+        let output = String(data: data, encoding: .utf8) ?? ""
+        if p.terminationStatus != 0 { throw UpdateError.signatureCheckFailed(output) }
+        return output
     }
 
     /// Hands over to a tiny script that waits for us to quit, replaces the
@@ -343,5 +404,27 @@ final class UpdateChecker: ObservableObject {
         a.messageText = title
         a.informativeText = text
         a.runModal()
+    }
+}
+
+/// Why an update was refused.
+///
+/// The wording matters: the person clicking "Update" is told what happened
+/// and what to do, because "update failed" on its own leaves them with a
+/// stale app and no idea why.
+enum UpdateError: LocalizedError {
+    case signatureCheckFailed(String)
+    case notSignedByUs
+
+    var errorDescription: String? {
+        switch self {
+        case .signatureCheckFailed(let output):
+            let detail = output.trimmingCharacters(in: .whitespacesAndNewlines)
+            return detail.isEmpty
+                ? "The downloaded update is not correctly signed, so it was not installed. The copy you have is untouched."
+                : "The downloaded update is not correctly signed, so it was not installed. The copy you have is untouched.\n\n\(detail)"
+        case .notSignedByUs:
+            return "The downloaded update is signed by somebody else, not by Vibresia's developer, so it was not installed. The copy you have is untouched. Get the release from https://vibresia.com instead."
+        }
     }
 }

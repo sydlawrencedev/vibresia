@@ -72,15 +72,23 @@ function makeShares() {
                 if (row) row.is_public = isPublic;
                 return { success: true };
               }
+              if (sql.includes("UPDATE shares SET edit_key")) {
+                const [editKeyHash, id] = args;
+                const row = rows.get(id);
+                if (!row) return { success: true, meta: { changes: 0 } };
+                if (row.edit_key) return { success: true, meta: { changes: 0 } };
+                row.edit_key = editKeyHash;
+                return { success: true, meta: { changes: 1 } };
+              }
               if (sql.includes("UPDATE shares SET payload = ?")) {
-                const [payload, name, author, payloadHash, revision, image, id] = args;
+                const [payload, name, author, payloadHash, image, id] = args;
                 const row = rows.get(id);
                 if (row) {
                   row.payload = payload;
                   row.name = name;
                   row.author = author;
                   row.payload_hash = payloadHash;
-                  row.revision = revision;
+                  row.revision = (row.revision ?? 1) + 1;
                   if (image) row.image = image;
                 }
                 return { success: true };
@@ -112,6 +120,22 @@ function makeShares() {
                 if (!id) return null;
                 const row = rows.get(id);
                 return { ...row, image: row.image ? Array.from(row.image) : null };
+              }
+              if (sql.includes("SELECT id, image FROM shares WHERE key = ?")) {
+                for (const row of rows.values()) {
+                  if (row.key === args[0]) {
+                    return { ...row, image: row.image ? Array.from(row.image) : null };
+                  }
+                }
+                return null;
+              }
+              if (sql.includes("SELECT edit_key FROM shares WHERE id = ?")) {
+                const row = rows.get(args[0]);
+                return row ? { edit_key: row.edit_key || null } : null;
+              }
+              if (sql.includes("SELECT is_public FROM shares WHERE id = ?")) {
+                const row = rows.get(args[0]);
+                return row ? { is_public: row.is_public } : null;
               }
               if (sql.includes("WHERE payload_hash = ?")) {
                 const id = byPayloadHash.get(args[0]);
@@ -237,6 +261,69 @@ test("a share comes back with a short URL on this domain", async () => {
   assert.equal(body.ok, true);
   assert.match(body.url, /^https:\/\/vibresia\.com\/s\/[a-z2-9]{6}$/);
   assert.equal(body.imageUrl, null);
+});
+
+test("making a share does not read every row in the table", async () => {
+  // A share used to be looked up by its payload when the hash lookup found
+  // nothing — which is every genuinely new share. The payload cannot be
+  // indexed, so that query reads every row in the table, and D1 charges for
+  // the rows it reads. At a few thousand shares a day that spends the whole
+  // day's read quota.
+  //
+  // The payload lookup is only worth doing when the database has not been
+  // migrated yet and the rows have no hash to be found by.
+  const { env, shares } = makeEnv();
+  const queries = [];
+  const realPrepare = shares.prepare.bind(shares);
+  shares.prepare = (sql) => {
+    queries.push(sql);
+    return realPrepare(sql);
+  };
+
+  resetRateLimiter();
+  const response = await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: PAYLOAD, name: "Scanned", author: "Stephen", key: "scanme1" }),
+  });
+  assert.equal(response.status, 200);
+
+  const scanned = queries.filter((sql) => sql.includes("WHERE payload = ?"));
+  assert.deepEqual(scanned, [], "a new share read the whole table to look for its payload");
+});
+
+test("a share is still found by its payload when the hash column is not there yet", async () => {
+  // A database that has not been migrated has no hash to look a share up by,
+  // so the payload itself is the only way to find the row. This is the case
+  // the slow query is for, and it has to keep working.
+  const { env, shares } = makeEnv();
+  shares.rows.set("legac3", {
+    id: "legac3", payload: PAYLOAD, name: "Old World", author: "Stephen",
+    image: null, key: null, payload_hash: null,
+    is_public: 0, created_at: 1_700_000_000_000, revision: 1,
+    edit_key: null, admin_edited: 0,
+  });
+
+  const realPrepare = shares.prepare.bind(shares);
+  shares.prepare = (sql) => {
+    if (sql.includes("WHERE payload_hash = ?")) {
+      return {
+        bind: () => ({
+          async first() { throw new Error("D1_ERROR: no such column: payload_hash"); },
+        }),
+      };
+    }
+    return realPrepare(sql);
+  };
+
+  resetRateLimiter();
+  const response = await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: PAYLOAD, name: "Old World", author: "Stephen" }),
+  });
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.id, "legac3", "it made a second share instead of finding the first");
+  assert.equal(body.existing, true);
 });
 
 test("a payload that is not a payload is refused", async () => {
@@ -918,6 +1005,85 @@ test("sharing an existing vibescape cannot list somebody else's share", async ()
 
   const details = await (await run(`https://vibresia.com/api/share/${id}`, { env })).json();
   assert.equal(details.public, false, "the share is in the gallery");
+});
+
+test("a share made before capabilities did can be claimed by its maker", async () => {
+    const { env, shares } = makeEnv();
+    // A share from an older build of the app: it has a row and a link, but
+    // no capability, because capabilities did not exist when it was made.
+    shares.rows.set("egac2a", {
+        id: "egac2a", payload: PAYLOAD, name: "Old World", author: "Stephen",
+        image: null, key: "legacy1", payload_hash: null,
+        is_public: 0, created_at: 1_700_000_000_000, revision: 1,
+        edit_key: null, admin_edited: 0,
+    });
+    shares.byKey.set("legacy1", "egac2a");
+
+    // The maker re-shares it from the new app. The app has a capability now
+    // — it did not have one before, so this is the first time it can prove
+    // anything about the share.
+    resetRateLimiter();
+    const second = await run("https://vibresia.com/api/share", {
+        env,
+        ...shareRequest({ payload: PAYLOAD, name: "Old World", author: "Stephen",
+                          key: "legacy1", public: true, editKey: "the-capability" }),
+    });
+    assert.equal(second.status, 200);
+    const body = await second.json();
+    assert.equal(body.existing, true, "it made a second share instead of finding the first");
+    assert.equal(body.public, true, "the maker could not list their own share");
+    assert.equal(body.editKey, undefined, "the answer should not leak a capability");
+
+    // And the capability was kept, so the maker can change it later.
+    const detailsResponse = await run("https://vibresia.com/api/share/egac2a", { env });
+    const details = await detailsResponse.json();
+    assert.equal(detailsResponse.status, 200, `the details said: ${JSON.stringify(details)}`);
+    assert.equal(details.public, true);
+
+    const patched = await run("https://vibresia.com/api/share/egac2a", {
+        env,
+        method: "PATCH",
+        headers: { "x-av-token": SHARE_TOKEN, "Content-Type": "application/json" },
+        body: JSON.stringify({ public: false, editKey: "the-capability" }),
+    });
+    assert.equal(patched.status, 200, "the maker still cannot change their own share");
+});
+
+test("a gallery write that fails is not reported as a success", async () => {
+    const { env, shares } = makeEnv();
+    // A share that already exists, made by somebody with the capability.
+    resetRateLimiter();
+    const created = await run("https://vibresia.com/api/share", {
+        env,
+        ...shareRequest({ payload: PAYLOAD, name: "Broken", author: "Stephen", key: "broken1",
+                          public: false, editKey: "the-capability" }),
+    });
+    const { id } = await created.json();
+
+    // Now the database refuses the gallery write — the column is not there,
+    // or the write is refused for any other reason. The share is still made,
+    // but the answer must not say it is in the gallery when it is not.
+    const realPrepare = shares.prepare.bind(shares);
+    shares.prepare = (sql) => {
+        if (sql.includes("UPDATE shares SET is_public")) {
+            return {
+                bind: () => ({
+                    async run() { throw new Error("D1_ERROR: no such column: is_public"); },
+                }),
+            };
+        }
+        return realPrepare(sql);
+    };
+
+    resetRateLimiter();
+    const second = await run("https://vibresia.com/api/share", {
+        env,
+        ...shareRequest({ payload: PAYLOAD, name: "Broken", author: "Stephen", key: "broken1",
+                          public: true, editKey: "the-capability" }),
+    });
+    const body = await second.json();
+    assert.equal(body.ok, true, "the share itself should still be made");
+    assert.equal(body.public, false, "the share is not in the gallery, but it said it was");
 });
 
 test("the gallery tickbox needs the token", async () => {

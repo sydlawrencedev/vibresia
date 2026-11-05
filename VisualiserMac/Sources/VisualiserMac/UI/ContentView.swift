@@ -222,6 +222,13 @@ enum CRTCache {
 
 struct BeatFlash: View {
     @ObservedObject var level: BeatFlashLevel
+    /// Whether the person has asked for less movement.
+    ///
+    /// The flash is a full-screen tint that pulses with the beat. Somebody
+    /// who has turned on Reduce Motion in System Settings does not want a
+    /// full-screen flash thirty times a second, and the website's own
+    /// animations honour the same setting.
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private var strength: Double { level.strength }
 
     /// Beat flashes are visually invisible below this, so we hide the whole
@@ -243,6 +250,12 @@ struct BeatFlash: View {
         )
         .opacity(isVisible ? strength : 0)
         .animation(.easeOut(duration: 0.18), value: isVisible)
+        // The flash is a whole screen that pulses with the music. With Reduce
+        // Motion on, it is held still: the shape of the music is still there
+        // in the scene itself, which is the part the person asked to see.
+        .opacity(reduceMotion ? 0 : (isVisible ? strength : 0))
+        .animation(reduceMotion ? nil : .easeOut(duration: 0.18), value: isVisible)
+        .accessibilityHidden(true)
     }
 }
 /// Hands back the NSWindow hosting this view (for the pointer check).

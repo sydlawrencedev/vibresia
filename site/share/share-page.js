@@ -118,6 +118,13 @@
     var url = deepLinkURL(button);
     if (!url) return;
 
+    // The href carries the deep link too, so the button works without this
+    // script: without it, a page whose script is blocked or delayed has a
+    // button that jumps to the top and does nothing. The script still
+    // handles the click — it has to, to notice whether the app is installed
+    // and offer the download — but the link is real either way.
+    button.setAttribute("href", url);
+
     button.dataset.vibresiaWired = "1";
     button.addEventListener("click", function (event) {
       event.preventDefault();
@@ -148,6 +155,40 @@
     buttons.forEach(wire);
   }
 
+  // --- The clip ------------------------------------------------------------
+
+  /* Starts the vibescape clip, unless the visitor has asked for less motion.
+   *
+   * The clip is the picture on a share page, and it is the only thing moving
+   * there. Somebody whose system asks for reduced motion gets the poster
+   * instead — which is the same render, still rather than moving — and the
+   * video is never started.
+   *
+   * The video element has no `autoplay` attribute, because an attribute
+   * cannot be taken back: the browser would start it before this script
+   * could ask. So the choice is ours to make.
+   */
+  function startClip() {
+    var video = $(".shot video");
+    if (!video) return;
+
+    var lessMotion = window.matchMedia
+      && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (lessMotion) {
+      // One still frame, so the page has a picture rather than a hole.
+      video.addEventListener("loadeddata", function () {
+        try { video.pause(); video.currentTime = 0; } catch (_) {}
+      }, { once: true });
+      return;
+    }
+
+    var start = function () {
+      video.play().catch(function () { /* autoplay refused: the poster stands in */ });
+    };
+    if (video.readyState >= 2) start();
+    else video.addEventListener("loadeddata", start, { once: true });
+  }
+
   // --- Main --------------------------------------------------------------
 
   function init() {
@@ -157,6 +198,8 @@
     var alreadyInstalled = false;
     try { alreadyInstalled = localStorage.getItem(INSTALL_KEY) === "1"; } catch (_) {}
     if (alreadyInstalled) hideDownloadForever();
+
+    startClip();
 
     wireAll();
 

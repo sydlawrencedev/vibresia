@@ -64,7 +64,28 @@
   }
 
   if (!KEY || KEY.indexOf("phc_") !== 0) return; // no key in this build: stay quiet
-  if (optedOut()) return;
+
+  // The opt-out link has to work on every page, including the ones where
+  // measuring is already off. If the script returned as soon as it saw an
+  // opt-out, the link in the footer would be dead on the next visit — it
+  // would scroll to the top and never say "Done". So the link is wired up
+  // first, and only then does the script decide whether to measure anything.
+  function showOptOutNote() {
+    var note = document.getElementById("optout-note");
+    if (note) note.hidden = false;
+  }
+  document.addEventListener("click", function (e) {
+    var el = e.target.closest("[data-optout]");
+    if (!el) return;
+    e.preventDefault();
+    try { localStorage.setItem(OPT_OUT_KEY, "1"); } catch (err) { /* nothing we can do */ }
+    showOptOutNote();
+  });
+
+  if (optedOut()) {
+    showOptOutNote();
+    return;
+  }
 
   var id = distinctId();
   var sessionId = uuid(); // one per page load: groups a single visit together
@@ -195,7 +216,13 @@
     if (el.hasAttribute("data-optout")) {
       e.preventDefault();
       try { localStorage.setItem(OPT_OUT_KEY, "1"); } catch (err) { /* nothing we can do */ }
-      flush(false);
+      // The queue is dropped, not sent. Opting out is the one action a
+      // person takes to stop being measured, and flushing it would send the
+      // very pageview they asked not to have sent — the click that opts out
+      // would be the thing that reports the visit. The Mac app clears its
+      // queue the same way (Analytics.swift).
+      if (flushTimer) { clearTimeout(flushTimer); flushTimer = null; }
+      queue.length = 0;
       var note = document.getElementById("optout-note");
       if (note) note.hidden = false;
       return;

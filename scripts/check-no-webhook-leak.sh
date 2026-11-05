@@ -21,10 +21,15 @@
 # The sweep walks the working tree rather than the index. `git grep` reads
 # the index, so an untracked file was invisible to it.
 set -euo pipefail
-# The sweep runs over the directory the check was invoked from, not the one
-# the script lives in: the point is to see the tree that is about to be
-# committed, wherever it is. Run from the repository root, that is the root.
-ROOT="$(pwd)"
+# The sweep runs over the repository the script lives in, not the directory
+# the check was invoked from. `release.sh` runs from `VisualiserMac/`, so a
+# cwd-based root would sweep only the app folder and miss the Worker, the
+# site, and every root-level file.
+#
+# LEAK_CHECK_ROOT exists for the self-test, which needs to point the sweep at
+# a scratch repository. It is not a general override.
+ROOT="${LEAK_CHECK_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+cd "$ROOT"
 
 # The directories that are not ours to sweep: the git directory, installed
 # dependencies, build output and the agent kit's vendored skills (which carry
@@ -46,17 +51,28 @@ EXCLUDES=(
 # Every match is appended. Assigning instead of appending let one pattern's
 # result overwrite another's, so a leaked SHARE_TOKEN passed the check.
 #
-# The tokens are matched the way they are actually written — `NAME=value`,
-# with no space around the `=`, in an env file or a shell script. A token
-# held in a JavaScript constant with a space before the `=` is a test
-# placeholder, not a credential: the suite's own tokens are
-# `share-token-for-tests` and `s3cret`, and the values that ship are
-# forty-plus hex characters.
+# The tokens are matched the way they are actually written. An env file says
+# `NAME=value`; a shell script says `export NAME=value`; a script or a
+# JavaScript constant says `NAME = "value"`. The old pattern only matched
+# the first of those, so a token written with a space around the `=`, or in
+# quotes, walked straight past it.
+#
+# The values that ship are forty-plus hex characters. The suite's own
+# tokens are `share-token-for-tests` and `s3cret`, and they are placeholders
+# rather than credentials — so a value made only of words is not a leak.
+# A real token is random, and randomness does not read as words.
 PATTERNS=(
-  'NOTIFY_TOKEN=[A-Za-z0-9_-]{16,}'
-  'SHARE_TOKEN=[A-Za-z0-9_-]{16,}'
+  'NOTIFY_TOKEN[[:space:]]*=[[:space:]]*["'"'"']?[A-Za-z0-9_$.-]{16,}'
+  'SHARE_TOKEN[[:space:]]*=[[:space:]]*["'"'"']?[A-Za-z0-9_$.-]{16,}'
+  'DISCORD_(GALLERY_)?WEBHOOK_URL[[:space:]]*=[[:space:]]*["'"'"']?[A-Za-z0-9_$./-]{16,}'
   'discord(app)?\.com/api/webhooks/[0-9]+/[A-Za-z0-9_.-]{20,}'
 )
+
+# A value that is only lower-case words with dashes between them is a
+# placeholder somebody wrote for a test — `share-token-for-tests`. A real
+# token is random. This is the one shape that is not worth failing a build
+# over, and every other shape still fails.
+PLACEHOLDER='^([a-z]+-)+[a-z]+$'
 
 matches=""
 
@@ -64,6 +80,15 @@ for pattern in "${PATTERNS[@]}"; do
   while IFS= read -r hit; do
     [ -n "$hit" ] || continue
     file="${hit%%:*}"
+    # The value that matched, so a placeholder can be recognised. The line
+    # is `file:line:text`; the value is what follows the `=`, with the
+    # quotes and the trailing punctuation taken off.
+    text="${hit#*:}"
+    value="$(printf '%s' "$text" | sed -e 's/^[^=]*=//' -e 's/^[[:space:]]*//' -e 's/^["'"'"']//' -e 's/["'"'"'];*$//' -e 's/;*$//')"
+    # A placeholder somebody wrote for a test is not a credential.
+    if printf '%s' "$value" | grep -qE "$PLACEHOLDER"; then
+      continue
+    fi
     # A file git ignores cannot be committed by accident, so a secret in one
     # is where it is supposed to be. A file that is already tracked is a
     # different matter: the secret is in git already.

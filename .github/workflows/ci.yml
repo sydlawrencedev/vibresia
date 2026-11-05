@@ -61,6 +61,13 @@ jobs:
       - name: Schema
         run: node scripts/check-schema.mjs
 
+      # The Worker and the database agree: every column the Worker asks for
+      # is added by a migration. A Worker that asks for a column the database
+      # does not have still answers, and the answer is wrong in a way nobody
+      # notices until a share cannot be found again.
+      - name: Database schema
+        run: node scripts/check-d1-schema.mjs
+
       # The four manifests that describe the public MCP server agree.
       - name: Plugin manifests
         run: python3 scripts/check-plugin-manifests.py "$PWD"

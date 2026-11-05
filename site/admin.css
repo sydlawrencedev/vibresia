@@ -130,6 +130,19 @@ button:hover { border-color: rgba(255, 255, 255, 0.28); }
 button.danger { color: var(--red); border-color: rgba(255, 90, 90, 0.35); }
 button.danger:hover { border-color: var(--red); }
 
+/* A focus ring on the buttons and links.
+ *
+ * The admin page is a wall of buttons — Hide, Show, Edit, Delete, Save,
+ * Cancel, Refresh — and without this a person using a keyboard cannot see
+ * which one they are on. The token field has its own ring, which changes the
+ * border; these need one too.
+ */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid rgba(43, 243, 255, 0.7);
+  outline-offset: 2px;
+}
+
 /* The list. */
 .shares-head {
   display: flex;

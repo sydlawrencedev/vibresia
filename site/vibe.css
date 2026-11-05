@@ -129,6 +129,15 @@ button.copy {
 button.copy:hover { color: var(--text); border-color: rgba(255, 255, 255, 0.25); }
 button.copy[data-done] { color: var(--pink); border-color: rgba(255, 43, 214, 0.5); }
 
+/* A focus ring on the buttons, so a person using a keyboard can see where
+ * they are. The text field has its own — it changes the border — but these
+ * two had none. */
+button.copy:focus-visible,
+button.example:focus-visible {
+  outline: 2px solid rgba(255, 43, 214, 0.7);
+  outline-offset: 2px;
+}
+
 .shot {
   border-radius: 12px;
   overflow: hidden;

@@ -31,9 +31,12 @@ function makeShares() {
                     return {
                         async run() {
                             if (sql.includes("INSERT INTO shares")) {
-                                const [id, payload, name, author, isPublic, created, editKey] = args;
+                                const [id, payload, name, author, key, payloadHash, isPublic,
+                                       created, editKey] = args;
                                 rows.set(id, {
                                     id, payload, name, author,
+                                    key: key || null,
+                                    payload_hash: payloadHash || null,
                                     is_public: isPublic ? 1 : 0,
                                     created_at: created,
                                     edit_key: editKey || null,
@@ -369,6 +372,43 @@ test("the maker can list their own vibescape with its capability", async () => {
     const result = await callTool(env, "share_vibescape", { id: "abc234", editKey: "the-capability" });
     assert.equal(isError(result), false);
     assert.equal(shares.rows.get("abc234").is_public, 1);
+});
+
+test("an agent-made vibescape is found again when the app shares the same one", async () => {
+    const { env, shares } = makeEnv();
+    const code = "vec3 render(vec2 p, float t) { return vec3(uBass, 0.2, 0.5); }";
+    const created = await callTool(env, "create_vibescape", { code, name: "Same World" });
+    const id = textOf(created).match(/\/s\/([a-z2-9]{6})/)[1];
+    const row = shares.rows.get(id);
+
+    // The row the agent made has to be findable by the key the app sends,
+    // and by the hash of its payload — otherwise the app makes a second row
+    // and a second link for the same vibescape.
+    assert.ok(row.key, "the row has no key, so the app cannot find it by key");
+    assert.ok(row.payload_hash, "the row has no payload hash, so it can only be found by a table scan");
+
+    // And the key has to be the one the app computes for the same content.
+    const { shareIdentityKey } = await import("./share-limits.js");
+    const appKey = await shareIdentityKey({
+        name: "Same World", author: "", url: null, shader: code,
+    });
+    assert.equal(row.key, appKey, "the key is not the one the app computes");
+});
+
+test("the tool descriptions say what the capability actually does", async () => {
+    const { env } = makeEnv();
+    const listed = await rpc(env, "tools/list", {});
+    const tools = listed.result.tools;
+    const share = tools.find((t) => t.name === "share_vibescape");
+    assert.ok(share, "there is no share_vibescape tool");
+    assert.match(share.description, /create_vibescape/,
+        "the description does not say where the capability comes from");
+    assert.doesNotMatch(share.description, /a vibescape made here has none/i,
+        "the description says agent-made vibescapes have no capability, which is false");
+
+    const create = tools.find((t) => t.name === "create_vibescape");
+    assert.match(create.description, /capability/i,
+        "create_vibescape does not mention the capability it returns");
 });
 
 test("the app's own download is in there for somebody who wants it", async () => {

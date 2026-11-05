@@ -1108,10 +1108,18 @@ final class AppState: ObservableObject {
     func setCustomVibescapeShare(id: String, shareID: String, key: String,
                                  revision: Int? = nil, editKey: String? = nil) {
         guard let i = customVibescapes.firstIndex(where: { $0.id == id }) else { return }
-        let changed = customVibescapes[i].shareID != shareID
+        // Only the fields that are actually being written count towards
+        // "changed". A nil revision or a nil capability means "leave it
+        // alone", so comparing them would rewrite the file on every call
+        // that does not set them.
+        var changed = customVibescapes[i].shareID != shareID
             || customVibescapes[i].shareKey != key
-            || customVibescapes[i].shareRevision != revision
-            || customVibescapes[i].shareEditKey != editKey
+        if let revision, customVibescapes[i].shareRevision != revision {
+            changed = true
+        }
+        if let editKey, customVibescapes[i].shareEditKey != editKey {
+            changed = true
+        }
         guard changed else { return }
         customVibescapes[i].shareID = shareID
         customVibescapes[i].shareKey = key

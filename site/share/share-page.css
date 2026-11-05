@@ -173,6 +173,64 @@ code, .mono {
 }
 .btn.coffee:hover { transform: translateY(-1px); }
 
+/* No movement for somebody who has asked for none.
+ *
+ * The hover lifts and the videos autoplay; both are movement. The website
+ * honours this setting on the homepage and on the share page's own canvas,
+ * but not on the buttons here or on the static share pages' video.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .btn:hover,
+  .btn.primary:hover,
+  .btn.coffee:hover {
+    transform: none;
+  }
+}
+
+/* A focus ring on the buttons the page exists for.
+ *
+ * The two actions here — "Open in Vibresia" and "Download for Mac" — are
+ * the reason the page is there, and without this a person using a keyboard
+ * has no idea where they are. The homepage has the same rule for the same
+ * reason; it did not reach this file because the rule is in the homepage's
+ * own inline stylesheet.
+ */
+.btn:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+/* The FAQ and the small print.
+ *
+ * `.faq` and `.small` are used on every share page, and neither was defined
+ * here — so the FAQ headings fell back to the browser's own 1.5em, which is
+ * *larger* than the section headings around them, and the small print came
+ * out at full body size. The hierarchy was the wrong way round.
+ */
+.faq h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 28px 0 8px;
+}
+.faq h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 18px 0 6px;
+}
+.faq p,
+.faq li {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.65;
+}
+.small {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
 .share-cta {
   display: flex; flex-direction: column; align-items: center;
   margin: 18px 0 0;
