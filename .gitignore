@@ -12,7 +12,15 @@ package-lock.json
 
 # Local agent/tooling state
 .claude/
+
+# The kit's own state: which files it installed and their hashes. It is
+# rewritten on every install and sync, and it is per-machine.
 .agents/.kitstate.json
+
+# The GitNexus skills, written by `gitnexus setup`. The canonical copies are
+# in .opencode/skills/ and .claude/skills/; this is a third copy that nothing
+# refreshes, so it does not belong in the repository.
+.agents/skills/
 
 # Cloudflare Worker local state and secrets
 .wrangler/
