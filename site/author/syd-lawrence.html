@@ -58,8 +58,13 @@
   .entry .meta { color: var(--gold); font-size: 14px; }
   .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 26px 0; }
   .cta span { color: var(--muted); font-size: 14px; }
-  .button { display: inline-block; background: linear-gradient(90deg, var(--magenta), #a33bff); color: #fff;
+  /* The button carries white text, and white on the neon magenta is 3.2:1 —
+     under what WCAG asks of body text. The same hue, dark enough to pass:
+     4.87:1. The neon magenta stays for text on the dark background, where
+     it passes easily. */
+  .button { display: inline-block; background: linear-gradient(90deg, #d100ad, #8b2fc7); color: #fff;
     text-decoration: none; font-weight: 700; padding: 12px 20px; border-radius: 999px; }
+  .button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
   .faq h3 { margin-top: 22px; }
   .sources { color: var(--muted); font-size: 14px; }
   .sources li { overflow-wrap: anywhere; }

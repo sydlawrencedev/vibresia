@@ -1,0 +1,102 @@
+name: CI
+
+# Every gate the release script runs, except the ones that need the network
+# or a credential, on every push and every pull request.
+#
+# The point is that nothing depends on a person remembering. A change that
+# breaks the Worker, the share API, the app's minifier or the site's SEO
+# checks should fail here rather than at the next release attempt — which is
+# the worst possible moment for it to fail.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  worker-and-site:
+    name: Worker and site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # The Worker: the share API, the gallery, the MCP server, the admin
+      # surface, and the site's own generators.
+      - name: Tests
+        run: npm test
+
+      # A secret in the tree is a credential in the public repository.
+      - name: No secrets in the working tree
+        run: |
+          bash scripts/check-no-webhook-leak.sh
+          bash scripts/check-no-webhook-leak.test.sh
+
+      # Every vibescape the app ships is on the landing page, and the site
+      # and the app agree about the version.
+      - name: Vibescapes and version
+        run: bash scripts/check-vibescapes.sh
+
+      - name: Admin page
+        run: node scripts/check-admin-page.mjs
+
+      # Every fact a comparison page states about another product has a
+      # source and a date, and none is over a year old.
+      - name: Comparison pages
+        run: node scripts/check-competitors.mjs
+
+      # The search pages are generated from content/pages/ and those records.
+      - name: Generated pages are current
+        run: node scripts/generate-seo-pages.mjs --check
+
+      # No orphans: every page in a sitemap is reachable, and no internal
+      # link leads nowhere.
+      - name: Links
+        run: node scripts/check-links.mjs
+
+      # Every indexable page has the shared structured data and the FAQs it
+      # shows on the page.
+      - name: Schema
+        run: node scripts/check-schema.mjs
+
+      # The four manifests that describe the public MCP server agree.
+      - name: Plugin manifests
+        run: python3 scripts/check-plugin-manifests.py "$PWD"
+
+      # Every page's navbar and footer come from site/_partials.
+      - name: Chrome
+        run: python3 scripts/inject-chrome.py --check "$PWD"
+
+      # The app's MCP server and the website's say the same thing, so an
+      # agent is not told two different things.
+      - name: MCP reference
+        run: python3 scripts/check-mcp-reference.py
+
+      # The share page's copy of the shaders has not drifted from the app's.
+      - name: Share page shaders
+        run: python3 scripts/check-preview-glsl.py
+
+  app:
+    name: macOS app
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      # The minifier rewrites somebody's code before it is published, and it
+      # has broken a share twice by changing what the code meant.
+      - name: Swift tests
+        working-directory: VisualiserMac
+        run: swift test
+
+      # The share codec round-trips through both formats: plain base64 JSON
+      # and raw DEFLATE.
+      - name: Share codec
+        working-directory: VisualiserMac
+        run: swift ../scripts/verify-share-codec.swift
+
+      # The genre detector, against the fixtures.
+      - name: Genre detector
+        working-directory: VisualiserMac
+        run: python3 Tests/test_detector.py

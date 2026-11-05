@@ -179,9 +179,19 @@
 
   .ctas { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
   .btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 24px; border-radius: 999px; font-weight: 700; text-decoration: none; font-size: 16px; }
-  .btn.primary { background: var(--magenta); color: #fff; box-shadow: 0 0 28px rgba(255, 43, 214, 0.45); }
+  /* White on the neon magenta is 3.2:1, which is under what WCAG asks of
+     body text. A button that says "Download for Mac" is body text. This is
+     the same hue, dark enough to pass: 4.87:1. The neon magenta stays for
+     the glow and for text on the dark background, where it passes easily. */
+  .btn.primary { background: #d100ad; color: #fff; box-shadow: 0 0 28px rgba(255, 43, 214, 0.45); }
   .btn.coffee { background: transparent; color: var(--gold); border: 1.5px solid var(--gold); }
   .btn:hover { transform: translateY(-1px); }
+  /* Keyboard focus has to be visible. The hover state is not enough: it is
+     the only state the vibescape cards and the buttons had. */
+  .btn:focus-visible, a.vibescape:focus-visible, .gallery-more a:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 3px;
+  }
   .small { color: var(--muted); font-size: 14px; margin-top: 14px; }
 
   .install { margin: 44px auto 0; max-width: 760px; text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; }
@@ -229,6 +239,12 @@
   .agents { background: var(--panel); border: 1px dashed var(--line); border-radius: 14px; padding: 18px 22px; }
   .agents ol { padding-left: 20px; }
   .agents li { margin: 6px 0; }
+  /* The install instructions are full of URLs and shell commands that cannot
+     be broken at a space. Without this they push the page wider than a
+     phone and the whole document scrolls sideways. */
+  .agents, .agents p, .agents li, .agents code, .agents a, .agents blockquote {
+    overflow-wrap: anywhere;
+  }
 
   .gh-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
   .gh-card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
@@ -269,7 +285,10 @@
      pages are generated from them. */
   section#vibescapes .vibescapes .vibescape:nth-child(n+5) { display: none; }
   @media (max-width: 640px) {
-    .site-nav { display: none; }
+    /* The nav links are in chrome.css, which loads after this block, so a
+       plain `.site-nav` here loses: same specificity, later sheet wins.
+       `body .site-nav` is specific enough to hold. */
+    body .site-nav { display: none; }
     .hero { padding-top: 28px; }
     .gallery-more { display: block; }
   }
@@ -308,7 +327,10 @@
   </div>
 
   <div class="video">
-    <video id="reel-lq" autoplay muted loop playsinline preload="auto" poster="media/poster.jpg">
+    <!-- No autoplay attribute: reel-upgrade.js starts the clip, and only
+         when the visitor has not asked their system for less motion. The
+         poster is what stands in when it doesn't. -->
+    <video id="reel-lq" muted loop playsinline preload="auto" poster="media/poster.jpg">
       <source src="media/demo-low.mp4" type="video/mp4">
     </video>
     <!-- No src in the markup: fetching the full-quality reel immediately would

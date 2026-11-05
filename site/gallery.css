@@ -141,8 +141,8 @@ a { color: inherit; }
 
 .gallery-sort a.on {
   color: #06010d;
-  background: var(--magenta);
-  border-color: var(--magenta);
+  background: var(--pink);
+  border-color: var(--pink);
 }
 
 /* Who made it, under the name. */

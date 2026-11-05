@@ -159,7 +159,9 @@ code, .mono {
   text-decoration: none;
 }
 .btn.primary {
-  background: var(--magenta);
+  /* White on the neon magenta is 3.2:1, under what WCAG asks of body text.
+     The same hue, dark enough to pass: 4.87:1. */
+  background: #d100ad;
   color: #fff;
   box-shadow: 0 0 28px rgba(255, 43, 214, 0.45);
 }

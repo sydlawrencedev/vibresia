@@ -76,8 +76,15 @@
 
   table { width: 100%; border-collapse: collapse; margin: 6px 0 4px; }
   th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--line); font-size: 15px; vertical-align: top; }
-  th { color: var(--muted); font: 600 12px "JetBrains Mono", monospace; letter-spacing: 1px; text-transform: uppercase; }
+  th { color: var(--muted); font: 600 12px "JetBrains Mono", ui-monospace, monospace; letter-spacing: 1px; text-transform: uppercase; }
   td code { color: var(--cyan); font-size: 13.5px; }
+  /* The setup commands are long and have no spaces to break at. Without
+     this they push the table wider than a phone and the whole document
+     scrolls sideways. */
+  td code, td pre, .setup code, .setup pre, .cmd code {
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
 
 </style>
 <link rel="stylesheet" href="/chrome.css">

@@ -271,7 +271,9 @@ struct ShareVibescapeView: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text("Public gallery")
                     .font(.system(size: 12, weight: .semibold, design: .monospaced))
-                Text("Lists it at vibresia.com/vibescapes, where anybody can find it.")
+                Text(canChangeGallery
+                     ? "Lists it at vibresia.com/vibescapes, where anybody can find it."
+                     : "Only the person who made this vibescape can list it.")
                     .font(.system(size: 11))
                     .foregroundStyle(Color(white: 0.55))
                     .fixedSize(horizontal: false, vertical: true)
@@ -280,6 +282,9 @@ struct ShareVibescapeView: View {
         .toggleStyle(.switch)
         .controlSize(.small)
         .tint(Color(red: 1, green: 0.17, blue: 0.84))
+        // A share that arrived from somebody else cannot be listed: the site
+        // would refuse it, so the tickbox is not offered.
+        .disabled(!canChangeGallery)
         // The tickbox has to reach the site. It used to be read only when a
         // share was made, so unticking it on a share that already existed
         // did nothing at all — the share stayed in the gallery and the
@@ -293,10 +298,17 @@ struct ShareVibescapeView: View {
     ///
     /// Only once there is a share to do it to. Before that the tick is
     /// carried into the share that gets made.
+    ///
+    /// The capability is what says the share is this Mac's own. A share that
+    /// arrived from somebody else has none, so the site would refuse the
+    /// change — and the tickbox for it is disabled rather than offered.
     private func pushGallery(_ wanted: Bool) {
         guard let shareID = currentShareID else { return }
+        guard let editKey = currentShareEditKey else { return }
         Task {
-            let ok = await ShareLinkStore().setGallery(shareID: shareID, inGallery: wanted)
+            let ok = await ShareLinkStore().setGallery(shareID: shareID,
+                                                       editKey: editKey,
+                                                       inGallery: wanted)
             if ok {
                 ShareLinkCache.remember(shareID: shareID, for: currentKey, isPublic: wanted)
             } else {
@@ -312,6 +324,17 @@ struct ShareVibescapeView: View {
         guard case .custom(let id) = vibescape,
               let mode = app.customVibescape(id: id) else { return nil }
         return mode.shareID
+    }
+
+    /// The capability for the share this vibescape has, if it has one.
+    ///
+    /// A copy that arrived from somebody else has none, and cannot change
+    /// the share it arrived on.
+    private var currentShareEditKey: String? {
+        guard case .custom(let id) = vibescape,
+              let mode = app.customVibescape(id: id),
+              let key = mode.shareEditKey, !key.isEmpty else { return nil }
+        return key
     }
 
     /// The key this vibescape's content makes.
@@ -347,6 +370,16 @@ struct ShareVibescapeView: View {
         guard case .custom(let id) = vibescape,
               let mode = app.customVibescape(id: id) else { return false }
         return mode.isShared
+    }
+
+    /// Whether the gallery tickbox can be used.
+    ///
+    /// It changes the share on the site, and only the maker of a share may do
+    /// that. A copy that arrived from somebody else has no capability, so
+    /// the site would refuse the change. The tickbox is disabled rather than
+    /// offered and then refused.
+    private var canChangeGallery: Bool {
+        currentShareEditKey != nil
     }
 
     /// The name on the vibescape as it stands.

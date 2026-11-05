@@ -6,12 +6,19 @@
 
 import { test, beforeEach } from "node:test";
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 
 import worker, { resetRateLimiter } from "./index.js";
 import { handleMcp, lintVibescape, resetMcpRateLimiters } from "./mcp.js";
 import SERVER_JSON from "../server.json" with { type: "json" };
 
 const PAYLOAD = "TZDNbsMgEIRfZcUJYoqIU6dtqjxCT63USy8oIcESBosfK1GUd-8CVZWLBd_M7oy5EZWT8YHsyGfSs9GOcOLUpBF8XOF";
+
+/// The hash the site stores for a capability. The capability itself is never
+/// stored, so a row in the database holds this and not the secret.
+function capabilityHash(capability) {
+    return createHash("sha256").update(capability).digest("hex");
+}
 
 /** A D1 stand-in, with just the queries the MCP server makes. */
 function makeShares() {
@@ -24,11 +31,13 @@ function makeShares() {
                     return {
                         async run() {
                             if (sql.includes("INSERT INTO shares")) {
-                                const [id, payload, name, author, isPublic, created] = args;
+                                const [id, payload, name, author, isPublic, created, editKey] = args;
                                 rows.set(id, {
                                     id, payload, name, author,
                                     is_public: isPublic ? 1 : 0,
                                     created_at: created,
+                                    edit_key: editKey || null,
+                                    revision: 1,
                                 });
                                 return { success: true };
                             }
@@ -80,13 +89,15 @@ function makeEnv() {
     };
 }
 
-async function rpc(env, method, params, id = 1, address = "203.0.113.1") {
+async function rpc(env, method, params, id = 1, address = "203.0.113.1", headers = {}) {
+    const edge = address ? { "CF-Connecting-IP": address } : {};
     const request = new Request("https://vibresia.com/mcp", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Accept": "application/json, text/event-stream",
-            "CF-Connecting-IP": address,
+            ...edge,
+            ...headers,
         },
         body: JSON.stringify({ jsonrpc: "2.0", id, method, params }),
     });
@@ -222,18 +233,46 @@ test("one address making vibescapes too fast slows itself down and nobody else",
     assert.equal(isError(await callTool(env, "create_vibescape", args, "198.51.100.7")), false);
 });
 
+test("a forged x-forwarded-for does not buy more vibescapes", async () => {
+    const { env } = makeEnv();
+    const args = { code: "vec3 render(vec2 p, float t) { return vec3(uBass); }", name: "Quick" };
+    // No CF-Connecting-IP at all, so the address has to come from the
+    // forwarded header — which a caller can write. It must not be able to
+    // mint a fresh budget per request.
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+        const result = await rpc(env, "tools/call", { name: "create_vibescape", arguments: args },
+            1, undefined, { "x-forwarded-for": `198.51.100.${attempt}` });
+        assert.equal(isError(result), attempt > 0, `attempt ${attempt + 1} was not limited`);
+    }
+});
+
+test("a forged x-forwarded-for cannot get round the limiter when the edge sets the address", async () => {
+    const { env } = makeEnv();
+    const args = { code: "vec3 render(vec2 p, float t) { return vec3(uBass); }", name: "Quick" };
+    const first = await rpc(env, "tools/call", { name: "create_vibescape", arguments: args },
+        1, "203.0.113.1", { "x-forwarded-for": "198.51.100.1" });
+    assert.equal(isError(first), false);
+    const second = await rpc(env, "tools/call", { name: "create_vibescape", arguments: args },
+        1, "203.0.113.1", { "x-forwarded-for": "198.51.100.2" });
+    assert.equal(isError(second), true, "the forged header changed the budget");
+});
+
 test("a vibescape that is made is not in the gallery until it is shared", async () => {
     const { env } = makeEnv();
     const created = await callTool(env, "create_vibescape", {
         code: "vec3 render(vec2 p, float t) { return vec3(uBass, 0.2, 0.5); }",
         name: "A Test World",
     });
-    const id = textOf(created).match(/\/s\/([a-z2-9]{6})/)[1];
+    const text = textOf(created);
+    const id = text.match(/\/s\/([a-z2-9]{6})/)[1];
+    // The capability comes back with it. The site keeps only its hash, so
+    // this is the one copy of it that exists.
+    const editKey = text.match(/editKey: (\S+)/)[1];
 
     let gallery = textOf(await callTool(env, "list_vibescapes", {}));
     assert.ok(!gallery.includes("A Test World"), "it is in the gallery before it was shared");
 
-    const shared = await callTool(env, "share_vibescape", { id });
+    const shared = await callTool(env, "share_vibescape", { id, editKey });
     assert.ok(textOf(shared).includes("Listed"));
 
     gallery = textOf(await callTool(env, "list_vibescapes", {}));
@@ -261,6 +300,75 @@ test("a vibescape needs a name and some code", async () => {
     const { env } = makeEnv();
     assert.equal(isError(await callTool(env, "create_vibescape", { code: "", name: "X" })), true);
     assert.equal(isError(await callTool(env, "create_vibescape", { code: "x", name: "" })), true);
+});
+
+test("the MCP server refuses a vibescape that is too big", async () => {
+    const { env } = makeEnv();
+    // Content that does not compress: the row costs what the payload costs,
+    // so this is the case that burns the quota. (A long run of the same
+    // character compresses to nothing and is harmless.)
+    const noise = Array.from({ length: 100_000 },
+        () => "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/"
+            [Math.floor(Math.random() * 64)]).join("");
+    const result = await callTool(env, "create_vibescape", {
+        name: "Big", code: noise,
+    });
+    assert.equal(isError(result), true);
+});
+
+test("the MCP server refuses a name that is too long", async () => {
+    const { env } = makeEnv();
+    const result = await callTool(env, "create_vibescape", {
+        name: "x".repeat(200), code: "vec3 render(vec2 p, float t) { return vec3(0.0); }",
+    });
+    assert.equal(isError(result), true);
+});
+
+test("the MCP server refuses an author that is too long", async () => {
+    const { env } = makeEnv();
+    const result = await callTool(env, "create_vibescape", {
+        name: "Fine", author: "x".repeat(200),
+        code: "vec3 render(vec2 p, float t) { return vec3(0.0); }",
+    });
+    assert.equal(isError(result), true);
+});
+
+test("the MCP server cannot list somebody else's vibescape", async () => {
+    const { env, shares } = makeEnv();
+    // A share somebody else made, kept out of the gallery on purpose, with a
+    // capability of their own.
+    shares.rows.set("abc234", {
+        id: "abc234", payload: PAYLOAD, name: "Private", author: "Somebody",
+        is_public: 0, created_at: 1, edit_key: capabilityHash("the-capability"),
+    });
+
+    const result = await callTool(env, "share_vibescape", { id: "abc234" });
+    assert.equal(isError(result), true);
+    assert.equal(shares.rows.get("abc234").is_public, 0, "it was listed anyway");
+});
+
+test("the MCP server cannot list a vibescape with the wrong capability", async () => {
+    const { env, shares } = makeEnv();
+    shares.rows.set("abc234", {
+        id: "abc234", payload: PAYLOAD, name: "Private", author: "Somebody",
+        is_public: 0, created_at: 1, edit_key: capabilityHash("the-capability"),
+    });
+
+    const result = await callTool(env, "share_vibescape", { id: "abc234", editKey: "not-the-capability" });
+    assert.equal(isError(result), true);
+    assert.equal(shares.rows.get("abc234").is_public, 0, "it was listed anyway");
+});
+
+test("the maker can list their own vibescape with its capability", async () => {
+    const { env, shares } = makeEnv();
+    shares.rows.set("abc234", {
+        id: "abc234", payload: PAYLOAD, name: "Mine", author: "Me",
+        is_public: 0, created_at: 1, edit_key: capabilityHash("the-capability"),
+    });
+
+    const result = await callTool(env, "share_vibescape", { id: "abc234", editKey: "the-capability" });
+    assert.equal(isError(result), false);
+    assert.equal(shares.rows.get("abc234").is_public, 1);
 });
 
 test("the app's own download is in there for somebody who wants it", async () => {
