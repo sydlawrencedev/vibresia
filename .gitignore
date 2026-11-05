@@ -12,6 +12,7 @@ package-lock.json
 
 # Local agent/tooling state
 .claude/
+.agents/.kitstate.json
 
 # Cloudflare Worker local state and secrets
 .wrangler/
