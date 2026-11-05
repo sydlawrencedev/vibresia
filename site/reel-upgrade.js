@@ -26,6 +26,36 @@
 
   var SRC = "media/demo.mp4";
 
+  // Somebody who has asked their system for less motion gets the poster and
+  // a still frame, not a looping video. The clip is the biggest moving thing
+  // on the page, so it is the one that has to stop.
+  function motionWanted() {
+    return !(window.matchMedia
+      && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }
+
+  if (motionWanted()) {
+    // The autoplay attribute is not on the element: the browser starts the
+    // clip before this script runs, and there is no way to take it back.
+    // Starting it here means the choice is ours.
+    //
+    // The clip has to be ready before it can be played, and this script is
+    // deferred — it runs while the page is still parsing, before the video
+    // has loaded anything. So the start waits for the data.
+    var start = function () {
+      lq.play().catch(function () { /* autoplay refused: the poster stands in */ });
+    };
+    if (lq.readyState >= 2) start();
+    else lq.addEventListener("loadeddata", start, { once: true });
+  } else {
+    // Show one frame rather than nothing, so the page does not have a hole
+    // where the video is.
+    lq.addEventListener("loadeddata", function () {
+      try { lq.pause(); lq.currentTime = 0; } catch (e) { /* nothing to show */ }
+    }, { once: true });
+    return;
+  }
+
   function willing() {
     // Someone on a metered or slow link gets the small clip and keeps it.
     var c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
@@ -60,14 +90,33 @@
       var reveal = function () {
         if (shown) return;
         shown = true;
-        hq.play().catch(function () { /* autoplay refused: the poster still stands in */ });
-        hq.classList.add("upgraded");
-        // Leave the small one alone rather than tearing it down mid-frame: it is
-        // the thing still painting if the full one is blocked or has no decoder.
-        hq.addEventListener("playing", function once() {
+        // The small clip was paused to read its playhead. If the full one
+        // does not actually start — the browser refused, or it has no
+        // decoder — the small one has to come back, or the page is left
+        // with a paused frame where the reel should be.
+        var hqStarted = function () {
+          hq.classList.add("upgraded");
+          // Leave the small one alone rather than tearing it down mid-frame: it is
+          // the thing still painting if the full one is blocked or has no decoder.
+          lq.removeAttribute("src");
+          lq.load();
+        };
+        var hqFailed = function () {
+          lq.play().catch(function () { /* the poster still stands in */ });
+        };
+        var started = hq.play();
+        if (started && started.catch) {
+          started.then(hqStarted, hqFailed);
+        } else {
+          hqStarted();
+        }
+        // A clip that never fires `playing` is not going to take over.
+        hq.addEventListener("playing", function () {
+          hq.classList.add("upgraded");
           lq.removeAttribute("src");
           lq.load();
         }, { once: true });
+        hq.addEventListener("error", hqFailed, { once: true });
       };
 
       if (hq.readyState < 1 || !isFinite(hq.duration) || hq.duration === 0) {

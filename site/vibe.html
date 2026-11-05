@@ -201,7 +201,12 @@
         note.textContent = "This browser cannot draw it — but the app can, and that is where it will run.";
         return;
       }
-      var result = window.vibresiaPreview.animate(example.shader, canvas, { animate: true });
+      // A still is a still. Somebody who has asked their system for less
+      // motion gets the picture without the movement, the same way the share
+      // page does it.
+      var reduce = window.matchMedia
+        && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var result = window.vibresiaPreview.animate(example.shader, canvas, { animate: !reduce });
       if (!result.ok) {
         note.textContent = "This browser would not draw it: " + (result.error || "unknown");
         return;

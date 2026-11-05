@@ -327,7 +327,10 @@
   </div>
 
   <div class="video">
-    <video id="reel-lq" autoplay muted loop playsinline preload="auto" poster="media/poster.jpg">
+    <!-- No autoplay attribute: reel-upgrade.js starts the clip, and only
+         when the visitor has not asked their system for less motion. The
+         poster is what stands in when it doesn't. -->
+    <video id="reel-lq" muted loop playsinline preload="auto" poster="media/poster.jpg">
       <source src="media/demo-low.mp4" type="video/mp4">
     </video>
     <!-- No src in the markup: fetching the full-quality reel immediately would
