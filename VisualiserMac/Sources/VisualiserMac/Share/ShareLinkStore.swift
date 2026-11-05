@@ -160,9 +160,18 @@ actor ShareLinkStore {
             guard let url = json["url"] as? String, let id = json["id"] as? String else {
                 return .failure(.refused("the site sent no link"))
             }
+            // The revision says which version of the share this is. The app
+            // records it and compares it with what the site says later, so
+            // that it knows whether the copy on this Mac is behind. If the
+            // site did not say, that is a broken answer rather than a first
+            // version: recording 1 would make the app think it was behind
+            // for ever and reinstall the same share over and over.
+            guard let revision = json["revision"] as? Int else {
+                return .failure(.refused("the site did not say which version this is"))
+            }
             return .success(ShareLink(id: id, url: url,
                                       inGallery: json["public"] as? Bool ?? inGallery,
-                                      revision: json["revision"] as? Int ?? 1))
+                                      revision: revision))
         } catch {
             NSLog("[SHARE] could not reach the site: %@", error.localizedDescription)
             return .failure(.unreachable)

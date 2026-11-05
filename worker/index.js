@@ -1011,6 +1011,11 @@ async function handleShareCreate(request, env, ctx) {
       imageUrl: existing.image ? `${CANONICAL_SITE}og/${existing.id}.jpg` : null,
       public: isPublic,
       existing: true,
+      // Which version this share is at. The app records it, and compares it
+      // with what the site says later to decide whether the copy on the Mac
+      // is behind. Leaving it out would make the app record the first
+      // version and then think it was behind forever.
+      revision: await shareRevision(env, existing.id),
     });
   }
 
@@ -1072,6 +1077,7 @@ async function handleShareCreate(request, env, ctx) {
             url: `${CANONICAL_SITE}s/${raced.id}`,
             imageUrl: raced.image ? `${CANONICAL_SITE}og/${raced.id}.jpg` : null,
             existing: true,
+            revision: await shareRevision(env, raced.id),
           });
         }
         continue;

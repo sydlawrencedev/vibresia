@@ -320,6 +320,42 @@ test("the same vibescape shared twice gets the same link", async () => {
   assert.equal(secondBody.url, firstBody.url);
 });
 
+test("an existing share comes back with the revision it is at", async () => {
+  const { env } = makeEnv();
+  resetRateLimiter();
+  const first = await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: PAYLOAD, name: "My World", author: "Stephen", key: "abc123",
+                      editKey: "the-capability" }),
+  });
+  const { id } = await first.json();
+
+  // A new version is published, so the share is at revision 2.
+  resetRateLimiter();
+  const updated = await run(`https://vibresia.com/api/share/${id}`, {
+    env,
+    method: "POST",
+    headers: { "x-av-token": SHARE_TOKEN, "Content-Type": "application/json" },
+    body: JSON.stringify({ payload: "QU5PVEhFUi1wYXlsb2Fk", name: "My World", author: "Stephen",
+                           editKey: "the-capability" }),
+  });
+  assert.equal((await updated.json()).revision, 2);
+
+  // Sharing the same vibescape again finds the share that is already there.
+  // It has to say which revision that is: the app records what it is told,
+  // and if the answer is missing it records the first one and then thinks
+  // it is behind forever.
+  resetRateLimiter();
+  const second = await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: PAYLOAD, name: "My World", author: "Stephen", key: "abc123",
+                      editKey: "the-capability" }),
+  });
+  const secondBody = await second.json();
+  assert.equal(secondBody.existing, true);
+  assert.equal(secondBody.revision, 2);
+});
+
 test("the same vibescape without a key still gets the same link", async () => {
   const { env } = makeEnv();
   const first = await run("https://vibresia.com/api/share", {
