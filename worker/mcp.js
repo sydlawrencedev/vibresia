@@ -322,8 +322,23 @@ function rateLimited(logs, address, secondsBetween, maxPerHour) {
 }
 
 /// The address the request came from, for the rate limit.
+///
+/// Cloudflare's own header is the address, and it is the only one that
+/// counts when it is there. `x-forwarded-for` is appended to by the edge
+/// rather than replaced, so anything a caller wrote is in it too — and a
+/// caller who can write it can mint a fresh budget per request. It is read
+/// only when the edge did not set its own (a local run, or a deployment not
+/// behind Cloudflare), and then only its last entry, which is the one the
+/// edge appended.
 function clientAddress(request) {
-    return request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for") || "unknown";
+    const edge = request.headers.get("cf-connecting-ip");
+    if (edge && edge.trim()) return edge.trim();
+    const forwarded = request.headers.get("x-forwarded-for");
+    if (forwarded) {
+        const last = forwarded.split(",").pop().trim();
+        if (last) return last;
+    }
+    return "unknown";
 }
 
 /// The text of a share's payload: the name, the author and the shader.

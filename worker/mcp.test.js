@@ -89,13 +89,15 @@ function makeEnv() {
     };
 }
 
-async function rpc(env, method, params, id = 1, address = "203.0.113.1") {
+async function rpc(env, method, params, id = 1, address = "203.0.113.1", headers = {}) {
+    const edge = address ? { "CF-Connecting-IP": address } : {};
     const request = new Request("https://vibresia.com/mcp", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Accept": "application/json, text/event-stream",
-            "CF-Connecting-IP": address,
+            ...edge,
+            ...headers,
         },
         body: JSON.stringify({ jsonrpc: "2.0", id, method, params }),
     });
@@ -229,6 +231,30 @@ test("one address making vibescapes too fast slows itself down and nobody else",
     assert.equal(isError(await callTool(env, "create_vibescape", args, "203.0.113.1")), false);
     assert.equal(isError(await callTool(env, "create_vibescape", args, "203.0.113.1")), true);
     assert.equal(isError(await callTool(env, "create_vibescape", args, "198.51.100.7")), false);
+});
+
+test("a forged x-forwarded-for does not buy more vibescapes", async () => {
+    const { env } = makeEnv();
+    const args = { code: "vec3 render(vec2 p, float t) { return vec3(uBass); }", name: "Quick" };
+    // No CF-Connecting-IP at all, so the address has to come from the
+    // forwarded header — which a caller can write. It must not be able to
+    // mint a fresh budget per request.
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+        const result = await rpc(env, "tools/call", { name: "create_vibescape", arguments: args },
+            1, undefined, { "x-forwarded-for": `198.51.100.${attempt}` });
+        assert.equal(isError(result), attempt > 0, `attempt ${attempt + 1} was not limited`);
+    }
+});
+
+test("a forged x-forwarded-for cannot get round the limiter when the edge sets the address", async () => {
+    const { env } = makeEnv();
+    const args = { code: "vec3 render(vec2 p, float t) { return vec3(uBass); }", name: "Quick" };
+    const first = await rpc(env, "tools/call", { name: "create_vibescape", arguments: args },
+        1, "203.0.113.1", { "x-forwarded-for": "198.51.100.1" });
+    assert.equal(isError(first), false);
+    const second = await rpc(env, "tools/call", { name: "create_vibescape", arguments: args },
+        1, "203.0.113.1", { "x-forwarded-for": "198.51.100.2" });
+    assert.equal(isError(second), true, "the forged header changed the budget");
 });
 
 test("a vibescape that is made is not in the gallery until it is shared", async () => {
