@@ -229,6 +229,12 @@
   .agents { background: var(--panel); border: 1px dashed var(--line); border-radius: 14px; padding: 18px 22px; }
   .agents ol { padding-left: 20px; }
   .agents li { margin: 6px 0; }
+  /* The install instructions are full of URLs and shell commands that cannot
+     be broken at a space. Without this they push the page wider than a
+     phone and the whole document scrolls sideways. */
+  .agents, .agents p, .agents li, .agents code, .agents a, .agents blockquote {
+    overflow-wrap: anywhere;
+  }
 
   .gh-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
   .gh-card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
@@ -269,7 +275,10 @@
      pages are generated from them. */
   section#vibescapes .vibescapes .vibescape:nth-child(n+5) { display: none; }
   @media (max-width: 640px) {
-    .site-nav { display: none; }
+    /* The nav links are in chrome.css, which loads after this block, so a
+       plain `.site-nav` here loses: same specificity, later sheet wins.
+       `body .site-nav` is specific enough to hold. */
+    body .site-nav { display: none; }
     .hero { padding-top: 28px; }
     .gallery-more { display: block; }
   }
