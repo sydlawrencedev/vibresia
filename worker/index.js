@@ -265,7 +265,14 @@ export function buildGalleryEmbed({ name, author, url, imageUrl }) {
 }
 
 async function postDiscord(env, payload, webhookUrl) {
-  const body = JSON.stringify(payload);
+  // Nobody's name is allowed to ping a channel here. Discord reads a mention
+  // out of a webhook's text by default, and a download's `src`, referrer and
+  // user-agent are whatever the caller typed — so a `@everyone` in any of
+  // them would ring the bell for the whole server.
+  //
+  // It is set here, on the wire, rather than in each embed builder: this is
+  // the one place that cannot be forgotten by a builder added later.
+  const body = JSON.stringify({ ...payload, allowed_mentions: { parse: [] } });
   // Discord usually answers in well under a second; five is a hung connection,
   // and the caller is a download we shouldn't keep waiting on.
   const url = webhookUrl || env.DISCORD_WEBHOOK_URL;

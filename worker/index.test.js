@@ -280,6 +280,47 @@ test("the analytics proxy forwards one endpoint, not all of PostHog", async () =
   assert.equal(other.events.length + get.events.length, 0);
 });
 
+test("a download cannot ping the channel", async () => {
+  // The `src` and the referrer are whatever the caller typed, so they can
+  // carry a mention. Discord reads mentions out of a webhook's text unless
+  // the payload says not to.
+  const { posts } = await run(
+    "https://vibresia.com/download?src=" + encodeURIComponent("@everyone"),
+    { headers: { "user-agent": BROWSER_UA, referer: "https://evil.example/@here" } },
+  );
+  assert.deepEqual(posts[0].body.allowed_mentions, { parse: [] });
+});
+
+test("an error report cannot ping the channel", async () => {
+  const body = JSON.stringify({
+    kind: "audio_error",
+    title: "@everyone",
+    message: "@here",
+    priority: "urgent",
+  });
+  const posts = [];
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async (target, init) => {
+    posts.push({ url: String(target), body: JSON.parse(init.body) });
+    return new Response(null, { status: 204 });
+  };
+  const request = new Request("https://vibresia.com/api/notify", {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-av-token": "s3cret" },
+    body,
+  });
+  const waits = [];
+  try {
+    await worker.fetch(request, makeEnv({ NOTIFY_TOKEN: "s3cret" }), {
+      waitUntil: (p) => waits.push(p),
+    });
+    await Promise.all(waits);
+    assert.deepEqual(posts[0].body.allowed_mentions, { parse: [] });
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+});
+
 test("everything else falls through to the static assets", async () => {
   const { response, posts } = await run("https://vibresia.com/index.html");
   assert.equal(response.status, 200);
