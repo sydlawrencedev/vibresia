@@ -1,6 +1,6 @@
 #!/bin/bash
-# Fails if a Discord webhook URL, the notify token or the share token is
-# anywhere in the working tree.
+# Fails if a Discord webhook URL, the notify token or the share token would
+# go into git.
 #
 # Delphina learned this the expensive way: one webhook URL got committed and
 # then baked into dozens of release tags, where it stayed long after it was
@@ -8,12 +8,18 @@
 # to the channel, and it can't be revoked without recreating it in Discord.
 #
 # The real value lives in a Worker secret (`wrangler secret put
-# DISCORD_WEBHOOK_URL`); `.dev.vars` holds the local copy. Neither is tracked.
+# DISCORD_WEBHOOK_URL`); `.dev.vars` and `VisualiserMac/.env` hold the local
+# copies. Those are gitignored on purpose, and a secret in one of them is
+# the system working, not a leak.
 #
-# The sweep walks the working tree, not the index. `git grep` reads the index,
-# so an untracked file — which is exactly how the webhook reached the tree
-# the first time — was invisible to it. The git pass is kept below as a
-# second opinion, but it is not what the check rests on.
+# So the rule is about what would be *committed*: a secret in a file git
+# would track, or in a file that is already tracked. That covers the case
+# that actually happened — an untracked file that was not ignored, and so
+# was one `git add -A` away from being published — without failing every
+# run on a machine that has its .env.
+#
+# The sweep walks the working tree rather than the index. `git grep` reads
+# the index, so an untracked file was invisible to it.
 set -euo pipefail
 # The sweep runs over the directory the check was invoked from, not the one
 # the script lives in: the point is to see the tree that is about to be
@@ -46,35 +52,33 @@ EXCLUDES=(
 # placeholder, not a credential: the suite's own tokens are
 # `share-token-for-tests` and `s3cret`, and the values that ship are
 # forty-plus hex characters.
+PATTERNS=(
+  'NOTIFY_TOKEN=[A-Za-z0-9_-]{16,}'
+  'SHARE_TOKEN=[A-Za-z0-9_-]{16,}'
+  'discord(app)?\.com/api/webhooks/[0-9]+/[A-Za-z0-9_.-]{20,}'
+)
+
 matches=""
-matches+=$(grep -rInE '^[^#]*\bNOTIFY_TOKEN=[A-Za-z0-9_-]{16,}' "${EXCLUDES[@]}" . 2>/dev/null || true)
-matches+=$(grep -rInE '^[^#]*\bSHARE_TOKEN=[A-Za-z0-9_-]{16,}' "${EXCLUDES[@]}" . 2>/dev/null || true)
-matches+=$(grep -rInE 'discord(app)?\.com/api/webhooks/[0-9]+/[A-Za-z0-9_.-]{20,}' "${EXCLUDES[@]}" . 2>/dev/null || true)
 
-# The tracked tree gets a second opinion, in case a path is excluded from the
-# sweep above for a reason the patterns do not know about.
-tracked=$(git grep -InE 'discord(app)?\.com/api/webhooks/[0-9]+/[A-Za-z0-9_.-]{20,}' -- . 2>/dev/null || true)
-if [ -n "$tracked" ]; then
-  matches+="${tracked}"
-fi
-
-# The ignored files are included by the sweep above — it reads the working
-# tree, not the index — but they are called out by name so the message says
-# "do not commit it" rather than "this is in git".
-for f in .env .dev.vars VisualiserMac/.env; do
-  [ -f "$f" ] || continue
-  if grep -qE 'discord(app)?\.com/api/webhooks/' "$f"; then
-    matches+="${f}: contains a Discord webhook URL (ignored file — do not commit it)"
-  fi
-  if grep -qE '^\s*NOTIFY_TOKEN\s*=\s*\S{16,}' "$f"; then
-    matches+="${f}: contains the /api/notify token (ignored file — do not commit it)"
-  fi
-  if grep -qE '^\s*SHARE_TOKEN\s*=\s*\S{16,}' "$f"; then
-    matches+="${f}: contains the share token (ignored file — do not commit it)"
-  fi
+for pattern in "${PATTERNS[@]}"; do
+  while IFS= read -r hit; do
+    [ -n "$hit" ] || continue
+    file="${hit%%:*}"
+    # A file git ignores cannot be committed by accident, so a secret in one
+    # is where it is supposed to be. A file that is already tracked is a
+    # different matter: the secret is in git already.
+    if git check-ignore -q "$file" 2>/dev/null; then
+      if git ls-files --error-unmatch "$file" >/dev/null 2>&1; then
+        matches+="${hit} (tracked file — this secret is in git)"
+      fi
+      continue
+    fi
+    matches+="${hit}"
+  done < <(grep -rInE "${pattern}" "${EXCLUDES[@]}" . 2>/dev/null || true)
 done
+
 if [ -n "$matches" ]; then
-  echo "A secret that shouldn't be in git found in the working tree:" >&2
+  echo "A secret that would go into git was found in the working tree:" >&2
   echo "$matches" >&2
   echo "" >&2
   echo "Treat it as leaked: rotate the webhook in Discord (npx wrangler secret put" >&2
@@ -82,4 +86,4 @@ if [ -n "$matches" ]; then
   echo "(SHARE_TOKEN), then rebuild." >&2
   exit 1
 fi
-echo "no webhook URLs, notify tokens or share tokens in the working tree"
+echo "no webhook URLs, notify tokens or share tokens in the files git would commit"

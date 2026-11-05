@@ -1,10 +1,12 @@
 #!/bin/bash
-# Proves the leak check sees the working tree, not only the tracked files.
+# Proves the leak check sees the files git would commit, and does not fail on
+# the ones it would not.
 #
-# Each case plants one of the three secret shapes in a scratch file and
-# asserts the check fails. The untracked case is the one that matters: a
-# webhook URL reached the tree in an untracked file, and `git grep` reads
-# the index, so it could not see it.
+# Each case plants one of the three secret shapes in a scratch tree and
+# asserts the check fails when the file would be committed, and passes when
+# the file is ignored. The untracked-but-not-ignored case is the one that
+# matters: a webhook URL reached the tree in exactly that shape, and the
+# old check — which read the index — could not see it.
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CHECK="$ROOT/scripts/check-no-webhook-leak.sh"
@@ -22,24 +24,56 @@ webhook_url() {
 notify_token() { printf 'NOTIFY_TOKEN=%s' 'zyxwvutsrqponmlkjihgfedcba987654'; }
 share_token()  { printf 'SHARE_TOKEN=%s' 'zyxwvutsrqponmlkjihgfedcba987654'; }
 
+# A scratch directory that is a git repository, so `git check-ignore` and
+# `git ls-files` answer the way they do in the project.
+make_repo() {
+  local dir="$1"
+  mkdir -p "$dir"
+  git -C "$dir" init -q
+  git -C "$dir" config user.email "test@example.com"
+  git -C "$dir" config user.name "Test"
+}
+
+# expect_fail <label> <contents> — the file is untracked and not ignored.
 expect_fail() {
-  local label="$1" file="$2" contents="$3"
-  printf '%s' "$contents" > "$SCRATCH/$file"
-  if (cd "$SCRATCH" && bash "$CHECK" >/dev/null 2>&1); then
+  local label="$1" contents="$2"
+  local dir="$SCRATCH/fail"
+  rm -rf "$dir"; make_repo "$dir"
+  printf '%s' "$contents" > "$dir/leak.txt"
+  if (cd "$dir" && bash "$CHECK" >/dev/null 2>&1); then
     echo "FAIL: $label — the check passed when it should not have"
     fails=$((fails + 1))
   else
     echo "ok: $label"
   fi
-  rm -f "$SCRATCH/$file"
 }
 
-expect_fail "a webhook URL in an untracked file" leak.txt "$(webhook_url)"
-expect_fail "a NOTIFY_TOKEN in an untracked file" leak.txt "$(notify_token)"
-expect_fail "a SHARE_TOKEN in an untracked file" leak.txt "$(share_token)"
+# expect_pass <label> <contents> — the file is gitignored, so it cannot be
+# committed by accident and the secret is where it belongs.
+expect_pass() {
+  local label="$1" contents="$2"
+  local dir="$SCRATCH/pass"
+  rm -rf "$dir"; make_repo "$dir"
+  printf '.env\n' > "$dir/.gitignore"
+  printf '%s' "$contents" > "$dir/.env"
+  if (cd "$dir" && bash "$CHECK" >/dev/null 2>&1); then
+    echo "ok: $label"
+  else
+    echo "FAIL: $label — the check failed on a file git would not commit"
+    fails=$((fails + 1))
+  fi
+}
+
+expect_fail "a webhook URL in an untracked file" "$(webhook_url)"
+expect_fail "a NOTIFY_TOKEN in an untracked file" "$(notify_token)"
+expect_fail "a SHARE_TOKEN in an untracked file" "$(share_token)"
+
+expect_pass "a webhook URL in a gitignored file" "$(webhook_url)"
+expect_pass "a NOTIFY_TOKEN in a gitignored file" "$(notify_token)"
+expect_pass "a SHARE_TOKEN in a gitignored file" "$(share_token)"
 
 if [ "$fails" -ne 0 ]; then
-  echo "$fails case(s) did not fail as they should"
+  echo "$fails case(s) did not behave as they should"
   exit 1
 fi
-echo "the leak check sees the working tree"
+echo "the leak check sees what git would commit, and only that"
