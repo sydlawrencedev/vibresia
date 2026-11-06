@@ -135,14 +135,25 @@ struct ShareVibescapeView: View {
     /// A short, human-readable summary of what the URL contains, used as
     /// the pitch on the system share sheet and for analytics. Title-cased
     /// so the share doesn't read like the vibescape name is shouting.
+    ///
+    /// The maker's name is in it, when there is one. This is the text that
+    /// lands in somebody's chat, and it is the highest-frequency string in
+    /// the whole sharing loop: if the name is not here, the person who made
+    /// the vibescape gets no credit in the channel where it is being shared,
+    /// and the person receiving it has no name to look for.
     private var pitch: String {
         switch vibescape {
         case .builtin(let m):
             let name = titleCased(m.displayName)
-            return "Try this Vibresia vibescape — \(name) — free, no account."
+            return "Try \(name), a Vibresia vibescape — free, no account."
         case .custom(let id):
-            let name = app.customVibescape(id: id)?.name ?? "custom"
-            return "Try this Vibresia vibescape — \(name) — free, no account."
+            let mode = app.customVibescape(id: id)
+            let name = mode?.name ?? "custom"
+            let maker = mode?.author.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            if maker.isEmpty {
+                return "Try \(name), a Vibresia vibescape — free, no account."
+            }
+            return "Try \(name) by \(maker) — a Vibresia vibescape, free."
         }
     }
 

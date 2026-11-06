@@ -192,7 +192,7 @@
         "verifiedISO": "2026-11-02"
       }
     },
-    "ourAngle": "projectM is the way to get MilkDrop's thousands of presets on a Mac. Vibresia doesn't play .milk presets. Its scenes are its own, it's a signed and notarised app that updates itself, and new scenes are written in GLSL (by you or by an AI assistant) rather than MilkDrop's preset language.",
+    "ourAngle": "projectM is the way to get MilkDrop's thousands of presets on a Mac. Vibresia doesn't play .milk presets. Its scenes are its own, it's a signed and notarised app that checks for updates from inside, and new scenes are written in GLSL (by you or by an AI assistant) rather than MilkDrop's preset language.",
     "profile": {
       "sourceUrl": "https://github.com/projectM-visualizer/projectm",
       "verifiedISO": "2026-11-02"

@@ -52,7 +52,7 @@ struct AboutButton: View {
         VStack(alignment: .leading, spacing: 14) {
             VStack(alignment: .leading, spacing: 4) {
                 Link(destination: Self.product) {
-                    Text("VIBRESSIA")
+                    Text("VIBRESIA")
                         .font(.system(size: 13, weight: .bold))
                         .tracking(3)
                         .foregroundStyle(.white)

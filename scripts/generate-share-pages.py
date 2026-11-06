@@ -187,6 +187,10 @@ def render(slug: str, title: str, desc: str) -> str:
     <h2>Recently shared</h2>
     <p class="small">The vibescapes people have shared lately.</p>
     <div class="recent-grid" id="recent-grid"></div>
+    <p class="recent-more">
+      <a href="/vibescapes">See the whole gallery</a> &middot;
+      <a href="/vibe">Make one — describe a world and an agent writes it</a>
+    </p>
   </section>
 
   <!-- chrome:footer -->

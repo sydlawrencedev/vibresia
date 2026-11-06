@@ -494,11 +494,10 @@
           "verifiedISO": "2026-11-04"
         },
         {
-          "text": "Vibresia is Parachord's built-in visualiser: Parachord draws Vibresia scenes with the audio it is already playing, so the visuals follow the music without another app.",
+          "text": "Parachord has no visualiser of its own. Vibresia draws the music Parachord is playing, because Vibresia listens to the Mac's system audio rather than needing a plug-in.",
           "sourceUrl": "https://github.com/Parachord/parachord",
           "quote": "Multi-source music player with cross-platform resolver support.",
-          "verifiedISO": "2026-11-04",
-          "note": "The integration is Vibresia's side of the partnership: Vibresia renders its scenes inside Parachord."
+          "verifiedISO": "2026-11-04"
         }
       ]
     }

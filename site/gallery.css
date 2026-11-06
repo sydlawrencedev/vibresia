@@ -153,3 +153,44 @@ a { color: inherit; }
   color: var(--muted);
   overflow-wrap: anywhere;
 }
+
+/* The name is a link, so somebody who liked a vibescape can go and find the
+ * rest of that person's work. */
+.card-by a {
+  color: var(--cyan);
+  text-decoration: none;
+}
+
+.card-by a:hover,
+.card-by a:focus-visible {
+  text-decoration: underline;
+}
+
+/* How the gallery works, in the room rather than in the privacy page. */
+.gallery-rules {
+  margin: 18px 0 0;
+  max-width: 640px;
+}
+
+.gallery-rules summary {
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.gallery-rules summary:hover,
+.gallery-rules summary:focus-visible {
+  color: var(--text);
+}
+
+.gallery-rules ul {
+  margin: 10px 0 0;
+  padding-left: 20px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.gallery-rules li {
+  margin: 6px 0;
+}

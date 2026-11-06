@@ -312,6 +312,35 @@ function thirdOptionHtml(h, page) {
     </section>`;
 }
 
+/**
+ * The disambiguation note on a referee page.
+ *
+ * A referee page compares two products that are both live-show tools: a
+ * broadcast switcher, a projection mapper, a VJ application. Somebody who
+ * lands on one of these searching for "Resolume vs TouchDesigner" is
+ * looking for exactly that, and Vibresia is not one of those things. The
+ * site's own comparison copy says so: no MIDI, OSC, NDI or Syphon output,
+ * no timeline, no projection mapping, no node editor.
+ *
+ * So the page says so too, near the top. It does not promote Vibresia —
+ * a referee page that advertises on every pair stops being a referee, and
+ * there is a test for that. It tells a reader who arrived in the wrong
+ * place that they have, and what the site is instead.
+ */
+function refereeNoteHtml(h, page) {
+    if (page.template !== "2b") return "";
+    const pair = pairOf(page);
+    if (pair.thirdOption) return "";
+    const names = [pair.a, pair.b].filter(Boolean).map((slug) => {
+        try { return h.rec(slug).name; } catch { return slug; }
+    });
+    const subject = names.length === 2 ? `${names[0]} and ${names[1]}` : (names[0] || "These two");
+    return `<aside class="referee-note">
+      <p><strong>These are live-show tools.</strong> ${escapeHtml(subject)} run a show: they send video to a projector, a mixer or a capture card. Vibresia, which we make, is not one of those. It has no MIDI, OSC, NDI or Syphon output, no timeline and no projection mapping — its only job is music in and picture out, on the Mac you are sitting at.</p>
+      <p>If you are after a visual for whatever your Mac is playing, <a href="/">Vibresia</a> is the free app that does that. If you are setting up a show, this page is the right one.</p>
+    </aside>`;
+}
+
 /** The section a template's pages live in. */
 export function sectionOf(page) {
     const found = Object.entries(SECTIONS).find(([, s]) => s.templates.includes(page.template));
@@ -836,6 +865,7 @@ export function render(pageFn, records, others = []) {
     const verdict = isComparison(page) ? verdictHtml(h, page) : "";
     const connections = page.connections ? connectionsHtml(h, page) : "";
     const third = page.template === "2b" ? thirdOptionHtml(h, page) : "";
+    const refereeNote = refereeNoteHtml(h, page);
     const sections = page.sections.map((s) => `<h2>${escapeHtml(s.h2)}</h2>\n    ${s.html}`).join("\n    ");
     const faq = (page.faq || []).map((f) => `<h3>${escapeHtml(f.q)}</h3>\n      <p>${f.a}</p>`).join("\n      ");
 
@@ -879,6 +909,7 @@ export function render(pageFn, records, others = []) {
     <h1>${escapeHtml(page.h1)}</h1>
     <p class="byline">By <a href="${AUTHOR_PATH}">${escapeHtml(AUTHOR_DATA.name)}</a>, ${escapeHtml(AUTHOR_DATA.byline)}. Facts last checked ${longDate(verifiedISO)}; updated ${longDate(page.updatedISO)}.</p>
     <p class="answer">${page.answer}</p>
+    ${refereeNote}
     ${table}${connections ? `\n    ${connections}` : ""}
     ${verdict}
     ${page.hub ? LIVE_SCENE : promotes ? REEL : ""}

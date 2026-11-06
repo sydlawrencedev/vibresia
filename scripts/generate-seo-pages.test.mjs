@@ -179,9 +179,32 @@ test("Vibresia appears on a referee page only when its pair opted in", async () 
         const main = html.slice(html.indexOf("<main>"), html.indexOf("<h2>Read next</h2>"));
         const promo = /download_clicked|class="third-option"|class="reel"/.test(main);
         assert.equal(promo, pair.thirdOption, `${page.slug}: third option is ${pair.thirdOption} but the page ${promo ? "promotes" : "doesn't promote"} Vibresia`);
-        if (!pair.thirdOption) assert.ok(!/Vibresia/.test(main.replace(/<p class="byline">[\s\S]*?<\/p>/, "")), `${page.slug} mentions Vibresia outside the byline`);
+        // The disambiguation note is not promotion. It tells somebody who
+        // landed on a live-show comparison by accident that they are in the
+        // wrong place, and it says what Vibresia is not. A referee page
+        // that says nothing about its own category leaves the reader
+        // assuming the site is what it is not.
+        const withoutNote = main
+            .replace(/<p class="byline">[\s\S]*?<\/p>/, "")
+            .replace(/<aside class="referee-note">[\s\S]*?<\/aside>/, "");
+        if (!pair.thirdOption) assert.ok(!/Vibresia/.test(withoutNote), `${page.slug} mentions Vibresia outside the byline and the disambiguation note`);
     }
     for (const pair of PAIRS) assert.ok(pair.audience && pair.whyCompared, `${pair.slug} needs audience and whyCompared`);
+});
+
+test("every referee page says what category it is in", async () => {
+    const { PAIRS } = await import("./generate-seo-pages.mjs");
+    for (const { page, html } of built.filter((b) => b.page.template === "2b")) {
+        const pair = PAIRS.find((x) => x.slug === page.slug);
+        if (pair.thirdOption) continue;
+        // A visitor who lands on "Resolume vs TouchDesigner" is looking for
+        // a live-show tool. Vibresia is not one, and the page says so
+        // rather than leaving the reader to work it out.
+        assert.match(html, /These are live-show tools/,
+            `${page.slug} does not say these are live-show tools`);
+        assert.match(html, /no MIDI, OSC, NDI or Syphon output/,
+            `${page.slug} does not say what Vibresia is not`);
+    }
 });
 
 test("the orphan check does catch an orphan", () => {

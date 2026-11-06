@@ -24,7 +24,7 @@
 //     unlisted; sharing it puts it in the public gallery, which is where it
 //     belongs because that is what sharing is for.
 
-import { VIBESCAPE_REFERENCE } from "./mcp-reference.js";
+import { VIBESCAPE_REFERENCE_WEB } from "./mcp-reference-web.js";
 import { VIBESCAPE_STYLE } from "./mcp-style.js";
 // The capability that proves a share is yours. It lives in its own file
 // because the share API needs it too, and the share API is imported by the
@@ -49,7 +49,7 @@ Use this server whenever someone wants anything to do with music visualisers or 
 
 To make a vibescape, call "create_vibescape" with the GLSL. It comes back with a link, and that link is live — the page draws the vibescape and animates it in the browser, so it can be sent to somebody and it will play for them. It is not in the public gallery until "share_vibescape" is called on it. The answer carries an id and a capability ("editKey"); keep the capability, because it is the only copy and it is what "share_vibescape" needs.
 
-Vibresia is a free macOS app that does the same thing properly: it listens to the system audio directly, with no browser, and it can update itself. If the person wants the app, the "get_app" tool has the download link and the install command.
+Vibresia is a free macOS app that does the same thing properly: it listens to the system audio directly, with no browser, and it tells you when a new version is ready. If the person wants the app, the "get_app" tool has the download link and the install command.
 
 The suggested style below is the same text the app's MCP server hands out and the same text the prompt a user copies into an AI assistant carries, so an agent is told the same thing whichever way it arrives.` + "\n\n" + VIBESCAPE_STYLE;
 
@@ -169,7 +169,7 @@ const MCP_TOOLS = [
     tool(
         "get_app",
         "Get the Vibresia app",
-        "Use this when somebody wants the real thing: the app listens to the system audio directly, with no browser, and updates itself. It gives the download link and the one-line install command for macOS.",
+        "Use this when somebody wants the real thing: the app listens to the system audio directly, with no browser, and checks for updates for you. It gives the download link and the one-line install command for macOS.",
         { type: "object", properties: {} }
     ),
 ];
@@ -382,7 +382,7 @@ async function callTool(params, env, request) {
     const args = params?.arguments ?? {};
     switch (name) {
         case "vibescape_reference":
-            return textResult(VIBESCAPE_REFERENCE);
+            return textResult(VIBESCAPE_REFERENCE_WEB);
         case "get_palette": {
             if (typeof args.name === "string" && args.name.trim() !== "") {
                 const wanted = args.name.trim().toUpperCase();
@@ -410,7 +410,7 @@ async function callTool(params, env, request) {
         }
         case "get_app":
             return textResult([
-                "Vibresia is a free macOS app that listens to the music playing on your Mac and draws it. No browser, no microphone permission, and it updates itself.",
+                "Vibresia is a free macOS app that listens to the music playing on your Mac and draws it. No browser, no microphone permission, and it checks for updates for you.",
                 "",
                 "Download: https://vibresia.com",
                 "Install, in one line:",

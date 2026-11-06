@@ -61,7 +61,7 @@ export default (h) => ({
             h2: "What to expect on a Mac",
             html: `<p>projectM's Mac apps are early: its own page calls the standalone apps a pre-release and a development preview, and the Music app plug-in is an unsigned development preview, which macOS will warn you about. The builds on Steam and Homebrew are an older 3.1.12 release. None of that makes it a bad choice, but plan for some setup.</p>
     <p>ProjectMilkSyphon needs ${h.rec("projectmilksyphon").requirements}. It always sends its picture over Syphon, the Mac's way of passing video between apps, because it was made as a source for VJ software like VDMX. You can still watch it on its own.</p>
-    <p>Vibresia needs ${h.rec("vibresia").requirements}, so it won't run on an Intel Mac. It's signed and notarised, and updates itself.</p>`,
+    <p>Vibresia needs ${h.rec("vibresia").requirements}, so it won't run on an Intel Mac. It's signed and notarised, and it checks for updates from inside.</p>`,
         },
         {
             h2: "How we put this together",

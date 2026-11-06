@@ -1575,6 +1575,13 @@ async function galleryItems(env, url, sort = "recent") {
   const rows = await galleryRows(env);
   const builtins = await builtinRows(env, url);
 
+  // The gallery can be filtered to one author, because the author on a card
+  // is a link: somebody who liked a vibescape can go and find the rest of
+  // that person's work. An empty `by` means no filter, so the link still
+  // works when a share has no name on it.
+  const by = url.searchParams.get("by");
+  const wantedAuthor = by ? by.trim() : "";
+
   const items = builtins.map((entry) => ({
     // Midnight, so a built-in and a share made on the same day are in the
     // order they were made.
@@ -1609,7 +1616,8 @@ async function galleryItems(env, url, sort = "recent") {
 
   const order = GALLERY_SORTS[sort] || GALLERY_SORTS.recent;
   items.sort(order);
-  return items;
+  if (!wantedAuthor) return items;
+  return items.filter((item) => (item.author || "") === wantedAuthor);
 }
 
 /// `GET /api/admin/shares` — every share, for the admin page.
@@ -1760,13 +1768,21 @@ async function handleGalleryPage(request, url, env) {
   // The name, the picture, and who made it. The author is on the card
   // because it is on the app's gallery too: the two are the same list, and
   // they should look the same.
+  //
+  // The author is a link, not text. A gallery where a maker's name is
+  // plain text is a catalogue: there is nowhere to go from it. The link
+  // goes to the gallery filtered to that author, so somebody who liked a
+  // vibescape can find the rest of that person's work.
   const cards = items.map((item) => {
     const name = escapeHtml(item.name || "A vibescape");
     const author = escapeHtml(item.author || "");
-    return `      <a class="card" href="${escapeHtml(item.url)}">
+    const authorBy = author
+      ? `<span class="card-by">by <a href="/vibescapes?by=${encodeURIComponent(item.author || "")}">${author}</a></span>`
+      : "";
+    return `      <a class="card" data-track="gallery_card_clicked" data-target="${escapeHtml(item.id || "")}" href="${escapeHtml(item.url)}">
         <img src="${escapeHtml(item.image)}" alt="${name}" loading="lazy" width="1200" height="630">
         <span class="card-name">${name}</span>
-        <span class="card-by">${author ? `by ${author}` : ""}</span>
+        ${authorBy}
       </a>`;
   }).join("\n");
 

@@ -336,6 +336,24 @@ code, .mono {
   margin-top: 16px;
 }
 
+/* The way out of the strip, and the invitation to make one. Without these
+ * the recipient of a share reaches three other vibescapes and then nothing:
+ * the trail goes cold. */
+.recent-more {
+  margin: 16px 0 0;
+  font-size: 14px;
+}
+
+.recent-more a {
+  color: var(--cyan);
+  text-decoration: none;
+}
+
+.recent-more a:hover,
+.recent-more a:focus-visible {
+  text-decoration: underline;
+}
+
 .recent-card {
   display: block;
   color: inherit;

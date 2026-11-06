@@ -69,7 +69,7 @@
       "@type": "SoftwareApplication",
       "@id": "https://vibresia.com/#app",
       "name": "Vibresia",
-      "alternateName": "Vibresia, AudioVane",
+      "alternateName": "Vibresia",
       "description": "Visual worlds that move with your music. Watch them, or write your own and share it. Free to use and yours to share.",
       "url": "https://vibresia.com/",
       "applicationCategory": "MultimediaApplication",
@@ -92,7 +92,7 @@
         "Listens to system audio from any app, or to the microphone",
         "Detects tempo, beats and instruments, and notices track changes",
         "Auto-detects the genre of what is playing and stages the band to match",
-        "Free, no account, and it updates itself"
+        "Free, no account, and it checks for updates for you"
       ],
       "author": {
         "@id": "https://minithlabs.com/#org"
@@ -317,13 +317,13 @@
   <div class="hero">
     <p class="eyebrow">Meet Vibresia</p>
     <h1>Your music. <span>Your world.</span></h1>
-    <p class="lede">Create, explore and share your own visual experiences. Every track has a world waiting to be discovered.</p>
+    <p class="lede">Put something beautiful on the screen you are not working on. Vibresia listens to whatever your Mac is playing and draws it live, then you can write a world of your own.</p>
     <p class="proclaim">Proudly shareware: free to use, and yours to share.</p>
     <div class="ctas">
       <a class="btn primary" data-install data-track="download_clicked" data-placement="hero" href="/download?src=hero">Download for Mac</a>
       <a class="btn coffee" data-track="coffee_clicked" data-placement="hero" href="https://buy.stripe.com/7sY3cuekN6z66L1c0cbEA01">☕ Buy me a coffee</a>
     </div>
-    <p class="small">macOS 14.2 or later · Apple silicon · updates itself · <a href="#shareware">proudly shareware</a> · <a href="https://github.com/sydlawrencedev/vibresia/issues" rel="noopener" data-track="bug_report_link_clicked" data-placement="hero">report a bug</a></p>
+    <p class="small">macOS 14.2 or later · Apple silicon · updates from inside the app · <a href="#shareware">proudly shareware</a> · <a href="https://github.com/sydlawrencedev/vibresia/issues" rel="noopener" data-track="bug_report_link_clicked" data-placement="hero">report a bug</a></p>
   </div>
 
   <div class="video">
@@ -362,7 +362,7 @@
       <a class="vibescape" data-vibescape="flux" href="/share/flux"><img src="media/modes/flux.jpg" alt="Flux: huge sheets of hot pink and gold light strands swirling into a vanishing point, with gold bokeh and cyan glass shards streaking past" loading="lazy"><div class="body"><h3>Flux</h3><p>Sheets of hot pink and gold light swirl into a vanishing point like long-exposure trails. Louder music flies faster, and every beat swells softly.</p></div></a>
       <a class="vibescape" data-vibescape="spectrum" href="/share/spectrum"><img src="media/modes/spectrum.jpg" alt="Spectrum: classic segmented LED bars with falling peak caps" loading="lazy"><div class="body"><h3>Spectrum</h3><p>Classic segmented LED bars with falling peak caps.</p></div></a>
       <a class="vibescape" data-vibescape="tunnel" href="/share/tunnel"><img src="media/modes/tunnel.jpg" alt="Tunnel: neon spectrum bars flying past in a ring" loading="lazy"><div class="body"><h3>Tunnel</h3><p>Fly through rings of spectrum bars that pulse with the bass.</p></div></a>
-      <a class="vibescape" data-vibescape="liquid" href="/share/liquid"><img src="media/modes/liquid.jpg" alt="Liquid: psychedelic fluid flowing and folding like Milkdrop" loading="lazy"><div class="body"><h3>Liquid</h3><p>Milkdrop-style psychedelic fluid that flows and folds to the music.</p></div></a>
+      <a class="vibescape" data-vibescape="liquid" href="/share/liquid"><img src="media/modes/liquid.jpg" alt="Liquid: psychedelic fluid flowing and folding like Milkdrop" loading="lazy"><div class="body"><h3>Liquid</h3><p>Psychedelic fluid that flows and folds to the music.</p></div></a>
       <a class="vibescape" data-vibescape="kaleidoscope" href="/share/kaleidoscope"><img src="media/modes/kaleidoscope.jpg" alt="Kaleidoscope: mirrored fractal folds pulsing with the bass" loading="lazy"><div class="body"><h3>Kaleidoscope</h3><p>Mirrored fractal folds that punch in on the bass and shift colour every few bars.</p></div></a>
       <a class="vibescape" data-vibescape="waveform" href="/share/waveform"><img src="media/modes/waveform.jpg" alt="Neon Wave: glowing green waveforms shaped by the spectrum" loading="lazy"><div class="body"><h3>Neon Wave</h3><p>Glowing green waveforms, shaped by the spectrum like an analogue sound analyser.</p></div></a>
       <a class="vibescape" data-vibescape="machine" href="/share/machine"><img src="media/modes/machine.jpg" alt="Machine: cannons firing balls at the drums" loading="lazy"><div class="body"><h3>Machine</h3><p>Cannons fire balls at drums in time with the notes, after mrdoob's MIDEM Hack Day machine.</p></div></a>
@@ -400,10 +400,22 @@
   <section>
     <h2>How it works</h2>
     <div class="facts">
-      <div class="fact"><h3>Hears everything</h3><p>Uses macOS system-audio capture, so it reacts to any app. No plug-ins, no browser tab, no microphone needed.</p></div>
+      <div class="fact"><h3>Hears everything</h3><p>Uses macOS system-audio capture, so it reacts to any app. No plug-ins, no browser tab, no microphone permission. You can point it at the microphone instead if you want.</p></div>
       <div class="fact"><h3>Knows the song</h3><p>It finds the tempo, the beats and the instruments, and notices track changes in Apple Music and Spotify. That's what your vibescape draws with.</p></div>
       <div class="fact"><h3>Moves on the beat</h3><p>Auto Scan hands over a few bars at a time, so the scene changes where the music does — on a beat, not on a timer.</p></div>
+      <div class="fact"><h3>Fits the screen</h3><p>Full screen, or always on top of everything else. It is a picture, not a window: it sits on the screen you are not working on and it stays there.</p></div>
       <div class="fact"><h3>Stays on your Mac</h3><p>Audio is analysed on-device and never recorded or uploaded; instrument detection uses Apple's built-in sound classifier.</p></div>
+    </div>
+  </section>
+
+  <section id="what-it-isnt">
+    <h2>What it is not</h2>
+    <p class="sub">So you know before you install it.</p>
+    <div class="facts">
+      <div class="fact"><h3>Not a live-show tool</h3><p>No MIDI, OSC, NDI or Syphon output, no timeline, no projection mapping, no node editor. Its only job is music in and picture out.</p></div>
+      <div class="fact"><h3>Mac only</h3><p>Apple silicon, macOS 14.2 or later. There is no Intel, Windows, Linux, iPhone or Android version, and there is not going to be one.</p></div>
+      <div class="fact"><h3>Not in the App Store</h3><p>It is signed and notarised by Apple and updates from inside the app, so there is no store account in the way.</p></div>
+      <div class="fact"><h3>Not a MilkDrop</h3><p>It does not play MilkDrop presets. Its scenes are its own, and you write them in GLSL.</p></div>
     </div>
   </section>
 
@@ -452,7 +464,7 @@
     <p class="sub">Free to use, and yours to pass on. No ads, no account.</p>
     <div class="shareware">
       <div class="fact"><h3>Every update is included</h3><p>Check for updates from the app and install in one click. Every vibescape you have now keeps working, and every one added later comes with the same download.</p></div>
-      <div class="fact"><h3>Your audio stays on your Mac</h3><p>Audio never leaves your Mac. The title and artist of a track, when your music app says what it is playing, are looked up in Apple's public catalogue to work out the band's genre. Usage stats are anonymous, and you can switch them off in the app.</p></div>
+      <div class="fact"><h3>Your audio stays on your Mac</h3><p>Audio is analysed on your Mac and never uploaded or stored. The title and artist of a track, when your music app says what it is playing, are looked up in Apple's public catalogue to work out the band's genre. There is one more thing, off until you turn it on: "Identify by listening" asks Apple to name what it hears, by sending a one-way fingerprint of a few seconds of sound. The <a href="/privacy">privacy page</a> has both.</p></div>
       <div class="fact"><h3>Yours to keep and to pass on</h3><p>Redistribute it to anyone. The source is on GitHub under the MIT licence, so read it, fork it or send a patch. New vibescapes are welcome, and most are a single shader.</p></div>
     </div>
   </section>
