@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The gallery, on its own so Search Console can report how it indexes
+     separately from the search pages.
+
+     It was 'noindex' until 6 November 2026. It holds what people have
+     actually made and shared, under their own names, and it is the only
+     page on the site whose content comes from other people rather than
+     from us. Leaving it out of search meant a maker's work could not be
+     found by anybody who did not already have the link.
+
+     Only the gallery itself is listed. The vibescapes inside it are
+     linked from the gallery, and each has a page at /s/<id>. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://vibresia.com/vibescapes</loc>
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+</urlset>

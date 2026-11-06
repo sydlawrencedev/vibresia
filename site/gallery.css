@@ -166,6 +166,33 @@ a { color: inherit; }
   text-decoration: underline;
 }
 
+/* The questions, at the foot of the gallery. A visitor who came from a
+ * share link has never read this page before, and these are the things
+ * they are about to wonder about. */
+.faq {
+  margin: 44px 0 8px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+
+.faq h2 {
+  margin: 0 0 14px;
+  font-size: 20px;
+}
+
+.faq h3 {
+  margin: 18px 0 4px;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.faq p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
 /* How the gallery works, in the room rather than in the privacy page. */
 .gallery-rules {
   margin: 18px 0 0;

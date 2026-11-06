@@ -1132,6 +1132,37 @@ export async function loadPages(records) {
     return pages;
 }
 
+/**
+ * The gallery's sitemap.
+ *
+ * The gallery is served by the Worker rather than being a static page, so
+ * it is not one of the templates the other sitemaps are built from. The URL
+ * is the same every time; what changes is what is behind it.
+ */
+function gallerySitemap() {
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<!-- The gallery, on its own so Search Console can report how it indexes
+     separately from the search pages.
+
+     It was 'noindex' until 6 November 2026. It holds what people have
+     actually made and shared, under their own names, and it is the only
+     page on the site whose content comes from other people rather than
+     from us. Leaving it out of search meant a maker's work could not be
+     found by anybody who did not already have the link.
+
+     Only the gallery itself is listed. The vibescapes inside it are
+     linked from the gallery, and each has a page at /s/<id>. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${ORIGIN}/vibescapes</loc>
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+</urlset>
+`;
+}
+
 export function sitemap(pages, extra = []) {
     const urls = [...extra, ...pages.map((p) => ({ path: pathOf(p), lastmod: p.updatedISO }))]
         .map((u) => `  <url>\n    <loc>${ORIGIN}${u.path}</loc>\n    <lastmod>${u.lastmod}</lastmod>\n  </url>`);
@@ -1176,6 +1207,18 @@ async function main() {
             ? [{ path: HUB.path, lastmod: comparisons.map((c) => c.updatedISO).sort().at(-1) }] : [];
         outputs.set(path.join(ROOT, "site/sitemaps", file), sitemap(listed, extra));
     }
+
+    // The gallery gets its own sitemap. It is served by the Worker rather
+    // than being a static page, so it is not one of the templates above,
+    // and the set of vibescapes in it changes as people share. The URL is
+    // the same every time; what changes is what is behind it.
+    //
+    // It was `noindex` until 6 November 2026. It holds what people have
+    // actually made and shared, under their own names, and it is the only
+    // page on the site whose content comes from other people rather than
+    // from us. While it was out of search, a maker's work could not be
+    // found by anybody who did not already have the link.
+    outputs.set(path.join(ROOT, "site/sitemaps/gallery.xml"), gallerySitemap());
 
     const stale = [];
     for (const [file, text] of outputs) {

@@ -142,3 +142,45 @@ test("the share pitch names the author", () => {
     assert.match(pitch[0], /author/i,
         "the share pitch does not name the author");
 });
+
+// --- The gallery is a public index and is indexed --------------------------
+
+test("the gallery is indexed and has a sitemap", () => {
+    // It holds what people have actually made and shared, under their own
+    // names. While it was `noindex`, a maker's work could not be found by
+    // anybody who did not already have the link.
+    const gallery = read("site/vibescapes.html");
+    assert.doesNotMatch(gallery, /noindex/,
+        "the gallery is noindex, so a maker's work cannot be found by search");
+    assert.match(gallery, /name="robots" content="index, follow"/,
+        "the gallery does not say it is indexable");
+    assert.match(gallery, /<link rel="canonical" href="https:\/\/vibresia\.com\/vibescapes">/,
+        "the gallery has no canonical URL");
+
+    // A sitemap, and robots.txt pointing at it, so a crawler is told where
+    // to look rather than having to find the page from the nav.
+    const robots = read("site/robots.txt");
+    assert.match(robots, /Sitemap: https:\/\/vibresia\.com\/sitemaps\/gallery\.xml/,
+        "robots.txt does not list the gallery sitemap");
+
+    const sitemap = read("site/sitemaps/gallery.xml");
+    assert.match(sitemap, /<loc>https:\/\/vibresia\.com\/vibescapes<\/loc>/,
+        "the gallery sitemap does not list the gallery");
+});
+
+// --- The author's credentials are stated as facts --------------------------
+
+test("the author's track record is stated plainly", () => {
+    // He is happy to defend the number, so it is stated as a fact rather
+    // than softened into "my own claim". A hedged version would make the
+    // most quotable thing on the site sound uncertain, which is a different
+    // kind of problem from the one the hedge was meant to solve.
+    const author = read("content/data/author.json");
+    const data = JSON.parse(author);
+    assert.match(data.description, /41 number-one albums/,
+        "the schema description no longer carries the album figure");
+    assert.match(data.bio.join(" "), /41 number-one albums/,
+        "the bio no longer carries the album figure");
+    assert.doesNotMatch(data.bio.join(" "), /my own claim/i,
+        "the bio now hedges the album figure, which it should not");
+});

@@ -6,7 +6,7 @@
 <title>The gallery — Vibresia</title>
 <meta name="description" content="Vibescapes people have shared with the world.">
 <link rel="canonical" href="https://vibresia.com/vibescapes">
-<meta name="robots" content="noindex, follow">
+<meta name="robots" content="index, follow">
 <meta name="theme-color" content="#06010d">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Vibresia">
@@ -31,6 +31,90 @@
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;700&display=swap"></noscript>
 <link rel="stylesheet" href="/chrome.css">
 <link rel="stylesheet" href="/gallery.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://minithlabs.com/#org",
+      "name": "Minith Labs",
+      "url": "https://minithlabs.com/",
+      "sameAs": [
+        "https://github.com/sydlawrencedev"
+      ],
+      "founder": {
+        "@id": "https://vibresia.com/author/syd-lawrence#person"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://vibresia.com/#website",
+      "name": "Vibresia",
+      "url": "https://vibresia.com/",
+      "inLanguage": "en-GB",
+      "publisher": {
+        "@id": "https://minithlabs.com/#org"
+      }
+    },
+    {
+      "@type": "CollectionPage",
+      "@id": "https://vibresia.com/vibescapes",
+      "name": "The gallery — Vibresia",
+      "url": "https://vibresia.com/vibescapes",
+      "description": "Vibescapes people have shared with the world.",
+      "isPartOf": {
+        "@id": "https://vibresia.com/#website"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is in this gallery?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The vibescapes that come with Vibresia, and the ones people have written and shared, newest first. A vibescape is one GLSL function that draws to the music."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Who can put something in the gallery?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Whoever made it, from the app or from an AI assistant. You tick it into the gallery when you share it, and your name goes on it. You can take it out again at any time."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my name public?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, if you tick it into the gallery. The name on the vibescape is shown next to it here, where anybody can find it. It is not shown anywhere else."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need Vibresia to look at one?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Each vibescape has a page that draws it live in your browser, so it plays whether or not you have the app. The app adds the Mac app's own audio and the rest of the scenes."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I make one of these?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Point an AI assistant at Vibresia and it writes one, or write the GLSL yourself. Either way it is a single function, and the app draws it before you keep it."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -71,6 +155,20 @@
   <div class="gallery">
     <!-- gallery:cards -->
   </div>
+
+  <section class="faq">
+    <h2>Questions people ask</h2>
+    <h3>What is in this gallery?</h3>
+    <p>The vibescapes that come with Vibresia, and the ones people have written and shared, newest first. A vibescape is one GLSL function that draws to the music.</p>
+    <h3>Who can put something in the gallery?</h3>
+    <p>Whoever made it, from the app or from an AI assistant. You tick it into the gallery when you share it, and your name goes on it. You can take it out again at any time.</p>
+    <h3>Is my name public?</h3>
+    <p>Yes, if you tick it into the gallery. The name on the vibescape is shown next to it here, where anybody can find it. It is not shown anywhere else.</p>
+    <h3>Do I need Vibresia to look at one?</h3>
+    <p>No. Each vibescape has a page that draws it live in your browser, so it plays whether or not you have the app. The app adds the Mac app's own audio and the rest of the scenes.</p>
+    <h3>Can I make one of these?</h3>
+    <p>Yes. Point an AI assistant at Vibresia and it writes one, or write the GLSL yourself. Either way it is a single function, and the app draws it before you keep it.</p>
+  </section>
 
   <!-- chrome:footer -->
   <footer class="site-footer">
