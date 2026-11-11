@@ -81,13 +81,27 @@
   th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--line); font-size: 15px; vertical-align: top; }
   th { color: var(--muted); font: 600 12px "JetBrains Mono", ui-monospace, monospace; letter-spacing: 1px; text-transform: uppercase; }
   td code { color: var(--cyan); font-size: 13.5px; }
-  /* The setup commands are long and have no spaces to break at. Without
-     this they push the table wider than a phone and the whole document
-     scrolls sideways. */
-  td code, td pre, .setup code, .setup pre, .cmd code {
-    overflow-wrap: anywhere;
-    white-space: pre-wrap;
-  }
+  /* The setup commands are long and have no spaces to break at. Wrapping
+     them would push the table wider than a phone — but breaking them
+     mid-token would corrupt the JSON somebody is about to copy. So the
+     table gives up the width it cannot use, and each command scrolls
+     sideways inside its own box. The command stays exactly as it is.
+     The first column keeps its share of the width, so the label beside a
+     command is readable rather than squeezed to nothing. */
+  table { table-layout: fixed; }
+  td { max-width: 0; }
+  th:first-child, td:first-child { width: 28%; }
+  /* A command in a cell scrolls rather than overflowing: it is in a block
+     of its own, so it can scroll on its own without taking the page with
+     it. The fade at the right edge is the cue that there is more to see,
+     because a scrollbar on a phone is easy to miss. */
+  td code { display: block; overflow-x: auto; max-width: 100%; white-space: pre;
+            -webkit-mask-image: linear-gradient(to right, #000 85%, transparent);
+            mask-image: linear-gradient(to right, #000 85%, transparent); }
+  td pre { overflow-x: auto; max-width: 100%; }
+  td pre code { display: inline; overflow: visible; }
+  .setup pre { overflow-x: auto; max-width: 100%; }
+  .cmd code { overflow-wrap: anywhere; white-space: pre-wrap; }
 
 </style>
 <link rel="stylesheet" href="/chrome.css">
