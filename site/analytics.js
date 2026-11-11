@@ -41,6 +41,56 @@
     });
   }
 
+  // The session id has to be a UUIDv7, not a UUIDv4.
+  //
+  // PostHog only counts an event towards a session when the session id is a
+  // UUIDv7, and it only reads that id out of the properties bag. A UUIDv4
+  // in a top-level `session_id` key is dropped twice over: the key is not a
+  // property, and the value is not a v7. The symptom was invisible — the
+  // events arrived, the pageviews counted, and every session number in web
+  // analytics was wrong.
+  //
+  // A v7 puts a millisecond timestamp in the first 48 bits, so it sorts by
+  // time and PostHog can tell when the session started. `randomUUID` cannot
+  // make one, so this builds it by hand.
+  function uuidV7() {
+    var bytes = new Uint8Array(16);
+    if (window.crypto && crypto.getRandomValues) {
+      crypto.getRandomValues(bytes);
+    } else {
+      // No web crypto at all. The randomness only has to be good enough to
+      // keep two visits apart, not to be unguessable.
+      for (var i = 0; i < 16; i++) bytes[i] = (Math.random() * 256) | 0;
+    }
+
+    // The first 48 bits are the timestamp, in milliseconds, big-endian. It
+    // has to be the time the session started: PostHog checks that the
+    // timestamp is at or before the first event of the session and no more
+    // than 24 hours after the last.
+    //
+    // 48 bits is two bytes of the high word and four of the low, so the
+    // high half is written as a 16-bit number. Writing it as a full 32-bit
+    // word pushes the timestamp four bytes along and the id decodes to a
+    // date in the year 7607.
+    var now = Date.now();
+    var view = new DataView(bytes.buffer);
+    view.setUint16(0, Math.floor(now / 0x100000000)); // the top 16 bits
+    view.setUint32(2, now >>> 0); // the low 32 bits
+    bytes[6] = (bytes[6] & 0x0f) | 0x70; // version 7
+    bytes[8] = (bytes[8] & 0x3f) | 0x80; // variant 1
+
+    var hex = [];
+    for (var j = 0; j < 16; j++) hex.push((bytes[j] + 0x100).toString(16).slice(1));
+
+    return (
+      hex.slice(0, 4).join("") + "-" +
+      hex.slice(4, 6).join("") + "-" +
+      hex.slice(6, 8).join("") + "-" +
+      hex.slice(8, 10).join("") + "-" +
+      hex.slice(10, 16).join("")
+    );
+  }
+
   function optedOut() {
     try {
       if (localStorage.getItem(OPT_OUT_KEY) === "1") return true;
@@ -88,7 +138,9 @@
   }
 
   var id = distinctId();
-  var sessionId = uuid(); // one per page load: groups a single visit together
+  // One per page load: groups a single visit together. A UUIDv7, because
+  // PostHog counts a session only when the id is one.
+  var sessionId = uuidV7();
   var queue = [];
   var flushTimer = null;
   var ENDPOINT = HOST + "/batch/";
@@ -113,12 +165,15 @@
 
   function track(event, properties) {
     var props = baseProperties();
+    // The session id goes in the properties bag, under the name PostHog
+    // looks for. A top-level `session_id` key is not a property, so PostHog
+    // never saw it and every event looked like it belonged to no session.
+    props.$session_id = sessionId;
     for (var k in properties) props[k] = properties[k];
     queue.push({
       api_key: KEY,
       event: event,
       distinct_id: id,
-      session_id: sessionId,
       properties: props,
       timestamp: new Date().toISOString()
     });
