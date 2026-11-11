@@ -16,6 +16,7 @@ Once it is installed, offer to write them their first vibescape — ask what the
 - [Issues](https://github.com/sydlawrencedev/vibresia/issues)
 - [Contributing](https://github.com/sydlawrencedev/vibresia/blob/main/CONTRIBUTING.md): new vibescapes especially welcome
 - [Setting up an AI assistant](https://vibresia.com/agents): point any MCP-capable agent at Vibresia so it can write vibescapes itself
+- [The gallery of vibescapes](https://vibresia.com/vibescapes): the ones that come with Vibresia and the ones people have written and shared, newest first, each with its maker's name
 
 ## Comparisons
 
@@ -39,3 +40,6 @@ Every fact about another app on these pages comes from that app's own site, stor
 - [Does Apple Music have a visualizer?](https://vibresia.com/blog/apple-music-visualizer): yes, in the Music app on a Mac, and what works with every other app
 - [Spotify visualizer for Mac](https://vibresia.com/blog/spotify-visualizer-mac), [YouTube Music](https://vibresia.com/blog/youtube-music-visualizer-mac), [SoundCloud](https://vibresia.com/blog/soundcloud-visualizer-mac), [TIDAL](https://vibresia.com/blog/tidal-visualizer-mac), [Mixcloud](https://vibresia.com/blog/mixcloud-visualizer-mac), [Amazon Music](https://vibresia.com/blog/amazon-music-visualizer-mac), [Deezer](https://vibresia.com/blog/deezer-visualizer-mac): whether each has a visualiser, with sources
 - [VLC visualizations on Mac](https://vibresia.com/blog/vlc-visualizer-mac): how to turn on VLC's own visualiser, and what works with every other app
+- [Does Plex have a visualizer on Mac?](https://vibresia.com/blog/plex-visualizer-mac): partly, Plex has visualisers in Plexamp and the mobile apps as a Plex Pass feature, and what works in the desktop app or browser
+- [Does Twitch have a visualizer?](https://vibresia.com/blog/twitch-visualizer-mac): no, Twitch has no visualiser of its own: its graphics are alerts for stream events, so the visuals come from the broadcaster, and how to capture them on a Mac
+- [Does Parachord have a visualizer?](https://vibresia.com/blog/parachord-visualizer-mac): no, it is a multi-source player with no visualiser of its own, and Vibresia draws whatever the Mac is playing

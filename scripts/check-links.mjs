@@ -61,6 +61,7 @@ export function sitemapPaths(root = SITE) {
     if (fs.existsSync(dir)) for (const f of fs.readdirSync(dir)) if (f.endsWith(".xml")) files.push(path.join(dir, f));
     const paths = [];
     for (const f of files) {
+        if (!fs.existsSync(f)) continue;
         for (const [, loc] of fs.readFileSync(f, "utf8").matchAll(/<loc>([^<]+)<\/loc>/g)) {
             paths.push(new URL(loc).pathname);
         }
@@ -89,17 +90,51 @@ export function crawl(pages) {
     return { reached, broken };
 }
 
+/**
+ * The site-internal paths llms.txt points an answer engine at.
+ *
+ * llms.txt is the file an assistant reads to find the right page on the
+ * site. A page that is in a sitemap but missing from llms.txt is a page the
+ * assistant has no reason to open, even though Google can rank it.
+ *
+ * Both forms the file uses count: a Markdown link, and a bare URL in prose.
+ */
+export function llmsPaths(root = SITE) {
+    const text = fs.readFileSync(path.join(root, "llms.txt"), "utf8");
+    const paths = new Set();
+    for (const [, href] of text.matchAll(/https:\/\/vibresia\.com([a-zA-Z0-9/._-]*)/g)) {
+        paths.add(href.replace(/\/$/, "") || "/");
+    }
+    return paths;
+}
+
+// Pages that are in a sitemap but are not search landing pages, so llms.txt
+// has no reason to point an assistant at them. The homepage is the file
+// itself. The author page is a byline target, not a page anybody searches
+// for, and it carries no question of its own.
+const NOT_A_LANDING_PAGE = new Set(["/", "/author/syd-lawrence"]);
+
+/** Sitemap pages that llms.txt does not mention. */
+export function llmsGaps(root = SITE) {
+    const covered = llmsPaths(root);
+    return [...new Set(sitemapPaths(root))]
+        .map((p) => p.replace(/\/$/, "") || "/")
+        .filter((p) => !covered.has(p) && !NOT_A_LANDING_PAGE.has(p));
+}
+
 export function check(root = SITE) {
     const pages = sitePages(root);
     const { reached, broken } = crawl(pages);
     const orphans = sitemapPaths(root).filter((p) => !reached.has(p));
-    return { orphans, broken, reached: reached.size };
+    const notInLlms = llmsGaps(root);
+    return { orphans, broken, notInLlms, reached: reached.size };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-    const { orphans, broken, reached } = check();
+    const { orphans, broken, notInLlms, reached } = check();
     for (const o of orphans) console.error(`  x orphan: ${o} is in a sitemap but no link from the homepage reaches it`);
     for (const b of broken) console.error(`  x broken: ${b}`);
-    if (orphans.length || broken.length) process.exit(1);
-    console.log(`every sitemap page is linked, and no internal link is broken (${reached} pages reached)`);
+    for (const m of notInLlms) console.error(`  x not in llms.txt: ${m} is in a sitemap but llms.txt does not point an assistant at it`);
+    if (orphans.length || broken.length || notInLlms.length) process.exit(1);
+    console.log(`every sitemap page is linked, no internal link is broken, and llms.txt covers them all (${reached} pages reached)`);
 }
