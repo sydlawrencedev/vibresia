@@ -663,19 +663,23 @@ function connectionsHtml(h, page) {
  */
 function verdictHtml(h, page) {
     const v = page.verdict || {};
+    // The verdict box is the first thing under the page's H1, so its
+    // headings are H2. They were H3, which made the outline skip a level:
+    // a screen reader moving by heading read every comparison page as
+    // starting mid-way down, with the H2 it expected missing.
     if (page.template === "2b") {
         // A referee says who each one is for, and favours neither.
         if (!v.pickA || !v.pickB) throw new Error(`${page.slug}: a referee page needs verdict.pickA and verdict.pickB`);
         const [a, b] = sides(page);
         return `<div class="verdict even">
-      <div><h3>Pick ${escapeHtml(h.name(a))} if</h3><p>${v.pickA}</p></div>
-      <div><h3>Pick ${escapeHtml(h.name(b))} if</h3><p>${v.pickB}</p></div>
+      <div><h2>Pick ${escapeHtml(h.name(a))} if</h2><p>${v.pickA}</p></div>
+      <div><h2>Pick ${escapeHtml(h.name(b))} if</h2><p>${v.pickB}</p></div>
     </div>`;
     }
     if (!v.pickUs || !v.pickThem) throw new Error(`${page.slug}: a head-to-head needs verdict.pickUs and verdict.pickThem`);
     return `<div class="verdict">
-      <div><h3>Pick Vibresia if</h3><p>${v.pickUs}</p></div>
-      <div><h3>Pick ${escapeHtml(h.name(page.versus))} if</h3><p>${v.pickThem}</p></div>
+      <div><h2>Pick Vibresia if</h2><p>${v.pickUs}</p></div>
+      <div><h2>Pick ${escapeHtml(h.name(page.versus))} if</h2><p>${v.pickThem}</p></div>
     </div>`;
 }
 
