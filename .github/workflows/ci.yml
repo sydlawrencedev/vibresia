@@ -56,6 +56,12 @@ jobs:
       - name: Links
         run: node scripts/check-links.mjs
 
+      # The weekly and monthly AI visibility prompt sets are the same set of
+      # prompts. If they drift, a weekly score cannot be compared with a
+      # monthly one.
+      - name: AI visibility prompts
+        run: node scripts/check-ai-prompts.mjs
+
       # Every indexable page has the shared structured data and the FAQs it
       # shows on the page.
       - name: Schema
@@ -87,7 +93,10 @@ jobs:
 
   app:
     name: macOS app
-    runs-on: macos-14
+    # macos-14 was retired by GitHub on 2026-11-02; macos-15 is the arm64
+    # image that replaced it. The package needs macOS 14.2 or later and
+    # builds with `swift build`, so a 15 runner satisfies it.
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
 

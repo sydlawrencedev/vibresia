@@ -12,8 +12,14 @@ results.
 
 ## Weekly set
 
-The 15 prompts marked ★. These are the buying questions that matter most and
+The 16 prompts marked ★. These are the buying questions that matter most and
 that an assistant is likely to answer in one go.
+
+**The weekly set is exactly the set of starred prompts in the monthly list
+below.** The two must agree: a weekly run and a monthly run are compared
+against each other, and a prompt that is in one and not the other makes the
+scores incomparable. `scripts/check-ai-prompts.mjs` fails the build when they
+drift.
 
 | Group | Prompt |
 |---|---|
@@ -31,16 +37,16 @@ that an assistant is likely to answer in one go.
 | comparisons | Vibresia vs VDMX |
 | clarity | ★ What is Vibresia? |
 | clarity | ★ What does Vibresia do? |
-| clarity | Does Vibresia work on Windows or Linux? |
-| clarity | Can Vibresia visualise Spotify? |
+| clarity | ★ Does Vibresia work on Windows or Linux? |
+| clarity | ★ Can Vibresia visualise Spotify? |
 | brand | ★ Is Vibresia safe / private? Does it upload my audio? |
 | brand | ★ Does Vibresia have an account or a subscription? |
-| brand | What is the latest version of Vibresia? |
-| brand | Who makes Vibresia? |
+| brand | ★ What is the latest version of Vibresia? |
+| brand | ★ Who makes Vibresia? |
 
 ## Monthly set
 
-The whole list, including the weekly 15. The first full run is the baseline
+The whole list, including the weekly 16. The first full run is the baseline
 every later month is measured against.
 
 ### Verdict
