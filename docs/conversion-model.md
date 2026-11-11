@@ -37,6 +37,35 @@ Worker only reports the download once per distinct person in a window. Treat a
 low `download_requested` count with a healthy `download_clicked` count as
 capture loss until the data says otherwise.
 
+## First-touch attribution
+
+The site sends a `$set_once` block on `$pageview`, so the first page a person
+landed on and the first site that referred them are kept on the person and
+never overwritten:
+
+| Property | Where it lives | What it is |
+|---|---|---|
+| `$initial_pathname` | person properties | The path of the first page the person saw |
+| `$initial_referring_domain` | person properties | The hostname that first referred them, or `$direct` |
+
+Both were verified against PostHog itself on 11 November 2026: a probe event
+with `$set_once` at the top level of the event and another with it nested
+inside `properties` were both applied to the person, so the client's nesting
+is correct.
+
+**Read them from the person, not from the event.** `properties.$set_once` is
+absent from a stored event by design, because it has been applied to the
+person instead. A query that looks for the property on the event finds
+nothing and wrongly concludes the attribution is broken.
+
+A person whose first event was not a pageview, such as the worker-side
+download, has a null `$initial_pathname`. That is expected, not missing data.
+
+The routine `organic-conversion-review` asks for `landing_page` and
+`landing_referrer`. **Nothing sets those names.** They are the same idea
+under different names, and this file is the mapping. Use
+`$initial_pathname` and `$initial_referring_domain`.
+
 ## Page types
 
 The taxonomy. A routine groups pages by type before interpreting a rate,
@@ -120,3 +149,26 @@ Impressions are not customers. Rank by this score, not by impressions alone.
 - Raw counts beside every rate. Always.
 - A merge is not a deploy. The site ships when the Worker is deployed
   (`npx wrangler deploy`); the app ships when a release is cut.
+
+## Reading PostHog without being misled
+
+Two measurement traps, both hit on 11 November 2026 and both producing a
+confident wrong answer. Check before you believe a negative.
+
+**`countIf(x != '')` counts the string "null" as present.** HogQL renders a
+missing property as the literal string `null`, so
+`countIf(toString(properties.$session_id) != '')` returned 548 of 548 for a
+property that was absent from every event. The comparison is against a
+string, and "null" is a non-empty string. Use a `GROUP BY` instead: a
+missing value produces one row with `null`, and a present value produces one
+row per distinct value, so the shape of the result tells you which you have.
+
+**A property that has been applied to the person is absent from the event.**
+`$set_once` is applied to the person profile and does not stay on the event.
+Looking for it on the event and concluding the attribution is broken is
+wrong; read `person.properties.$initial_pathname`.
+
+The raw events API, `GET /api/projects/673583/events/?event=<name>`, returns
+the real properties object and is a good second opinion when HogQL and the
+raw event disagree. It is also how to see a property that PostHog derives,
+such as the geo fields.

@@ -324,3 +324,322 @@ uncommitted changes when this run started; they were left alone.
   the whole window.
 
 ---
+
+## 2026-11-11: Organic acquisition
+
+Second step of the weekly CRO check. This section puts search and conversion
+side by side per page type, so a search change is judged on whether it brought
+people who downloaded, not only on clicks. It reads data and proposes
+changes. **It deploys nothing.**
+
+### Data health
+
+Two of the three checks pass. **The third fails, and because it fails the
+review queue below is empty.**
+
+- **GSC export: complete to its stated date. Pass.** The export was generated
+  today, 2026-11-11, by `ops/seo/pulse/gsc-export.py --days 28 --name
+  gsc-28d`. It covers 2026-10-12 to 2026-11-09 and names 2026-11-09 as the
+  latest complete date. A direct daily pull for 2026-10-01 to 2026-11-09
+  returns 9 date rows with no gaps in the range and data on every day from
+  2026-11-01 to 2026-11-09, so the window is not truncated. The row cap is
+  25,000 and the query x page query returned 32 rows, so nothing was capped.
+- **A download event fired in the last 7 days. Pass.** 167
+  `download_requested`, 12 `download_clicked` and 2 `install_command_copied`
+  in the 7 days to 2026-11-11 13:15 UTC. The last worker download was
+  2026-11-11 13:13 UTC and the last browser click 2026-11-11 12:40 UTC.
+- **`landing_page` and `landing_referrer` coverage: FAIL, 0%.** The routine
+  asks what share of the traffic has these two properties. The answer is
+  that the properties do not exist. Not one event in the window carries
+  either key: 0 of 2,591 events across every event name have
+  `landing_page`, and 0 have `landing_referrer`. They are not null on some
+  events and set on others. They are absent from the data altogether, and
+  nothing in the repository sets them either (`grep` for `landing_page` and
+  `landing_referrer` across the repo returns one hit, the line in this
+  routine that asks the question).
+
+  This is a naming mismatch, not a broken pipeline. The site fires
+  `properties.path` and `properties.referrer` on `$pageview`, and
+  `properties.source` and `properties.referer` (one r) on
+  `download_requested`. The question names properties the site does not use,
+  so the check cannot pass as written.
+
+  **Correction, checked after the first draft of this section.** The site
+  does carry first-touch attribution, under PostHog's own names rather than
+  the routine's. `site/analytics.js` sends a `$set_once` block with
+  `$initial_pathname` and `$initial_referring_domain`, and those land on the
+  person. Measured over the window, 434 of 698 pageviews carry a real
+  `$initial_pathname` (264 are null, which is a person whose first event was
+  not a pageview, such as the worker-side download), and the referring
+  domains are `google.com` (25), `www.google.co.uk` (1), `linkedin.com`
+  (57 across two hostnames), `github.com` (6), `vibresia.com` (58),
+  `minithlabs.com` (2) and `$direct` (280).
+
+  The mechanism was verified against PostHog itself rather than assumed. A
+  probe event was sent with `$set_once` at the top level of the event and
+  another with it nested inside `properties`; both were applied to the
+  person. So the site's nesting is not the bug it looks like. The bug is
+  only that the routine asks for `landing_page` and `landing_referrer`,
+  which nothing sets.
+
+  This changes the recommendation. The first-touch attribution the routine
+  wants already exists and works. Rewriting the routine's check to read
+  `$initial_pathname` and `$initial_referring_domain` from the person
+  properties is the better fix, because it measures what the site collects
+  rather than asking the site to start collecting a second copy of it.
+
+  **What that means for this run.** The instruction attached to a failing
+  check is that the queue is empty. The queue below is empty. The reason is
+  not that the data is bad, it is that the data-health check asks for two
+  properties that do not exist, and this routine will not quietly swap in
+  different properties, change the meaning of the check, and carry on. The
+  equivalent question was answered with the properties the site actually
+  fires, in the baseline table below, and it is reported as a measurement
+  with its own limits rather than as a passed check.
+
+  The fix is small and belongs to the owner, not to this routine: the
+  routine's check should be rewritten to name the properties the site
+  already sends, `$initial_pathname` and `$initial_referring_domain`, read
+  from the person rather than from the event. Until that happens, every
+  future run of this routine will report the same failure and carry an
+  empty queue.
+
+**Window.** The analytics window is 28 days, **2026-10-14 13:15 to 2026-11-11
+13:15 UTC, pinned at both ends**. The project's earliest event for this site
+is 2026-10-20 12:47 UTC, so the first six days of the window are empty by
+construction rather than by failure. The window is pinned because it rolls:
+worker downloads went from 296 to 299 and `seo-*` downloads from 57 to 60
+while this run was being written. Every figure below is as at
+2026-11-11 13:15 UTC and will not drift if you check it.
+
+The GSC window is 28 days, 2026-10-12 to 2026-11-09, cut two days back
+because Search Console lags. **The two windows are not the same window and
+their numbers are not a cohort.** They are printed in separate columns below
+and are never divided by one another.
+
+**A second site shares the analytics project.** `audiovane-web` and
+`vibresia-web` share project 673583. Every query in this section is filtered
+on `properties.$lib = 'vibresia-web'`. Without it the numbers are wrong.
+
+**The capture gap is still open.** 33 browser `download_clicked` against 299
+worker `download_requested`. This section does not attempt to close it and
+does not use it to argue anything. It is described in the CRO section above
+and its fix is candidate 1 there.
+
+### Baseline, by page type
+
+Search numbers and analytics numbers sit in separate columns. There is no
+column that divides one by the other, because a Search Console click and a
+PostHog download are not the same people and this data cannot join them.
+
+**Search side (GSC, 2026-10-12 to 2026-11-09).** **Analytics side (PostHog,
+2026-10-14 to 2026-11-11).**
+
+| Page type | GSC clicks | GSC impressions | GSC pages | Visits | From a search referrer | Page-attributed downloads (`seo-*` source) | Browser download clicks | Browser download clicks by a search visitor |
+|---|---|---|---|---|---|---|---|---|
+| Question | 4 | 108 | 9 | 54 | 9 | 31 | 4 | 4 |
+| Comparison | 2 | 146 | 18 | 154 | 2 | 18 | 1 | 1 |
+| Blog | 2 | 39 | 3 | 25 | 5 | 11 | 0 | 0 |
+| Home | 3 | 10 | 1 | 263 | 6 | 0 | 28 | 3 |
+| Vibescape (share pages and `/s/*` short links) | 0 | 12 | 7 | 137 | 0 | 0 | 0 | 0 |
+| Agents | 0 | 3 | 1 | 31 | 1 | 0 | 0 | 0 |
+| Comparison hub | 0 | 2 | 1 | 9 | 0 | 0 | 0 | 0 |
+| Vibescape gallery | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 |
+| Author | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 |
+| Vibe | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 |
+| Other (`/share/` index) | 0 | 0 | 0 | 9 | 1 | 0 | 0 | 0 |
+| **Total** | **11** | **318** | **39** | **696** | **24** | **60** | **33** | **8** |
+
+Notes on the columns.
+
+- **Page types come from the sitemaps, not from the URL pattern.**
+  `site/sitemaps/questions.xml` holds 12 question pages published under
+  `/blog/`, so those twelve are counted as Question and not as Blog. A
+  routine that maps by URL alone misclassifies them.
+- **Two path details a reader needs.** The `/s/*` short links are share
+  pages, so they count as Vibescape, and `/share/` on its own is the share
+  index, which has no page type of its own and sits in Other. Two blog
+  pages also arrive with a `.html` suffix on the path
+  (`/blog/best-music-visualizer-for-mac-2026.html`,
+  `/blog/milkdrop-alternatives-mac-2026.html`, one visit each); the suffix
+  is stripped before the path is matched to a slug, otherwise those two
+  pages split their own counts.
+- **The GSC columns come from the full page dimension, 39 rows, not from the
+  export's 19-page list.** The export builds its `pages` list from the query
+  x page rows, and that list holds only 19 of the 39 pages that carry
+  impressions. The page dimension is the sounder column and it is what is
+  printed above. `ops/seo/pulse/data/gsc-28d-latest.json` is unchanged; the
+  numbers here are the same data read on the page dimension.
+- **"Page-attributed downloads" is the `seo-<slug>-<position>` source on the
+  download link.** It names the page the link sat on. It is the sound page
+  attribution channel, and it was validated before use: on the 5 downloads
+  in the window that carry both a `seo-*` source and a specific-page referrer,
+  the source and the referrer agree 5 times out of 5. The 60 downloads here
+  are every `seo-*` download in the window, and they are the only downloads
+  in the whole dataset that can be tied to a page.
+- **"From a search referrer" is a pageview whose `referrer` is a search
+  engine.** 24 of 696 pageviews (3.4%) carry one. 190 of 696 (27.3%) carry
+  any referrer at all, and 506 carry none. The referrers that are there are
+  our own bare domain (104), LinkedIn (54), Google (21), Bing (3), Minith
+  Labs (4), and five others including localhost and a staging host.
+- **"Browser download clicks by a search visitor" joins on the visitor's
+  `distinct_id`.** 8 of the 33 browser download clicks came from somebody
+  who arrived from a search engine at some point in the window.
+- **The GSC "pages" column counts pages with at least one impression, not
+  pages with traffic.** 39 pages carry impressions.
+- **The GSC totals do not reconcile with the GSC query rows, and this
+  matters.** The page dimension reports 11 clicks and 318 impressions. The
+  query dimension reports 2 clicks and 54 impressions. 91 of the 318
+  impressions (28.6%) sit on pages that have no row in the query data at
+  all. This is Search Console withholding query strings for anonymised
+  rows, and it is why the export's query list covers a fraction of the
+  traffic it names. **Any conclusion drawn from the query list in this
+  report describes at most 54 of the 318 impressions.** The page-level
+  totals are the sounder column. The daily series shows impressions landing
+  from 2 November onwards and clicks from 3 November, so the site has only
+  just begun to appear in search.
+
+### The signal gate
+
+A page type needs 10 page-attributed downloads in 28 days. A single page
+needs 5. Below that, insufficient signal.
+
+| Page type | Page-attributed downloads | Type gate (10) |
+|---|---|---|
+| Question | 31 | Cleared |
+| Comparison | 18 | Cleared |
+| Blog | 11 | Cleared |
+| Home | 0 | Insufficient signal |
+| Every other type | 0 | Insufficient signal |
+
+Three types clear the type gate. That is the type-level statement, and it
+is the whole of it. The three types that cleared it hold 60 downloads between
+them, spread across 16 pages.
+
+### Page level
+
+The 16 pages that carry a `seo-*` download source, with their raw counts.
+
+| Page | Visits | From a search referrer | Page-attributed downloads | Browser clicks | Gate (5) |
+|---|---|---|---|---|---|
+| `/blog/parachord-visualizer-mac` | 3 | 0 | 8 | 0 | Cleared |
+| `/blog/apple-music-visualizer` | 16 | 4 | 7 | 1 | Cleared |
+| `/comparison/vibresia-vs-magic-music-visuals` | 7 | 0 | 6 | 0 | Cleared |
+| `/blog/best-music-visualizer-for-mac-2026` | 12 | 4 | 6 | 0 | Cleared |
+| `/comparison/vibresia-vs-projectm` | 5 | 0 | 5 | 0 | Cleared |
+| `/blog/plex-visualizer-mac` | 4 | 1 | 5 | 1 | Cleared |
+| `/blog/soundcloud-visualizer-mac` | 1 | 0 | 4 | 0 | Insufficient signal |
+| `/blog/does-milkdrop-work-on-mac` | 3 | 1 | 4 | 0 | Insufficient signal |
+| `/comparison/projectm-vs-milkdrop` | 6 | 0 | 3 | 0 | Insufficient signal |
+| `/blog/amazon-music-visualizer-mac` | 4 | 0 | 3 | 0 | Insufficient signal |
+| `/comparison/vibresia-vs-shadertoy` | 2 | 0 | 3 | 0 | Insufficient signal |
+| `/blog/youtube-music-visualizer-mac` | 7 | 3 | 2 | 1 | Insufficient signal |
+| `/blog/tidal-visualizer-mac` | 2 | 0 | 1 | 0 | Insufficient signal |
+| `/blog/spotify-visualizer-mac` | 5 | 1 | 1 | 1 | Insufficient signal |
+| `/comparison/vibresia-vs-synesthesia` | 7 | 0 | 1 | 1 | Insufficient signal |
+| `/blog/milkdrop-alternatives-mac-2026` | 10 | 0 | 1 | 0 | Insufficient signal |
+
+**Six pages clear the 5-download page gate.** Every one of them is a blog or
+comparison page. No other page in the site comes close.
+
+**Five of the sixteen have more downloads than visits.** `/blog/parachord-visualizer-mac`
+has 8 downloads and 3 visits, `/blog/plex-visualizer-mac` 5 and 4,
+`/blog/soundcloud-visualizer-mac` 4 and 1, `/blog/does-milkdrop-work-on-mac`
+4 and 3, `/comparison/vibresia-vs-shadertoy` 3 and 2. A download cannot come
+from a visit that did not happen, so these counts cannot be read as rates,
+and this report does not print them as rates.
+
+This is not the share-page problem described in the CRO section above, and
+the difference is worth stating. On the share pages the `src` names a
+vibescape rather than a page, so the attribution is meaningless by
+construction. Here the `src` names a real page, and the validation run
+confirmed it: where the download carries a specific-page referrer, the
+source and the referrer agree 5 out of 5. The downloads are real, the
+attribution is real, and the missing pageviews are missing because the
+reader fetched the page without the site recording a view of it. The
+referrer on 41 of the 60 `seo-*` downloads is the bare domain
+`https://vibresia.com` and on 14 of them there is no referrer at all, which
+is what a referrer policy produces on a landing.
+
+### The queue
+
+**Empty.**
+
+The rule is that a failing data-health check empties the queue, and the
+`landing_page` / `landing_referrer` check failed at 0% coverage. That is the
+reason, and it stands on its own.
+
+The other reason is that the queue could not have been filled from this data
+even if the check had passed:
+
+- **Every page in the site is locked.** `scripts/locked-routes.sh` reports
+  77 locked routes, including `/`, every blog page, every comparison page,
+  every share page, `/agents`, `/vibescapes` and `/author/syd-lawrence`. The
+  three commits that regenerated all the pages sit inside the window. **All
+  39 pages that carry GSC impressions are in the locked list, and so are
+  every one of the 16 pages that carry a page-attributed download.** There is
+  nothing to propose against.
+- **The three candidate pages with the strongest signal are all locked.**
+  `/blog/parachord-visualizer-mac` (8 downloads), `/blog/apple-music-visualizer`
+  (7) and `/blog/best-music-visualizer-for-mac-2026` (6) are all in the
+  locked list.
+- **No page has a defensible search-side gap.** 11 clicks and 318
+  impressions over 28 days, with an empty previous window, and 28.6% of the
+  impressions carrying no query string at all. The two query-side facts the
+  data does support are that `/blog/apple-music-visualizer` holds the most
+  impressions of any page (58, and 2 of the 11 clicks) at position 16.5, and
+  that `/blog/best-music-visualizer-for-mac-2026` holds 21 impressions and
+  2 clicks at position 10. The best position of any page with a click is
+  5.2, on `/blog/amazon-music-visualizer-mac`, with 5 impressions and 0
+  clicks. One click on two impressions is not a result. At these volumes one
+  click moves a rate by 50 percentage points.
+- **The type gate cleared on three types, but the page gate cleared on six
+  pages out of the 49 blog and comparison pages the site publishes.** There
+  is no cluster here to rank and no untargeted query cluster that this data
+  can distinguish from noise.
+
+### What could not be measured
+
+- **The rate at which search brings people who download.** This is the
+  thing this routine exists to measure, and it cannot be measured on this
+  data. The worker's `download_requested` carries a constant `distinct_id`
+  and no session id, so a download cannot be joined to the visit that
+  produced it. 8 of the 33 browser download clicks can be attributed to a
+  search visitor, which is the closest the data comes, and 8 clicks cannot
+  carry a rate.
+- **How many distinct people downloaded.** The worker event counts requests.
+  The `seen` flag is the only signal, and it reports almost everything as
+  false.
+- **Which query produced a download.** The GSC query data covers 54 of 318
+  impressions, the analytics data cannot be joined to the search data, and
+  the two windows are not the same window. There is no path from a query to
+  a download in this dataset.
+- **Whether the 24 search-referrer pageviews and the 11 GSC clicks are the
+  same people.** They cannot be the same set with any confidence. GSC
+  records a click; PostHog records a pageview with a referrer. One search
+  click may produce no recorded pageview, and one recorded pageview may
+  come from a click GSC did not count. The two numbers, 11 and 24, are
+  printed side by side and deliberately not reconciled.
+- **What the 32 of 39 GSC pages with impressions but no clicks are doing.**
+  32 pages hold 197 impressions and 0 clicks. Their impression-weighted
+  average position is 9.1 and their median is 6.8, so they are not ranking
+  badly, they are ranking for queries nobody clicks on a result page yet.
+  There is no per-page signal to act on.
+- **Whether the five pages with more downloads than visits are a tracking
+  defect or a real effect.** The missing visits could be a pageview event
+  that did not fire, or readers who loaded the page without the site
+  recording it. The data cannot tell the two apart.
+
+### What did not ship
+
+Nothing. No branch was cut, nothing was merged, nothing was deployed. This
+routine reads data and proposes changes; it does not ship them, and the
+working tree already carried unrelated uncommitted changes when this run
+started. They were left alone.
+
+The one thing this section asks for is a decision from the owner on the
+`landing_page` / `landing_referrer` check, which asks for properties the
+site does not fire. Until that is settled, this routine reports a failed
+data-health check and an empty queue every week.
+
+---
