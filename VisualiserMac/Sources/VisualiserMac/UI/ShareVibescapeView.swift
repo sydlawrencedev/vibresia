@@ -608,7 +608,7 @@ struct ShareVibescapeView: View {
         // different vibescape, so it gets its own link.
         if let shareID = mode.shareID, mode.isStillShared(as: key) {
             shortLink = "\(ShareLinkStore.site)/s/\(shareID)"
-            await syncGalleryState(shareID: shareID, key: key)
+            await syncWithSite(shareID: shareID, key: key, author: author)
             return shortLink
         }
 
@@ -617,6 +617,7 @@ struct ShareVibescapeView: View {
         if let shareID = ShareLinkCache.shareID(for: key) {
             shortLink = "\(ShareLinkStore.site)/s/\(shareID)"
             inGallery = ShareLinkCache.isPublic(for: key) ?? inGallery
+            await fillMissingPicture(shareID: shareID, author: author)
             return shortLink
         }
 
@@ -660,6 +661,16 @@ struct ShareVibescapeView: View {
             width: 1200, height: 630, time: 6.0,
             title: ShareImageBuilder.title(name: app.displayName(for: target),
                                           author: author))
+        // A share with no picture of its own falls back to the site's
+        // placeholder, so the gallery shows it as something it is not. That
+        // used to happen silently: nothing was logged and nothing was shown,
+        // so the picture was simply missing and nobody could say why.
+        //
+        // The picture is worth making, so its absence is worth a line in the
+        // log — the one place somebody can go and look.
+        if image == nil {
+            NSLog("[SHARE] could not make a picture of this vibescape — the share will have no picture of its own")
+        }
 
         // A new version of a share this Mac made.
         //
@@ -728,19 +739,77 @@ struct ShareVibescapeView: View {
         return shortLink
     }
 
-    /// Sets the tickbox to what the site actually has.
+    /// Sets the tickbox to what the site actually has, and gives the share
+    /// a picture if it has none.
     ///
     /// The sheet opens with the tick on, because a share that has not been
     /// made yet will be made with the tick on. A share that already exists
     /// may be the other way round, and the tick has to show what is true.
-    private func syncGalleryState(shareID: String, key: String) async {
+    ///
+    /// The picture is the other thing the site knows and the sheet needs:
+    /// a share made by an agent has no picture, and the app can make one.
+    /// Both come from the same request.
+    private func syncWithSite(shareID: String, key: String, author: String) async {
         if let cached = ShareLinkCache.isPublic(for: key) {
             inGallery = cached
+        } else if let details = await ShareLinkStore().details(shareID: shareID) {
+            inGallery = details.inGallery
+            ShareLinkCache.remember(shareID: shareID, for: key, isPublic: details.inGallery)
+            // The site was asked about the picture in the same request, so
+            // there is nothing left to find out.
+            if !details.hasImage {
+                await giveItAPicture(shareID: shareID, author: author)
+            }
             return
         }
-        guard let details = await ShareLinkStore().details(shareID: shareID) else { return }
-        inGallery = details.inGallery
-        ShareLinkCache.remember(shareID: shareID, for: key, isPublic: details.inGallery)
+        // The site could not be asked, so the picture is not known either
+        // way. The share still gets one: the site only fills an empty slot,
+        // so sending a picture that is not needed costs nothing but the
+        // upload.
+        await fillMissingPicture(shareID: shareID, author: author)
+    }
+
+    /// Gives a share a picture, if it has none.
+    ///
+    /// The site is asked first, because drawing a picture is a GPU job and
+    /// most shares already have one.
+    private func fillMissingPicture(shareID: String, author: String) async {
+        if let details = await ShareLinkStore().details(shareID: shareID), details.hasImage {
+            return
+        }
+        await giveItAPicture(shareID: shareID, author: author)
+    }
+
+    /// Draws the vibescape and sends the picture to the site.
+    ///
+    /// A share made by an agent — through the MCP server — is born without
+    /// a picture: the server cannot draw a shader and the agent has no Mac
+    /// to draw it on. So it is shown in the gallery with the site's neutral
+    /// placeholder, and the link preview is a picture of nothing in
+    /// particular.
+    ///
+    /// The app can draw one, and this is the only place in the app that can.
+    /// So it draws it and sends it, and the share has a picture of itself
+    /// from then on.
+    ///
+    /// It only ever fills an empty slot — the site refuses to overwrite a
+    /// picture that is already there — so this can be called on every share
+    /// without thinking about it. Sending a picture for a share that
+    /// already has one is refused, not obeyed, so a race with the browser
+    /// is harmless.
+    private func giveItAPicture(shareID: String, author: String) async {
+        guard let image = await ShareImageBuilder.jpeg(
+            renderer: app.renderer, mode: vibescape,
+            width: 1200, height: 630, time: 6.0,
+            title: ShareImageBuilder.title(name: app.displayName(for: vibescape),
+                                          author: author)) else {
+            NSLog("[SHARE] could not make a picture of %@ — the share has no picture of its own", shareID)
+            return
+        }
+        let stored = await ShareLinkStore().fillPicture(shareID: shareID, image: image)
+        if stored {
+            NSLog("[SHARE] gave %@ a picture of its own", shareID)
+        }
     }
 
     /// The Share button. Waits for the short link if there isn't one yet, so

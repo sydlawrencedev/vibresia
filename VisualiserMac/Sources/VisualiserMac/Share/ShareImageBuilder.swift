@@ -1,6 +1,7 @@
 import AppKit
 import Foundation
 import VibresiaBrand
+import VibresiaShareImage
 
 /// The picture a share shows: the vibescape, with Vibresia's mark and the
 /// credit on it.
@@ -95,36 +96,16 @@ enum ShareImageBuilder {
         ShareImageBrand.branded(image, title: title)
     }
 
-    /// Encodes an image as JPEG data.
+    /// Encodes a picture small enough for the site to take.
+    ///
+    /// The encoder is in its own module, so the check for it runs the code
+    /// the app runs rather than a copy of it: a copy proves only that the
+    /// copy works.
     ///
     /// JPEG rather than PNG because it is 1200x630 of smooth gradients, which
     /// is what JPEG is good at, and it is a third of the size — and the
     /// picture is stored, one per share, against a quota.
-    private static func encodeJPEG(_ image: CGImage, quality: CGFloat) -> Data? {
-        let out = NSMutableData()
-        guard let dest = CGImageDestinationCreateWithData(out, "public.jpeg" as CFString, 1, nil) else {
-            return nil
-        }
-        CGImageDestinationAddImage(dest, image, [
-            kCGImageDestinationLossyCompressionQuality: quality
-        ] as CFDictionary)
-        guard CGImageDestinationFinalize(dest) else { return nil }
-        return out as Data
-    }
-
-    /// Encodes a picture small enough for the site to take.
-    ///
-    /// A detailed vibescape produces a picture twice the size the site will
-    /// store: a screen full of fine detail does not compress. So the quality
-    /// comes down until the picture fits, and if it will not fit at any
-    /// sensible quality the picture is left out — a share with a generic
-    /// preview is much better than a share that does not exist.
     private static func encodeJPEG(_ image: CGImage, quality: CGFloat, maxBytes: Int) -> Data? {
-        for quality in [quality, 0.65, 0.5, 0.4] {
-            guard let data = encodeJPEG(image, quality: quality) else { continue }
-            if data.count <= maxBytes { return data }
-        }
-        // Nothing fitted. The share is still worth having.
-        return nil
+        ShareImageEncoder.within(image, quality: quality, maxBytes: maxBytes)
     }
 }

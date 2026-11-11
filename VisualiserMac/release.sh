@@ -109,6 +109,11 @@ python3 ../scripts/check-plugin-manifests.py "$(pwd)/.."
 # that by itself: three definitions of .brand is survivable, three that drift
 # apart quietly is not.
 python3 ../scripts/inject-chrome.py --check "$(pwd)/.."
+# The share picture's encoder must never give up and drop the picture: a
+# share with no picture of its own falls back to the placeholder, and
+# nobody could say why. The check runs the app's own encoder, so it cannot
+# pass against a broken one.
+swift test --package-path . --filter ShareImageEncoderTests
 
 if gh release view "$TAG" -R "$REPO" >/dev/null 2>&1; then
     echo "Release $TAG already exists — build again to get a new one." >&2

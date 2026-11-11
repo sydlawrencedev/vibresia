@@ -337,6 +337,52 @@ actor ShareLinkStore {
         return ShareImporter.base64URLEncode(Data(bytes))
     }
 
+    /// Puts a picture into a share that has none.
+    ///
+    /// A share made by an agent — through the MCP server — has no picture:
+    /// the server cannot draw a shader and the agent has no Mac to draw it
+    /// on. The row is born without one, and the gallery shows it with the
+    /// placeholder for ever.
+    ///
+    /// The app can draw one. This sends it.
+    ///
+    /// The site's rule is that this only ever fills an empty slot: a share
+    /// that has a picture of its own keeps it, so this cannot replace a
+    /// true picture with a false one. That is why it is worth sending even
+    /// for a share somebody else made — the site will only take it if there
+    /// is nothing there.
+    func fillPicture(shareID: String, image: Data) async -> Bool {
+        guard !shareID.isEmpty, !image.isEmpty, !ShareLinkStore.token.isEmpty else { return false }
+        guard let url = URL(string: "\(ShareLinkStore.site)/api/share/\(shareID)/picture") else {
+            return false
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue(ShareLinkStore.token, forHTTPHeaderField: "x-av-token")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try? JSONSerialization.data(withJSONObject: [
+            "image": image.base64EncodedString(),
+        ])
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+            guard status == 200 else {
+                let said = (try? JSONSerialization.jsonObject(with: data) as? [String: Any])?["error"] as? String
+                NSLog("[SHARE] the site would not take the picture for %@: %@", shareID, said ?? "no reason given")
+                return false
+            }
+            let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+            // "stored" is false when the share already had a picture, which
+            // is not a failure: it means there was nothing to do.
+            return (json?["stored"] as? Bool) ?? false
+        } catch {
+            NSLog("[SHARE] could not reach the site to give %@ a picture: %@", shareID, error.localizedDescription)
+            return false
+        }
+    }
+
     /// What the site knows about a share — in particular whether it is in
     /// the public gallery, so the tickbox can show what is true.
     func details(shareID: String) async -> ShareDetails? {
@@ -352,7 +398,8 @@ actor ShareLinkStore {
                                 author: json["author"] as? String ?? "",
                                 inGallery: json["public"] as? Bool ?? false,
                                 revision: json["revision"] as? Int ?? 1,
-                                payload: json["payload"] as? String ?? "")
+                                payload: json["payload"] as? String ?? "",
+                                hasImage: json["hasImage"] as? Bool ?? false)
         } catch {
             return nil
         }
@@ -369,6 +416,13 @@ struct ShareDetails: Equatable {
     /// The share's contents, which is what a copy behind would be brought
     /// forward to. Empty when the site did not send it.
     let payload: String
+    /// Whether the share has a picture of its own.
+    ///
+    /// A share made by an agent does not: the server cannot draw a shader
+    /// and the agent has no Mac to draw it on. The app can — so the app
+    /// makes one and sends it, rather than leaving the share with the
+    /// placeholder for ever.
+    let hasImage: Bool
 }
 
 /// A short link the site made, and the share it belongs to.

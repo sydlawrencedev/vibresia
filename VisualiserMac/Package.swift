@@ -60,12 +60,32 @@ let package = Package(
             path: "Tests/VibresiaMinifyTests",
             linkerSettings: testingLinkerSettings
         ),
+        // Encodes the picture a share carries.
+        //
+        // On its own, because it is the one piece of the app that decides
+        // what a share looks like, and a check for it has to run the same
+        // code the app runs. A copy of the encoder in a script proves only
+        // that the copy works.
+        .target(
+            name: "VibresiaShareImage",
+            path: "Sources/VibresiaShareImage"
+        ),
+        .testTarget(
+            name: "VibresiaShareImageTests",
+            dependencies: [
+                "VibresiaShareImage",
+                .product(name: "Testing", package: "swift-testing")
+            ],
+            path: "Tests/VibresiaShareImageTests",
+            linkerSettings: testingLinkerSettings
+        ),
         .executableTarget(
             name: "AudioVane",
             dependencies: [
                 .product(name: "PostHog", package: "posthog-ios"),
                 "VibresiaBrand",
                 "VibresiaMinify",
+                "VibresiaShareImage",
             ],
             path: "Sources/VisualiserMac",
             swiftSettings: [
