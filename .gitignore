@@ -36,6 +36,10 @@ VisualiserMac/Tests/eval-results/
 # Local git worktrees
 .worktrees/
 
+# The push token for the SEO routines' ship helper. Written at the start of a
+# run and deleted at the end. It must never be committed.
+ops/seo/pulse/.token
+
 # Python bytecode from scripts/
 __pycache__/
 *.pyc
@@ -57,3 +61,4 @@ __pycache__/
 ._*
 .!*
 chatgpt-plugin/*.zip
+ops/seo/pulse/data/
