@@ -259,6 +259,17 @@ npx wrangler secret put ADMIN_TOKEN
   same moment the share page draws its still (six seconds in, so anything
   driven by time has reached its stride), so the preview in a chat is the
   picture the recipient gets.
+- **A share with no picture gets one from the browser.** A share made by an
+  agent — through the MCP server — is born without a picture: the server
+  cannot draw a shader and the agent has no Mac to draw it on. So the share
+  page draws it in the browser that opened it, and posts the frame. The
+  next visitor, and every link preview crawler that runs the page, gets a
+  picture of the actual vibescape. Until then the share has the site's
+  neutral placeholder — which says what it is, rather than pretending to be
+  some other vibescape.
+- **A picture is never overwritten.** `POST /api/share/<id>/picture` only
+  ever fills a slot that is empty, so a real picture of a vibescape cannot
+  be replaced by a false one.
 - **The long link still works.** It carries the payload with it, so it
   needs nothing stored. The app falls back to it if the site can't be
   reached — sharing is not allowed to depend on the network.
@@ -269,6 +280,7 @@ stops is a script creating shares to burn the daily write quota.
 
 ```bash
 npx wrangler secret put SHARE_TOKEN        # once; the same value goes in VisualiserMac/.env
+npx wrangler secret put PICTURE_SECRET     # once; signs the picture capability the share page is given
 npx wrangler d1 migrations apply vibresia-shares --remote
 node scripts/backfill-share-payload-hashes.mjs
 ```
@@ -294,6 +306,27 @@ node scripts/backfill-share-payload-hashes.mjs
 # 3. The Worker.
 npx wrangler deploy
 ```
+
+### Pictures for the shares that have none
+
+`scripts/backfill-share-pictures.mjs` draws a picture for every share that
+has none, and sends it to the site through the same endpoint the share page
+uses — so the picture that lands is one the site would have accepted.
+
+```bash
+node scripts/backfill-share-pictures.mjs --dry-run   # what would be drawn
+node scripts/backfill-share-pictures.mjs             # draw it and send it
+```
+
+It needs Playwright, which is not a dependency of this project:
+
+```bash
+npx playwright install chromium
+```
+
+It is safe to run twice: the endpoint only fills an empty slot, so a share
+that already has a picture is left alone, and the list of shares to fix is
+read fresh each time.
 
 `scripts/check-d1-schema.mjs` checks that the Worker and the migrations
 agree — every column the Worker asks for is added by a migration. It runs in

@@ -2,7 +2,9 @@ import AppKit
 import Foundation
 import VibresiaBrand
 
-// Draws the website's share picture for every built-in vibescape.
+// Draws the website's share picture for every built-in vibescape, and the
+// neutral placeholder a share falls back to when it has no picture of its
+// own.
 //
 // The app's own share images are drawn by the app, and this is the other
 // half: the static pictures the website serves for the built-ins. Both use
@@ -174,6 +176,25 @@ func render(slug: String, title: String) -> Data? {
 
 // The drawing uses AppKit for the lettering, which is main-thread-only.
 // Top-level code runs on the main thread, so this is the right place for it.
+//
+// The placeholder is drawn too, and into the site's media folder rather
+// than beside the built-ins: it is not a vibescape's picture, it is the
+// picture a share falls back to when it has none of its own.
+func drawPlaceholder() {
+    guard let data = renderPlaceholder(width: canvasW, height: canvasH) else {
+        print("[share-graphics] failed to draw the placeholder")
+        exit(1)
+    }
+    let url = root.appendingPathComponent("site").appendingPathComponent(placeholderPath)
+    do {
+        try data.write(to: url, options: .atomic)
+    } catch {
+        print("[share-graphics] failed to write \(placeholderPath): \(error)")
+        exit(1)
+    }
+    print("[share-graphics] wrote \(placeholderPath) (\(data.count) bytes)")
+}
+
 func drawAll() {
     var wrote = 0
     var missing: [String] = []
@@ -201,6 +222,7 @@ func drawAll() {
         print("[share-graphics] FAILED: missing source images: \(missing.joined(separator: ", "))")
         exit(1)
     }
+    drawPlaceholder()
     print("[share-graphics] \(wrote) share graphics written to \(shareDir.path)")
 }
 
