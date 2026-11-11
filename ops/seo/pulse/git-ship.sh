@@ -17,9 +17,12 @@
 # worktree: the SEO routines run unattended, and the main tree is where the
 # owner works.
 #
-# A token, if there is one, is read from ops/seo/pulse/.token (gitignored).
-# The credential helper is disabled during fetch so a broken helper cannot
-# wedge the run.
+# Credentials are found in this order:
+#   1. ops/seo/pulse/.token (written by the run, deleted by the run)
+#   2. `gh auth token`, when gh is logged in
+# The credential helper is disabled during fetch and push, because a helper
+# that prompts turns an unattended run into a hang. A token is passed in the
+# URL instead, so nothing prompts.
 
 set -uo pipefail
 
@@ -30,6 +33,9 @@ TOKEN_FILE="ops/seo/pulse/.token"
 WORKTREE_ROOT=".worktrees"
 REMOTE="origin"
 BASE="origin/main"
+GIT_SHIP_LOG="ops/seo/pulse/.git-ship.log"
+
+: >"$GIT_SHIP_LOG" 2>/dev/null || true
 
 die() { echo "ERROR: $*" >&2; exit 1; }
 
@@ -37,16 +43,49 @@ has_remote() {
   git remote get-url "$REMOTE" >/dev/null 2>&1
 }
 
-fetch_base() {
-  if has_remote && [ -s "$TOKEN_FILE" ]; then
-    local token
-    token="$(cat "$TOKEN_FILE")"
-    GIT_ASKPASS=/bin/true GIT_TERMINAL_PROMPT=0 \
-      git -c credential.helper= fetch "$REMOTE" "$BASE" 2>/dev/null
-  elif has_remote; then
-    GIT_ASKPASS=/bin/true GIT_TERMINAL_PROMPT=0 \
-      git -c credential.helper= fetch "$REMOTE" "$BASE" 2>/dev/null
+# Prints the token, or nothing. Never prompts.
+find_token() {
+  if [ -s "$TOKEN_FILE" ]; then
+    cat "$TOKEN_FILE"
+    return 0
   fi
+  if command -v gh >/dev/null 2>&1; then
+    gh auth token 2>/dev/null && return 0
+  fi
+  return 0
+}
+
+# The remote URL with the token embedded, for a one-shot authenticated call.
+authed_url() {
+  local token url
+  token="$(find_token)"
+  url="$(git remote get-url "$REMOTE" 2>/dev/null)"
+  [ -n "$url" ] || return 1
+  if [ -n "$token" ] && [[ "$url" == https://* ]]; then
+    # Strip any credentials already in the URL.
+    url="${url#https://}"
+    url="${url#*@}"
+    echo "https://x-access-token:${token}@${url}"
+  else
+    echo "$url"
+  fi
+}
+
+# A fetch or push with prompting disabled. Fails rather than hanging.
+# The error is kept in $GIT_SHIP_LOG rather than swallowed, so a routine that
+# gets STATUS=local can say why.
+git_authed() {
+  local op="$1"; shift
+  local url
+  url="$(authed_url)" || return 1
+  GIT_ASKPASS=/bin/true GIT_TERMINAL_PROMPT=0 GCM_INTERACTIVE=never \
+    git -c credential.helper= -c core.askPass=true \
+    "$op" "$url" "$@" 2>>"$GIT_SHIP_LOG"
+}
+
+fetch_base() {
+  has_remote || return 0
+  git_authed fetch origin main
 }
 
 cmd_start() {
@@ -108,14 +147,8 @@ cmd_finish() {
   fi
 
   local status="local"
-  if has_remote && [ -s "$TOKEN_FILE" ]; then
-    local token
-    token="$(cat "$TOKEN_FILE")"
-    if git -C "$wt" -c credential.helper= push "$REMOTE" "HEAD:refs/heads/$name" >/dev/null 2>&1; then
-      status="pushed"
-    fi
-  elif has_remote; then
-    if git -C "$wt" -c credential.helper= push "$REMOTE" "HEAD:refs/heads/$name" >/dev/null 2>&1; then
+  if has_remote; then
+    if git_authed push "HEAD:refs/heads/$name"; then
       status="pushed"
     fi
   fi
@@ -125,6 +158,11 @@ cmd_finish() {
   echo "WORKTREE=$ROOT/$wt"
   echo "SHA=$(git -C "$wt" rev-parse HEAD)"
   echo "AHEAD=$ahead"
+
+  if [ "$status" != "pushed" ] && [ -s "$GIT_SHIP_LOG" ]; then
+    echo "NOTE=push failed; the last error was:"
+    sed 's/^/  /' "$GIT_SHIP_LOG"
+  fi
 
   # The worktree is only removed on a clean push. A branch or local status
   # means the work holds work that has not landed, so it stays and the report

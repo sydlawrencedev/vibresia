@@ -54,6 +54,22 @@ try {
   onBranch = "";
 }
 
+if (!onBranch) {
+  // The remote-tracking refs can be stale. Ask the remote directly.
+  try {
+    const remotes = git(["ls-remote", "--heads", "origin"]).split("\n").filter(Boolean);
+    const targets = remotes
+      .map((line) => line.split(/\s+/))
+      .filter((parts) => parts.length === 2)
+      .filter(([, sha2]) => sha2.startsWith(sha));
+    if (targets.length) {
+      onBranch = targets.map(([, name]) => `origin/${name}`).join(", ");
+    }
+  } catch {
+    onBranch = "";
+  }
+}
+
 console.log("STRANDED");
 if (onBranch) {
   console.log(`(the commit is on ${onBranch}, not on origin/main)`);
