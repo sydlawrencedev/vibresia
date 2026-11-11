@@ -20,7 +20,10 @@ run_worker_first = true
 [vars]
 # Plain settings; the webhook URL is a secret, never a var:
 #   npx wrangler secret put DISCORD_WEBHOOK_URL
-DISCORD_NOTIFICATIONS_ENABLED = "true"
+#
+# There is no switch for downloads any more: a download posts nothing to
+# Discord at all. The webhook is used for the gallery announcement and for
+# the app's error reports, and those have their own switches below.
 DISCORD_BOT_USERNAME = "Vibresia"
 
 # A vibescape joining the public gallery is announced on Discord, with its

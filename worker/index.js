@@ -72,20 +72,12 @@ const DISCORD_TITLE_LIMIT = 256;
 const DISCORD_FIELD_LIMIT = 1024;
 const DISCORD_DESC_LIMIT = 4096;
 
-// Per-isolate, so it is a nudge rather than a guarantee: it exists to stop a
-// double-clicked button posting twice, not to defend the webhook. Rate limits
-// at Discord and rotating the secret do that job.
-const MIN_SECONDS_BETWEEN = 5;
-const MAX_PER_HOUR = 30;
 // Errors are rarer but more valuable, and they arrive from installs rather
 // than from the site, so they get their own budget — including their own
 // cooldown, because one broken install can fail every second while the user
 // fights with a permission dialog.
 const ERROR_MIN_SECONDS_BETWEEN = 60;
 const ERROR_MAX_PER_HOUR = 60;
-let lastSentAt = 0;
-let sentThisHour = 0;
-let hourStartedAt = 0;
 let lastErrorAt = 0;
 let errorsThisHour = 0;
 let errorHourStartedAt = 0;
@@ -95,34 +87,14 @@ function truncate(value, limit) {
   return text.length > limit ? text.slice(0, limit - 3) + "..." : text;
 }
 
-export function isDiscordEnabled(env) {
-  return env.DISCORD_NOTIFICATIONS_ENABLED === "true" && !!env.DISCORD_WEBHOOK_URL;
-}
-
 function looksAutomated(request) {
   const agent = request.headers.get("user-agent") || "";
   return !agent || AUTOMATION.test(agent);
 }
 
-function rateLimited() {
-  const now = Date.now();
-  if (now - hourStartedAt > 3_600_000) {
-    hourStartedAt = now;
-    sentThisHour = 0;
-  }
-  if (now - lastSentAt < MIN_SECONDS_BETWEEN * 1000) return true;
-  if (sentThisHour >= MAX_PER_HOUR) return true;
-  lastSentAt = now;
-  sentThisHour += 1;
-  return false;
-}
-
 // The debounce lives in module scope because that is where per-isolate state
 // lives. Exported so the tests can clear it between cases.
 export function resetRateLimiter() {
-  lastSentAt = 0;
-  sentThisHour = 0;
-  hourStartedAt = 0;
   lastErrorAt = 0;
   errorsThisHour = 0;
   errorHourStartedAt = 0;
@@ -134,8 +106,8 @@ export function resetRateLimiter() {
   galleryHourStartedAt = 0;
 }
 
-// Same idea, separate budget: a download in a loop shouldn't silence the one
-// crash report that matters.
+// Same idea, separate budget: a burst of error reports shouldn't silence the
+// one crash report that matters.
 function errorRateLimited() {
   const now = Date.now();
   if (now - errorHourStartedAt > 3_600_000) {
@@ -199,6 +171,11 @@ function shareRateLimited() {
 // Kept pure and exported so the payload can be asserted on without a network.
 // `firstSeen` means "this browser has downloaded before" — the page puts it in
 // the link's query string, since a plain link click can't carry a header.
+//
+// This built the message a download used to post to Discord. It does not
+// post it any more — a download is silent now — but the payload builder is
+// kept because it is the shape the other messages follow, and because the
+// truncation rules it enforces are the ones Discord enforces.
 export function buildDownloadEmbed({ source, referer, country, city, agent, firstSeen }) {  const style = STYLES.good;
   const fields = [];
 
@@ -365,20 +342,18 @@ function handleDownload(request, url, env, ctx) {
     }));
   }
 
-  if (isDiscordEnabled(env) && counted && !rateLimited()) {
-    const payload = buildDownloadEmbed({
-      source,
-      referer,
-      country: request.cf?.country || "",
-      city: request.cf?.city || "",
-      agent,
-      firstSeen: seen === null ? false : seen === "1",
-    });
-    payload.username = env.DISCORD_BOT_USERNAME || "Vibresia";
-    // waitUntil, not await: the redirect goes out whether or not Discord ever
-    // answers, and a Discord outage can't turn into a broken download.
-    ctx.waitUntil(postDiscord(env, payload));
-  }
+  // No Discord message for a download.
+  //
+  // There used to be one here, for every download that was counted. It was
+  // noisy, it was not useful, and it had a second problem: a download link
+  // is a public URL, so anything that fetched it — a link preview, a
+  // scanner, a bot — posted a message of its own, with whatever it had put
+  // in the link. The message is gone for every request, preview and
+  // automated request alike. The download itself is untouched: it is still
+  // counted, and it is still redirected.
+  //
+  // The gallery announcement and the app's error reports are separate
+  // messages and are not affected by this.
 
   return Response.redirect(RELEASE_ZIP, 302);
 }
@@ -1833,11 +1808,12 @@ function handleHealth(env) {
   return Response.json({
     ok: true,
     notify: env.NOTIFY_TOKEN ? "accepting app reports" : "no NOTIFY_TOKEN (wrangler secret put NOTIFY_TOKEN)",
-    discord: isDiscordEnabled(env)
-      ? "configured"
-      : env.DISCORD_WEBHOOK_URL
-        ? "disabled (DISCORD_NOTIFICATIONS_ENABLED is not \"true\")"
-        : "missing (set it with: wrangler secret put DISCORD_WEBHOOK_URL)",
+    // Downloads do not post to Discord at all, so the webhook is only
+    // reported here for the messages that still use it: a vibescape
+    // joining the gallery, and a crash report from the app.
+    discord: env.DISCORD_WEBHOOK_URL
+      ? "configured (gallery announcements and app reports; downloads are silent)"
+      : "missing (set it with: wrangler secret put DISCORD_WEBHOOK_URL)",
   });
 }
 

@@ -8,7 +8,7 @@
 import { test, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 
-import worker, { buildDownloadEmbed, buildErrorEmbed, isDiscordEnabled, resetRateLimiter } from "./index.js";
+import worker, { buildDownloadEmbed, buildErrorEmbed, resetRateLimiter } from "./index.js";
 
 const RELEASE_ZIP =
   "https://github.com/sydlawrencedev/vibresia/releases/latest/download/Vibresia.zip";
@@ -17,7 +17,6 @@ function makeEnv(overrides = {}) {
   return {
     ASSETS: { fetch: async () => new Response("asset", { status: 200 }) },
     DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1/token",
-    DISCORD_NOTIFICATIONS_ENABLED: "true",
     DISCORD_BOT_USERNAME: "Vibresia",
     POSTHOG_KEY: "phc_test_key",
     POSTHOG_HOST: "https://us.i.posthog.com",
@@ -66,76 +65,69 @@ test("download redirects to the latest release", async () => {
   });
   assert.equal(response.status, 302);
   assert.equal(response.headers.get("location"), RELEASE_ZIP);
-  assert.equal(posts.length, 1, "one alert to Discord");
+  assert.equal(posts.length, 0, "a download posts nothing to Discord");
 });
 
-test("the notification says who, where and whether it is a repeat", async () => {
-  const { posts } = await run("https://vibresia.com/download?src=hero&seen=1", {
-    headers: { "user-agent": BROWSER_UA, referer: "https://vibresia.com/?x=1" },
-    cf: { country: "GB", city: "Alton" },
+test("no download request posts to Discord, whoever makes it", async () => {
+  // The message used to be gated on the request looking like a person. It
+  // is gone for every request instead, because a download link is a public
+  // URL: anything that fetches it posted a message of its own, with
+  // whatever it had put in the link.
+  for (const agent of [
+    BROWSER_UA,
+    "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+    "curl/8.4.0",
+    "Slackbot-LinkExpanding 1.0",
+    "WhatsApp/2.23.20",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Version/17.0 Mobile/15E148 Safari/604.1",
+  ]) {
+    const { response, posts } = await run("https://vibresia.com/download?src=hero", {
+      headers: { "user-agent": agent },
+    });
+    assert.equal(response.status, 302, `${agent} still gets the file`);
+    assert.equal(posts.length, 0, `${agent} must not post`);
+  }
+});
+
+test("a link preview gets the file and posts nothing", async () => {
+  // Apple's preview fetcher is not a download. It used to be filtered out
+  // of the notification, but the notification is gone now, so the check is
+  // that the file is still served.
+  const { response, posts } = await run("https://vibresia.com/download", {
+    headers: { "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Version/17.0 Mobile/15E148 Safari/604.1" },
   });
-  const embed = posts[0].body.embeds[0];
-  const fields = Object.fromEntries(embed.fields.map((f) => [f.name, f.value]));
-  assert.match(embed.title, /downloaded Vibresia/);
-  assert.equal(posts[0].body.username, "Vibresia");
-  assert.equal(fields.Source, "hero");
-  assert.equal(fields.Where, "Alton, GB");
-  assert.match(fields["Seen before"], /has downloaded before/);
-  assert.equal(embed.url, RELEASE_ZIP);
+  assert.equal(response.status, 302);
+  assert.equal(response.headers.get("location"), RELEASE_ZIP);
+  assert.equal(posts.length, 0);
 });
 
-test("a first download says so, and a missing src is not invented", async () => {
-  const { posts } = await run("https://vibresia.com/download", {
-    headers: { "user-agent": BROWSER_UA },
-  });
-  const embed = posts[0].body.embeds[0];
-  const names = embed.fields.map((f) => f.name);
-  assert.ok(!names.includes("Source"));
-  assert.equal(
-    embed.fields.find((f) => f.name === "Seen before").value,
-    "no — first download from this browser"
-  );
-});
-
-test("a double-clicked button only notifies once", async () => {
+test("a double-clicked button still downloads twice", async () => {
+  // The old rate limit existed so a double click did not post twice. There
+  // is nothing to post now, so the limit is gone too, and both clicks are
+  // served.
   const first = await run("https://vibresia.com/download?src=hero&seen=0", {
     headers: { "user-agent": BROWSER_UA },
   });
   const second = await run("https://vibresia.com/download?src=hero&seen=0", {
     headers: { "user-agent": BROWSER_UA },
   });
-  assert.equal(first.posts.length, 1);
-  assert.equal(second.posts.length, 0, "second click inside the window is dropped");
-  assert.equal(second.response.status, 302, "but the file still downloads");
-});
-
-test("crawlers and link previewers don't generate notifications", async () => {
-  for (const agent of [
-    "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
-    "curl/8.4.0",
-    "Slackbot-LinkExpanding 1.0",
-    "WhatsApp/2.23.20",
-  ]) {
-    const { response, posts } = await run("https://vibresia.com/download", {
-      headers: { "user-agent": agent },
-    });
-    assert.equal(response.status, 302, `${agent} still gets the file`);
-    assert.equal(posts.length, 0, `${agent} should not post`);
-  }
+  assert.equal(first.response.status, 302);
+  assert.equal(second.response.status, 302, "the file still downloads");
+  assert.equal(first.posts.length, 0);
+  assert.equal(second.posts.length, 0);
 });
 
 test("no webhook configured means a silent download, not an error", async () => {
   const { response, posts } = await run("https://vibresia.com/download", {
-    env: makeEnv({ DISCORD_WEBHOOK_URL: "", DISCORD_NOTIFICATIONS_ENABLED: "true" }),
+    env: makeEnv({ DISCORD_WEBHOOK_URL: "" }),
     headers: { "user-agent": BROWSER_UA },
   });
   assert.equal(response.status, 302);
   assert.equal(posts.length, 0);
 });
 
-test("the switch really is off when it says it is", async () => {
-  const env = makeEnv({ DISCORD_NOTIFICATIONS_ENABLED: "false" });
-  assert.equal(isDiscordEnabled(env), false);
+test("a download posts nothing even with the webhook on", async () => {
+  const env = makeEnv();
   const { response, posts } = await run("https://vibresia.com/download", {
     env,
     headers: { "user-agent": BROWSER_UA },
@@ -160,9 +152,9 @@ test("a Discord outage never breaks the download", async () => {
     assert.equal(response.status, 302);
     assert.equal(response.headers.get("location"), RELEASE_ZIP);
     await Promise.all(waits); // resolves rather than rejecting: waitUntil would log an unhandled error
-    // Three: the count in the analytics, the alert to Discord, and the one
-    // retry of that alert. None of them failing changes the download.
-    assert.equal(calls, 3, "the count, the alert and its retry");
+    // One: the count in the analytics. The Discord alert is gone, so a
+    // Discord outage cannot touch the download at all.
+    assert.equal(calls, 1, "only the count, and no alert to fail");
   } finally {
     globalThis.fetch = realFetch;
   }
@@ -199,9 +191,9 @@ test("a real download is counted on the server", async () => {
     headers: { "user-agent": BROWSER_UA, referer: "https://vibresia.com/" },
   });
   assert.equal(response.status, 302);
-  // The Discord alert, and the count — which is the one that does not depend
-  // on anybody's JavaScript running.
-  assert.equal(posts.length, 1, "the alert did not go out");
+  // The count — which is the one that does not depend on anybody's
+  // JavaScript running. There is no Discord alert alongside it any more.
+  assert.equal(posts.length, 0, "a download posts nothing to Discord");
   assert.equal(events.length, 1, "the download was not counted on the server");
   const [event] = events[0].body;
   assert.equal(event.event, "download_requested");
@@ -253,7 +245,7 @@ test("local dev is left alone", async () => {
   });
   assert.equal(response.status, 302);
   assert.equal(response.headers.get("location"), RELEASE_ZIP);
-  assert.equal(posts.length, 1);
+  assert.equal(posts.length, 0);
 
   const onLocalhost = await run("http://localhost:8787/", { headers: { host: "localhost:8787" } });
   assert.equal(onLocalhost.response.status, 200);
@@ -282,13 +274,13 @@ test("the analytics proxy forwards one endpoint, not all of PostHog", async () =
 
 test("a download cannot ping the channel", async () => {
   // The `src` and the referrer are whatever the caller typed, so they can
-  // carry a mention. Discord reads mentions out of a webhook's text unless
-  // the payload says not to.
+  // carry a mention. A download posts nothing at all now, so there is
+  // nothing that could be pinged with one.
   const { posts } = await run(
     "https://vibresia.com/download?src=" + encodeURIComponent("@everyone"),
     { headers: { "user-agent": BROWSER_UA, referer: "https://evil.example/@here" } },
   );
-  assert.deepEqual(posts[0].body.allowed_mentions, { parse: [] });
+  assert.equal(posts.length, 0, "a download posts nothing, so it cannot ping");
 });
 
 test("an error report cannot ping the channel", async () => {
@@ -440,7 +432,8 @@ test("errors can be switched off without taking downloads with them", async () =
     env: makeEnv({ DISCORD_ERRORS_ENABLED: "false" }),
     headers: { "user-agent": BROWSER_UA },
   });
-  assert.equal(dl.posts.length, 1, "downloads still notify");
+  assert.equal(dl.response.status, 302, "the download still works");
+  assert.equal(dl.posts.length, 0, "and it posts nothing either way");
 });
 
 test("a long report is trimmed to what Discord accepts", () => {
@@ -462,16 +455,11 @@ test("health reports which state the webhook is in", async () => {
   assert.deepEqual(await ok.response.json(), {
     ok: true,
     notify: "accepting app reports",
-    discord: "configured",
+    discord: "configured (gallery announcements and app reports; downloads are silent)",
   });
 
   const noToken = await run("https://vibresia.com/api/health");
   assert.match((await noToken.response.json()).notify, /NOTIFY_TOKEN/);
-
-  const off = await run("https://vibresia.com/api/health", {
-    env: makeEnv({ DISCORD_NOTIFICATIONS_ENABLED: "false" }),
-  });
-  assert.match((await off.response.json()).discord, /disabled/);
 
   const missing = await run("https://vibresia.com/api/health", {
     env: makeEnv({ DISCORD_WEBHOOK_URL: "" }),
