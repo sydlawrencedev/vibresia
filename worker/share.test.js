@@ -724,6 +724,68 @@ test("the gallery page is a page, with the shares on it", async () => {
   assert.ok(html.includes("/s/"), "the share was not linked");
 });
 
+test("a gallery card does not put one link inside another", async () => {
+  const { env } = makeEnv();
+  resetRateLimiter();
+  await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: PAYLOAD, name: "Nested", author: "Stephen", key: "nest1", public: true }),
+  });
+  const response = await run("https://vibresia.com/vibescapes", { env });
+  const html = await response.text();
+
+  // A link inside a link is not valid HTML, and every browser resolves it
+  // the same way: the outer link is closed before the inner one, so the
+  // inner link's contents leave the card and become a sibling of it. The
+  // author's name then falls out of the grid it was in.
+  //
+  // So the card holds two links — the vibescape and the author — and they
+  // must be side by side, not one inside the other.
+  const card = html.match(/<div class="card"[\s\S]*?<\/div>/);
+  assert.ok(card, "the card was not on the page");
+  const cardHtml = card[0];
+  assert.ok(!/<a class="card"/i.test(cardHtml), "the card is still a link itself");
+  // Every link in the card is closed before the next one opens, which is
+  // what "siblings, not nested" looks like in the markup.
+  const opens = (cardHtml.match(/<a\b/gi) || []).length;
+  const closes = (cardHtml.match(/<\/a>/gi) || []).length;
+  assert.equal(opens, closes, `the card has ${opens} links and ${closes} closes`);
+  // And the author's link comes after the vibescape's is closed.
+  const vibescapeEnd = cardHtml.indexOf("</a>");
+  const authorAt = cardHtml.indexOf("/vibescapes?by=");
+  assert.ok(authorAt > vibescapeEnd,
+    "the author's link is inside the vibescape's link");
+});
+
+test("a gallery card is tracked on the link, where the click handler looks", async () => {
+  const { env } = makeEnv();
+  resetRateLimiter();
+  await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: PAYLOAD, name: "Tracked", author: "Ada", key: "track1", public: true }),
+  });
+  const response = await run("https://vibresia.com/vibescapes", { env });
+  const html = await response.text();
+
+  // The site's click handler finds the nearest ancestor matching
+  // "[data-track], a[href]". The card's link is nearer than the card, so an
+  // attribute on the card alone is never found and the gallery's
+  // click-through count quietly goes to zero.
+  const card = html.match(/<div class="card"[\s\S]*?<\/div>/);
+  assert.ok(card, "the card was not on the page");
+  const link = card[0].match(/<a class="card-link"[^>]*>/);
+  assert.ok(link, "the card's link was not on the page");
+  assert.match(link[0], /data-track="gallery_card_clicked"/,
+    "the card's link carries no tracking attribute");
+  assert.match(link[0], /data-target="/,
+    "the card's link carries no target");
+
+  // And the card itself must not be the one carrying it, because that is
+  // the mistake this test exists to catch.
+  assert.doesNotMatch(card[0].match(/<div class="card"[^>]*>/)[0], /data-track=/,
+    "the tracking attribute is on the card, where the click handler cannot find it");
+});
+
 // --- the admin --------------------------------------------------------------
 
 test("the admin needs the admin token", async () => {

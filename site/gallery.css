@@ -10,6 +10,7 @@
   --muted: #a79fc4;
   --line: rgba(255, 255, 255, 0.10);
   --pink: #ff2bd6;
+  --cyan: #2bf2ff;
 }
 
 * { box-sizing: border-box; }
@@ -59,7 +60,13 @@ a { color: inherit; }
   max-width: 62ch;
 }
 
-/* The cards. */
+/* The cards.
+ *
+ * A card is a div, not a link: the author's name on it is a link of its own,
+ * and a link inside a link is not valid HTML — browsers close the outer
+ * one early and the name falls out of the card and into the grid beside
+ * it. So the picture and the name are the link to the vibescape, and the
+ * card around them is just the frame. */
 .gallery {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -68,8 +75,6 @@ a { color: inherit; }
 
 .card {
   display: block;
-  text-decoration: none;
-  color: inherit;
   border: 1px solid var(--line);
   border-radius: 14px;
   overflow: hidden;
@@ -77,10 +82,20 @@ a { color: inherit; }
   transition: transform 0.18s ease, border-color 0.18s ease;
 }
 
-.card:hover,
-.card:focus-visible {
+.card:hover {
   transform: translateY(-3px);
   border-color: rgba(255, 43, 214, 0.55);
+}
+
+.card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.card-link:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -3px;
 }
 
 .card img {

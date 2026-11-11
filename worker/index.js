@@ -1773,17 +1773,32 @@ async function handleGalleryPage(request, url, env) {
   // plain text is a catalogue: there is nowhere to go from it. The link
   // goes to the gallery filtered to that author, so somebody who liked a
   // vibescape can find the rest of that person's work.
+  //
+  // The card is not a link itself, because the author's name inside it is
+  // one. A link inside a link is not valid HTML, and every browser
+  // resolves it the same way: the outer link is closed before the inner
+  // one, so the author's name leaves the card and becomes a sibling of it
+  // in the grid. The card is a div, the picture and the name are the link
+  // to the vibescape, and the author's name is a link beside it.
   const cards = items.map((item) => {
     const name = escapeHtml(item.name || "A vibescape");
     const author = escapeHtml(item.author || "");
+    const href = escapeHtml(item.url);
     const authorBy = author
       ? `<span class="card-by">by <a href="/vibescapes?by=${encodeURIComponent(item.author || "")}">${author}</a></span>`
       : "";
-    return `      <a class="card" data-track="gallery_card_clicked" data-target="${escapeHtml(item.id || "")}" href="${escapeHtml(item.url)}">
-        <img src="${escapeHtml(item.image)}" alt="${name}" loading="lazy" width="1200" height="630">
-        <span class="card-name">${name}</span>
+    // The tracking attributes are on the link, not on the card. The site's
+    // click handler finds the nearest ancestor that matches
+    // "[data-track], a[href]", and the link is nearer than the card — so an
+    // attribute on the card alone would never be found, and the gallery's
+    // click-through count would quietly go to zero.
+    return `      <div class="card">
+        <a class="card-link" href="${href}" data-track="gallery_card_clicked" data-target="${escapeHtml(item.id || "")}">
+          <img src="${escapeHtml(item.image)}" alt="${name}" loading="lazy" width="1200" height="630">
+          <span class="card-name">${name}</span>
+        </a>
         ${authorBy}
-      </a>`;
+      </div>`;
   }).join("\n");
 
   const empty = items.length === 0
