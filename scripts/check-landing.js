@@ -61,9 +61,19 @@ if (!onBranch) {
     const targets = remotes
       .map((line) => line.split(/\s+/))
       .filter((parts) => parts.length === 2)
-      .filter(([, sha2]) => sha2.startsWith(sha));
+      // Each line is "<sha> <ref>". The sha is the first half, so it is the
+      // first half that has to start with the commit being looked for. This
+      // used to read the second half — the branch name — and ask whether the
+      // branch name started with the sha, which is never true. The commit
+      // was on the remote and the check still could not say where.
+      .filter(([sha2]) => sha2.startsWith(sha));
     if (targets.length) {
-      onBranch = targets.map(([, name]) => `origin/${name}`).join(", ");
+      // `ls-remote` gives the full ref, `refs/heads/a-branch`. The other path
+      // above gives `origin/a-branch`. Same branch, two spellings, so strip
+      // the prefix and put `origin/` back on.
+      onBranch = targets
+        .map(([, name]) => `origin/${name.replace(/^refs\/heads\//, "")}`)
+        .join(", ");
     }
   } catch {
     onBranch = "";
