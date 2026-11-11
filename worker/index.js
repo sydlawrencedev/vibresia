@@ -26,6 +26,11 @@ import { editKeyMatches, hashEditKey } from "./share-capability.js";
 import {
   MAX_PAYLOAD_CHARS, MAX_NAME_CHARS, MAX_AUTHOR_CHARS, MAX_IMAGE_BYTES, MAX_KEY_CHARS,
 } from "./share-limits.js";
+// The picture a browser fills into a share that has none, and the check
+// that the bytes it was given are a picture at all.
+import {
+  makePictureCapability, checkPictureCapability, jpegSize,
+} from "./share-picture.js";
 // The official MCP Registry's entry for this server. mcp-publisher reads the
 // same file from the repository root, so what is published and what is served
 // here cannot drift apart.
@@ -34,6 +39,25 @@ const MCP_REGISTRY_AUTH = "v=MCPv1; k=ed25519; p=lFHTVZgSo/YyYNfyVnswDTDgLqhkG87
 
 const CANONICAL_HOST = "vibresia.com";
 const CANONICAL_SITE = `https://${CANONICAL_HOST}/`;
+
+// The picture a share falls back to when it has none of its own.
+//
+// It used to be `media/share.jpg`, which was a picture of one of the
+// built-in vibescapes — so a shared starfield was shown in the gallery as
+// a picture of a band. The placeholder is drawn by the same tool that
+// draws the built-ins' share graphics (scripts/build-share-graphics.sh),
+// so it looks like the same product while saying nothing about any one
+// vibescape.
+const PLACEHOLDER_IMAGE = "media/share-placeholder.jpg";
+
+// The size a share's picture is, in pixels.
+//
+// It is the size the app renders at, and the size the site's share page
+// draws its canvas at, and the size a link preview is picked up at — so a
+// picture that comes from the browser and a picture that comes from the app
+// are the same shape and sit in the same card.
+const SHARE_PICTURE_WIDTH = 1200;
+const SHARE_PICTURE_HEIGHT = 630;
 
 // The host the app used to live on. It's still attached to this Worker, so
 // requests to it are answered — with a permanent redirect to the new name,
@@ -104,6 +128,8 @@ export function resetRateLimiter() {
   lastGalleryAt = 0;
   galleryThisHour = 0;
   galleryHourStartedAt = 0;
+  picturesThisHour = 0;
+  pictureHourStartedAt = 0;
 }
 
 // Same idea, separate budget: a burst of error reports shouldn't silence the
@@ -165,6 +191,30 @@ function shareRateLimited() {
   if (sharesThisHour >= SHARE_MAX_PER_HOUR) return true;
   lastShareAt = now;
   sharesThisHour += 1;
+  return false;
+}
+
+// Filling a share's picture is a row write too, and a bigger one: a picture
+// is up to 400KB against a payload of a few kilobytes. So it gets a budget
+// of its own, rather than being free.
+//
+// It is looser than sharing's, because a picture is filled once and then
+// never again — a person opening a link fills one picture and stops. The
+// ceiling is on the number of writes, not on how fast they come: the same
+// visitor opening twenty shares in a row should fill twenty pictures, and
+// a script doing that a thousand times over should not.
+const PICTURE_MAX_PER_HOUR = 200;
+let picturesThisHour = 0;
+let pictureHourStartedAt = 0;
+
+function pictureRateLimited() {
+  const now = Date.now();
+  if (now - pictureHourStartedAt > 3_600_000) {
+    pictureHourStartedAt = now;
+    picturesThisHour = 0;
+  }
+  if (picturesThisHour >= PICTURE_MAX_PER_HOUR) return true;
+  picturesThisHour += 1;
   return false;
 }
 
@@ -549,14 +599,15 @@ export function escapeHtml(value) {
 /// so a crawler gets a title, a description and a picture for this specific
 /// vibescape instead of the generic ones. Crawlers do not run the page's
 /// JavaScript, so the metadata has to be right in the HTML itself.
-export function buildSharePage(html, { id, payload, name, author, url, hasImage = true }) {
+export function buildSharePage(html, { id, payload, name, author, url, hasImage = true,
+                                       pictureCapability = null }) {
   const title = name ? `${name} — Vibresia` : "A vibescape was shared with you — Vibresia";
   const description = author
     ? `A vibescape called “${name}” by ${author}. Open it in Vibresia, free.`
     : "Someone shared a Vibresia vibescape with you. Open it in Vibresia or download the app.";
-  // A share with no picture of its own gets the general Vibresia one, rather
+  // A share with no picture of its own gets the neutral placeholder, rather
   // than a link to a picture that is not there.
-  const image = hasImage ? `${CANONICAL_SITE}og/${id}.jpg` : `${CANONICAL_SITE}media/share.jpg`;
+  const image = hasImage ? `${CANONICAL_SITE}og/${id}.jpg` : `${CANONICAL_SITE}${PLACEHOLDER_IMAGE}`;
 
   let out = html;
 
@@ -566,9 +617,21 @@ export function buildSharePage(html, { id, payload, name, author, url, hasImage 
   // link the vibescape came from, and can hand the same link back when it
   // is shared on.
   //
+  // The capability is the permission to fill this share's picture with the
+  // frame the page draws. It is only there when the share has no picture:
+  // a page that already has one has nothing to send.
+  //
   // `</` is escaped because the payload ends up inside a <script> element,
   // and the JSON is the only thing that could close it early.
-  const injected = `<script>window.__VIBRESIA_SHARE__ = ${JSON.stringify({ d: payload, id }).replace(/</g, "\\u003c")};</script>`;
+  const injected = `<script>window.__VIBRESIA_SHARE__ = ${JSON.stringify({
+    d: payload,
+    id,
+    // Whether the page should draw a picture and send it. False when the
+    // share already has one, and false when the page has no way to fill
+    // it — which is every share page that is not served by this Worker.
+    canUploadPicture: !hasImage && !!pictureCapability,
+    pictureCapability: pictureCapability || null,
+  }).replace(/</g, "\\u003c")};</script>`;
   out = out.replace("</head>", `${injected}\n</head>`);
 
   const swap = (pattern, value) => {
@@ -849,11 +912,16 @@ async function deleteShare(env, id) {
 ///
 /// The gallery flag in particular: the tickbox in the share sheet has to
 /// show what is true, not what it was set to when the sheet opened.
+///
+/// Whether it has a picture of its own matters for the same reason. A share
+/// made by an agent has no picture, and the app can make one — so the app
+/// needs to be able to tell that it should.
 async function handleShareGet(request, url, env) {
   const id = url.pathname.slice("/api/share/".length);
   if (!isValidShareId(id)) return Response.json({ ok: false, error: "no such share" }, { status: 404 });
   const row = await env.SHARES.prepare(
-    "SELECT id, name, author, is_public, created_at, payload, COALESCE(revision, 1) AS revision " +
+    "SELECT id, name, author, is_public, created_at, payload, COALESCE(revision, 1) AS revision, " +
+    "CASE WHEN image IS NULL THEN 0 ELSE 1 END AS has_image " +
     "FROM shares WHERE id = ?"
   ).bind(id).first();
   if (!row) return Response.json({ ok: false, error: "no such share" }, { status: 404 });
@@ -870,6 +938,9 @@ async function handleShareGet(request, url, env) {
     // shared page draws from it — so this is not a new disclosure.
     revision: row.revision ?? 1,
     payload: row.payload || "",
+    // Whether the share has a picture of its own. False for a share made by
+    // an agent: the server cannot draw one, so the row is born without one.
+    hasImage: row.has_image === 1,
   });
 }
 
@@ -1333,7 +1404,7 @@ async function handleSharePage(request, url, env, ctx) {
   if (!isValidShareId(id)) return new Response("Not found", { status: 404 });
 
   const row = await env.SHARES.prepare(
-    "SELECT payload, name, author, CASE WHEN image IS NULL THEN 0 ELSE 1 END AS has_image FROM shares WHERE id = ?"
+    "SELECT payload, name, author, payload_hash, CASE WHEN image IS NULL THEN 0 ELSE 1 END AS has_image FROM shares WHERE id = ?"
   ).bind(id).first();
   if (!row) return new Response("Not found", { status: 404 });
 
@@ -1367,6 +1438,26 @@ async function handleSharePage(request, url, env, ctx) {
   }
   const html = await asset.text();
 
+  // The permission to fill this share's picture, for a share that has none.
+  //
+  // It is minted here, when the page is served, and it goes in the page —
+  // so the browser that draws the vibescape can post the picture it drew.
+  // The page cannot hold the app's token (that would put it on the public
+  // web) and it does not hold the share's own capability (that belongs to
+  // whoever made the share, and is not in the link).
+  //
+  // It is bound to this share and this share's payload, so it cannot be
+  // taken from one share's page and used on another's, and it stops
+  // working when the share is republished. See share-picture.js.
+  let pictureCapability = null;
+  if (row.has_image !== 1) {
+    const secret = pictureSecret(env);
+    if (secret) {
+      const payloadHash = row.payload_hash || await hashPayload(row.payload);
+      pictureCapability = await makePictureCapability(secret, id, payloadHash);
+    }
+  }
+
   const page = buildSharePage(html, {
     id,
     payload: row.payload,
@@ -1374,8 +1465,9 @@ async function handleSharePage(request, url, env, ctx) {
     author: row.author,
     // A share made by an agent has no picture, because the server cannot
     // draw one. Pointing og:image at a picture that is not there would give
-    // the link preview a broken image, so it gets the general one instead.
+    // the link preview a broken image, so it gets the placeholder instead.
     hasImage: row.has_image === 1,
+    pictureCapability,
     url: `${CANONICAL_SITE}s/${id}`,
   });
 
@@ -1420,6 +1512,139 @@ async function handleShareImage(request, url, env) {
       "cache-control": "public, max-age=31536000, immutable",
     },
   });
+}
+
+/// `POST /api/share/<id>/picture` — the browser fills a share's empty
+/// picture with the frame it drew.
+///
+/// The page draws the vibescape with WebGL and posts the picture it made.
+/// The Worker stores it, so the next visitor — and every link preview
+/// crawler that runs the page — gets a picture of the actual vibescape
+/// rather than the placeholder.
+///
+/// Three rules, and all three matter:
+///
+///   * It only ever fills an empty slot. The `WHERE image IS NULL` in the
+///     statement is the rule, not a check before it: two browsers can
+///     upload at the same moment and the second one has to lose.
+///
+///   * The caller has to be the app, or a page the Worker gave a
+///     capability to. See `share-picture.js`.
+///
+///   * The bytes have to be a JPEG of the size a picture here is, and
+///     within the same cap every other picture is under.
+async function handleSharePicture(request, url, env) {
+  const id = url.pathname.slice("/api/share/".length).replace(/\/picture$/, "");
+  if (!isValidShareId(id)) return Response.json({ ok: false, error: "no such share" }, { status: 404 });
+
+  const row = await env.SHARES.prepare(
+    "SELECT payload, payload_hash, CASE WHEN image IS NULL THEN 0 ELSE 1 END AS has_image FROM shares WHERE id = ?"
+  ).bind(id).first();
+  if (!row) return Response.json({ ok: false, error: "no such share" }, { status: 404 });
+
+  // A share that already has a picture is not given another one. The page
+  // is not told to upload in the first place, but a page that was left open
+  // before the picture arrived would still try.
+  if (row.has_image === 1) {
+    return Response.json({ ok: true, id, stored: false, reason: "it already has a picture" });
+  }
+
+  // The write is a picture against the row-write quota, so it has a budget
+  // of its own. It is checked after the "does it already have one" case, so
+  // a page that is only asking about a share it has already filled does not
+  // spend any of it.
+  if (pictureRateLimited()) {
+    return Response.json({ ok: false, error: "slow down" }, { status: 429 });
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return Response.json({ ok: false, error: "bad json" }, { status: 400 });
+  }
+
+  const capability = typeof body?.capability === "string" ? body.capability : "";
+  const token = request.headers.get("x-av-token") || "";
+  // Two ways in.
+  //
+  // The app sends its token. The token ships inside the bundle, so it is a
+  // speed bump rather than a lock, but it is the same bar the app's own
+  // sharing path clears: `POST /api/share` fills an empty picture on a
+  // share it finds by its content, with nothing but the token. The app is
+  // the thing that can draw a vibescape, so the app is the thing that gets
+  // to fill a picture in.
+  //
+  // The browser sends the capability the Worker minted for the page. The
+  // page has no token and no capability of its own, and the Worker cannot
+  // draw either — so the browser draws it and is given permission to.
+  //
+  // Either way the rule is the same: this only ever fills a slot that is
+  // empty.
+  const appToken = !!env.SHARE_TOKEN && token === env.SHARE_TOKEN;
+  if (!appToken) {
+    const payloadHash = row.payload_hash || await hashPayload(row.payload);
+    if (!(await checkPictureCapability(pictureSecret(env), capability, id, payloadHash))) {
+      return Response.json({ ok: false, error: "not allowed" }, { status: 403 });
+    }
+  }
+
+  const encoded = typeof body?.image === "string" ? body.image : "";
+  if (!encoded) return Response.json({ ok: false, error: "no image" }, { status: 400 });
+  // Checked before it is decoded: base64 expands to three bytes for every
+  // four characters, so a body that is mostly a picture costs the Worker
+  // megabytes of memory before the byte count below can refuse it.
+  if (encoded.length > maxImageBase64Chars()) {
+    return Response.json({ ok: false, error: "image too large" }, { status: 400 });
+  }
+  let bytes;
+  try {
+    bytes = Uint8Array.from(atob(encoded), (c) => c.charCodeAt(0));
+  } catch {
+    return Response.json({ ok: false, error: "bad image" }, { status: 400 });
+  }
+  if (bytes.length > MAX_IMAGE_BYTES) {
+    return Response.json({ ok: false, error: "image too large" }, { status: 400 });
+  }
+  // It has to be a picture, and it has to be the right shape. The bytes are
+  // served back as `image/jpeg` to whatever asks for the share's picture,
+  // so a file that is not a JPEG would be served as one.
+  const size = jpegSize(bytes);
+  if (!size) return Response.json({ ok: false, error: "not a jpeg" }, { status: 400 });
+  if (size.width !== SHARE_PICTURE_WIDTH || size.height !== SHARE_PICTURE_HEIGHT) {
+    return Response.json({ ok: false, error: "wrong size" }, { status: 400 });
+  }
+
+  try {
+    // The condition is in the statement, so a picture that arrived while
+    // this one was being read is not overwritten.
+    const written = await env.SHARES.prepare(
+      "UPDATE shares SET image = ? WHERE id = ? AND image IS NULL"
+    ).bind(bytes, id).run();
+    const stored = (written?.meta?.changes ?? 0) > 0;
+    if (!stored) {
+      console.log(`[share] ${id} already had a picture by the time this one arrived`);
+    }
+    return Response.json({ ok: true, id, stored });
+  } catch (error) {
+    console.log(`[share] could not store the picture for ${id}: ${error}`);
+    return Response.json({ ok: false, error: "could not save" }, { status: 500 });
+  }
+}
+
+/// The secret the picture capability is signed with.
+///
+/// It has its own Worker secret, because it is a different job from the
+/// app's token: the token says "this request came from the app", and this
+/// says "this page may fill this share's picture". Sharing one secret
+/// between the two would mean a page's capability could be used as the
+/// app's token and the other way round.
+///
+/// The app's token is used when there is no secret of its own, so a Worker
+/// that has not been given one still works — it just signs pictures with
+/// the app's token.
+function pictureSecret(env) {
+  return env.PICTURE_SECRET || env.SHARE_TOKEN || "";
 }
 
 /// `POST /api/notify` — how the Mac app reports problems.
@@ -1582,9 +1807,9 @@ async function galleryItems(env, url, sort = "recent") {
       name: row.name || "",
       author: row.author || "",
       url: `/s/${row.id}`,
-      // A share with no picture of its own gets the general one, rather than
-      // a broken image on a page about pictures.
-      image: row.has_image ? `/og/${row.id}.jpg` : "/media/share.jpg",
+      // A share with no picture of its own gets the neutral placeholder,
+      // rather than a broken image on a page about pictures.
+      image: row.has_image ? `/og/${row.id}.jpg` : PLACEHOLDER_IMAGE,
       builtin: false,
       // How many times it has been opened. Only the shares have one: the
       // built-ins' pages are static files, so there is nothing to count.
@@ -1886,6 +2111,12 @@ export default {
       });
     }
     if (url.pathname.startsWith("/api/share/")) {
+      // The picture a browser draws and posts. Its own path, because it is
+      // a different act from changing a share: it fills a picture that is
+      // not there and touches nothing else.
+      if (url.pathname.endsWith("/picture") && request.method === "POST") {
+        return handleSharePicture(request, url, env);
+      }
       if (request.method === "PATCH") return handleSharePatch(request, url, env);
       if (request.method === "POST") return handleShareUpdate(request, url, env);
       return handleShareGet(request, url, env);

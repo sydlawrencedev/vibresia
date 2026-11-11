@@ -56,6 +56,24 @@ binding = "SHARES"
 database_name = "vibresia-shares"
 database_id = "df8952d8-d6d0-4bd5-91cb-19f6ba97adae"
 
+# The secret the picture capability is signed with.
+#
+# A share made by an agent has no picture: the server cannot draw a shader
+# and the agent has no Mac to draw it on. So the share page draws it in the
+# browser and posts the frame, and the Worker keeps it for the next visitor
+# and for the link preview crawlers.
+#
+# The permission for that is signed with this secret. It is a secret of its
+# own rather than SHARE_TOKEN, because it is a different job: the app's
+# token says "this request came from the app", and this says "this page may
+# fill this share's picture". One secret doing both jobs would mean a
+# picture capability could be used as the app's token.
+#
+#   npx wrangler secret put PICTURE_SECRET
+#
+# Without it the Worker signs picture capabilities with SHARE_TOKEN, which
+# works but couples the two.
+
 # These are routes rather than custom domains because the DNS for
 # vibresia.com already exists and is proxied. A custom domain would want to
 # own those records, and Cloudflare refuses to overwrite records it didn't

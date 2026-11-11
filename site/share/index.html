@@ -13,14 +13,14 @@
 <meta property="og:url" content="https://vibresia.com/share">
 <meta property="og:title" content="A vibescape was shared with you — Vibresia">
 <meta property="og:description" content="Someone shared a Vibresia vibescape with you. Open it in Vibresia or download the app.">
-<meta property="og:image" content="https://vibresia.com/media/share.jpg">
+<meta property="og:image" content="https://vibresia.com/media/share-placeholder.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="A Vibresia vibescape">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="A vibescape was shared with you — Vibresia">
 <meta name="twitter:description" content="Someone shared a Vibresia vibescape with you. Open it in Vibresia or download the app.">
-<meta name="twitter:image" content="https://vibresia.com/media/share.jpg">
+<meta name="twitter:image" content="https://vibresia.com/media/share-placeholder.jpg">
 <meta name="posthog-key" content="phc_pzYyxiM6u2pYa6FbCkRY8HPudHDopu5LrTwnoamHaeg2">
 <meta name="posthog-host" content="/ingest">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -221,6 +221,207 @@
       return; // a thrown preview is still just a missing picture
     }
     if (result && result.ok) wrap.hidden = false;
+
+    // The picture this visitor's browser has just drawn is worth keeping:
+    // the next visitor, and every link preview crawler, gets a picture of
+    // the actual vibescape instead of the placeholder.
+    //
+    // It is sent once, after the first frame is on the canvas — the frame
+    // the page is showing, so the picture that gets stored is the picture
+    // the page looks like.
+    sendPicture(canvas, payload);
+  }
+
+  /* Sends the frame the browser drew to the site, which keeps it as the
+   * share's picture.
+   *
+   * Only for a share that has no picture of its own, and only when the page
+   * was given the permission to fill one — the Worker puts that permission
+   * in the page, and only for a share that needs a picture.
+   *
+   * Best effort, and quietly so. Nobody opened this link to be told that
+   * the site had not accepted a picture, and the picture is already on the
+   * page either way.
+   */
+  function sendPicture(canvas, payload) {
+    var share = window.__VIBRESIA_SHARE__;
+    if (!share || !share.canUploadPicture || !share.pictureCapability) return;
+    if (!canvas || !canvas.toDataURL) return;
+
+    var image = jpegWithin(canvas, payload);
+    if (!image) return;
+
+    fetch("/api/share/" + encodeURIComponent(share.id) + "/picture", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        image: image,
+        capability: share.pictureCapability
+      })
+    }).then(function (response) {
+      if (!response.ok) return;
+      return response.json();
+    }).then(function (result) {
+      if (result && result.stored) {
+        // The share has a picture now, so the metadata can point at it.
+        // The page's own <meta> tags were written by the server before the
+        // picture existed, so they still say the placeholder.
+        var meta = document.querySelector('meta[property="og:image"]');
+        if (meta) meta.setAttribute("content", "/og/" + share.id + ".jpg");
+      }
+    }).catch(function () {
+      // Nothing to do: the picture is on the page, which is what the
+      // visitor came for.
+    });
+  }
+
+  /* The frame the browser drew, as JPEG data, small enough for the site to
+   * store.
+   *
+   * The brand goes on first, so the picture that is stored is branded the
+   * same way the picture the app uploads is branded. Otherwise the gallery
+   * would have two kinds of card in it: the app's, with the mark in the
+   * corner, and the browser's, without.
+   *
+   * The site holds one picture per share against a quota, so the quality
+   * comes down until it fits — the same rule the app follows when it
+   * uploads a picture of its own.
+   */
+  function jpegWithin(canvas, payload) {
+    // The branded copy is made once and encoded several times: the brand
+    // does not change with the quality, and redrawing it for every try is
+    // work for nothing.
+    var copy;
+    try {
+      copy = branded(canvas, payload);
+    } catch (e) {
+      return null;
+    }
+    var qualities = [0.85, 0.7, 0.55, 0.4];
+    for (var i = 0; i < qualities.length; i += 1) {
+      var dataUrl;
+      try {
+        dataUrl = copy.toDataURL("image/jpeg", qualities[i]);
+      } catch (e) {
+        return null;
+      }
+      if (!dataUrl || dataUrl.indexOf("data:image/jpeg") !== 0) return null;
+      var image = dataUrl.slice(dataUrl.indexOf(",") + 1);
+      // The site's own limit, as the base64 it is sent as. Four characters
+      // for every three bytes.
+      if (image.length <= 546136) return image;
+    }
+    return null;
+  }
+
+  /* A copy of the canvas with Vibresia's mark and the vibescape's name on
+   * it.
+   *
+   * The same marks the app puts on the picture it uploads, in the same
+   * corners: the wave in the top-left with the wordmark beside it, and the
+   * name in the bottom-left. The wave is the same path the website's
+   * header draws, so it cannot drift from the one in the app.
+   *
+   * A copy rather than the canvas itself: the page is showing the
+   * vibescape on its own, and the brand on the page's copy would be in the
+   * way of the thing somebody came to look at.
+   */
+  function branded(canvas, payload) {
+    var copy = document.createElement("canvas");
+    copy.width = canvas.width;
+    copy.height = canvas.height;
+    var ctx = copy.getContext("2d");
+    if (!ctx) return canvas;
+    ctx.drawImage(canvas, 0, 0);
+
+    payload = payload || {};
+
+    // The brand, in the top-left. The wave is drawn in a 32-unit box and
+    // scaled up, which is what the header does.
+    var margin = 30, mark = 30, gap = 12;
+    try {
+      ctx.save();
+      ctx.translate(margin + 4, margin + 4);
+      ctx.scale(mark / 32, mark / 32);
+      ctx.strokeStyle = "#ff2bd6";
+      ctx.lineWidth = 2.4;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.shadowColor = "rgba(255, 43, 214, 0.8)";
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.moveTo(1.6, 16);
+      ctx.lineTo(7.94, 16);
+      ctx.lineTo(10.82, 7.36);
+      ctx.lineTo(14.56, 24.64);
+      ctx.lineTo(18.3, 10.24);
+      ctx.lineTo(21.76, 20.32);
+      ctx.lineTo(24.06, 16);
+      ctx.lineTo(30.4, 16);
+      ctx.stroke();
+      ctx.restore();
+    } catch (e) {
+      // A mark that will not draw is a card without a mark.
+    }
+
+    // The wordmark, beside it.
+    try {
+      ctx.save();
+      ctx.font = "bold 19px 'Space Grotesk', 'Helvetica Neue', sans-serif";
+      ctx.fillStyle = "#ffffff";
+      ctx.textBaseline = "middle";
+      ctx.shadowColor = "rgba(0, 0, 0, 0.85)";
+      ctx.shadowBlur = 6;
+      var word = "VIBRESIA";
+      // The wordmark is spaced out, the way the app spaces it.
+      var spacing = 3.4;
+      var x = margin + 4 + mark + gap;
+      var y = margin + 4 + mark / 2;
+      for (var w = 0; w < word.length; w += 1) {
+        ctx.fillText(word[w], x, y);
+        x += ctx.measureText(word[w]).width + spacing;
+      }
+      ctx.restore();
+    } catch (e) {
+      // As above.
+    }
+
+    // The name, in the bottom-left, and who made it under it.
+    //
+    // The same two lines the app puts in the same corner, in the same
+    // places: the credit above, the name below it. The canvas counts y
+    // from the top and the app counts from the bottom, so the numbers are
+    // flipped here.
+    var name = payload.name || "";
+    var author = payload.author || "";
+    if (author) {
+      try {
+        ctx.save();
+        ctx.font = "14px 'JetBrains Mono', monospace";
+        ctx.fillStyle = "rgba(255, 255, 255, 0.55)";
+        ctx.shadowColor = "rgba(0, 0, 0, 0.85)";
+        ctx.shadowBlur = 6;
+        ctx.fillText("Made with 💜 by " + author, margin + 4, canvas.height - (margin + 1) - 14);
+        ctx.restore();
+      } catch (e) {
+        // As above.
+      }
+    }
+    if (name) {
+      try {
+        ctx.save();
+        ctx.font = "bold 22px 'JetBrains Mono', monospace";
+        ctx.fillStyle = "#ffffff";
+        ctx.shadowColor = "rgba(0, 0, 0, 0.85)";
+        ctx.shadowBlur = 6;
+        ctx.fillText(name.toUpperCase(), margin + 4, canvas.height - (margin + 29));
+        ctx.restore();
+      } catch (e) {
+        // As above.
+      }
+    }
+
+    return copy;
   }
 
   /* Copies the shader, and says so.

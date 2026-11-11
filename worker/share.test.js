@@ -63,8 +63,13 @@ function makeShares() {
               if (sql.includes("UPDATE shares SET image")) {
                 const [image, id] = args;
                 const row = rows.get(id);
-                if (row) row.image = image;
-                return { success: true };
+                // The "AND image IS NULL" form only fills an empty slot.
+                if (!row) return { success: true, meta: { changes: 0 } };
+                if (sql.includes("image IS NULL") && row.image) {
+                  return { success: true, meta: { changes: 0 } };
+                }
+                row.image = image;
+                return { success: true, meta: { changes: 1 } };
               }
               if (sql.includes("UPDATE shares SET is_public")) {
                 const [isPublic, id] = args;
@@ -552,7 +557,7 @@ test("the share page has the payload inlined and the URL stays short", async () 
   const response = await run(`https://vibresia.com/s/${id}`, { env });
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.ok(html.includes(`window.__VIBRESIA_SHARE__ = {"d":"${PAYLOAD}","id":"${id}"}`), "payload not inlined");
+  assert.ok(html.includes(`window.__VIBRESIA_SHARE__ = {"d":"${PAYLOAD}","id":"${id}",`), "payload not inlined");
   // The id goes with it, so the page can put it in the deep link and the app
   // can hand the same link back when the vibescape is shared on.
   assert.ok(html.includes(`"id":"${id}"`), "the share's id was not inlined");
@@ -586,8 +591,8 @@ test("a share with no picture of its own gets the general one, not a broken link
   const html = await (await run(`https://vibresia.com/s/${id}`, { env })).text();
   // An agent's share has no picture, because the server cannot draw one.
   // Pointing the preview at a picture that is not there would be worse than
-  // the general one.
-  assert.ok(html.includes('<meta property="og:image" content="https://vibresia.com/media/share.jpg">'));
+  // the neutral placeholder.
+  assert.ok(html.includes('<meta property="og:image" content="https://vibresia.com/media/share-placeholder.jpg">'));
   assert.ok(!html.includes(`content="https://vibresia.com/og/${id}.jpg"`));
 });
 
@@ -641,6 +646,258 @@ test("a share with no picture has no picture, rather than a broken one", async (
   });
   const { id } = await created.json();
   assert.equal((await run(`https://vibresia.com/og/${id}.jpg`, { env })).status, 404);
+});
+
+// --- the browser fills an empty picture --------------------------------------
+
+/** A JPEG of the size a share's picture is, built by hand.
+ *
+ *  The bytes have to be a real JPEG, because the Worker checks the header
+ *  before it stores them — so the test cannot use three bytes and hope.
+ */
+function jpegBytes(width = 1200, height = 630) {
+  // The smallest JPEG there is: the start-of-image marker, a frame header
+  // carrying the size, and the end-of-image marker.
+  return Buffer.from([
+    0xff, 0xd8,                        // start of image
+    0xff, 0xc0, 0x00, 0x11, 0x08,      // frame header, 8 bits per sample
+    (height >> 8) & 0xff, height & 0xff,
+    (width >> 8) & 0xff, width & 0xff,
+    0x03,                              // three components
+    0x01, 0x11, 0x00, 0x02, 0x11, 0x01, 0x03, 0x11, 0x01,
+    0xff, 0xd9,                        // end of image
+  ]);
+}
+
+/** The capability the share page is given, read out of the page. */
+async function capabilityFrom(env, id) {
+  const html = await (await run(`https://vibresia.com/s/${id}`, { env })).text();
+  const match = html.match(/"pictureCapability":"([^"]+)"/);
+  return match ? match[1].replace(/\\u003c/g, "<") : null;
+}
+
+test("a browser may fill a share that has no picture", async () => {
+  const { env, shares } = makeEnv();
+  const created = await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: PAYLOAD, name: "Drawn In A Browser" }),
+  });
+  const { id } = await created.json();
+
+  const capability = await capabilityFrom(env, id);
+  assert.ok(capability, "the share page was given no capability");
+
+  const response = await run(`https://vibresia.com/api/share/${id}/picture`, {
+    env,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image: jpegBytes().toString("base64"), capability }),
+  });
+  assert.equal(response.status, 200);
+  assert.equal((await response.json()).stored, true);
+  // And now the share has a picture, which is what the gallery card and the
+  // link preview point at.
+  assert.equal((await run(`https://vibresia.com/og/${id}.jpg`, { env })).status, 200);
+  assert.ok(shares.rows.get(id).image, "the picture was not stored");
+});
+
+test("a picture never replaces one that is already there", async () => {
+  const { env, shares } = makeEnv();
+  const created = await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: PAYLOAD, name: "Has One" }),
+  });
+  const { id } = await created.json();
+
+  const capability = await capabilityFrom(env, id);
+  await run(`https://vibresia.com/api/share/${id}/picture`, {
+    env,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image: jpegBytes().toString("base64"), capability }),
+  });
+  const first = shares.rows.get(id).image;
+
+  // A share that has a picture is not even given a capability, so the
+  // second upload has nothing to upload with. And if one is forced through,
+  // the slot is left alone.
+  const forced = await run(`https://vibresia.com/api/share/${id}/picture`, {
+    env,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image: jpegBytes(800, 600).toString("base64"), capability }),
+  });
+  assert.equal(forced.status, 200);
+  assert.equal((await forced.json()).stored, false);
+  assert.deepEqual(Array.from(shares.rows.get(id).image), Array.from(first));
+});
+
+test("a share that already has a picture is not given a capability", async () => {
+  const { env } = makeEnv();
+  const created = await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: PAYLOAD, name: "Has One", image: jpegBytes().toString("base64") }),
+  });
+  const { id } = await created.json();
+  const html = await (await run(`https://vibresia.com/s/${id}`, { env })).text();
+  assert.ok(!html.includes('"canUploadPicture":true'), "the page was told it could upload");
+});
+
+test("a picture cannot be posted without a capability", async () => {
+  const { env } = makeEnv();
+  const created = await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: PAYLOAD, name: "No Capability" }),
+  });
+  const { id } = await created.json();
+  const response = await run(`https://vibresia.com/api/share/${id}/picture`, {
+    env,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image: jpegBytes().toString("base64") }),
+  });
+  assert.equal(response.status, 403);
+});
+
+test("a capability from one share does not work on another", async () => {
+  const { env } = makeEnv();
+  resetRateLimiter();
+  const first = await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: PAYLOAD, name: "One", key: "one" }),
+  });
+  const { id: firstId } = await first.json();
+  resetRateLimiter();
+  const second = await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: `${PAYLOAD}x`, name: "Two", key: "two" }),
+  });
+  const { id: secondId } = await second.json();
+  assert.notEqual(firstId, secondId, "the two shares are the same one");
+
+  const capability = await capabilityFrom(env, firstId);
+  const response = await run(`https://vibresia.com/api/share/${secondId}/picture`, {
+    env,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image: jpegBytes().toString("base64"), capability }),
+  });
+  assert.equal(response.status, 403);
+});
+
+test("a picture has to be a JPEG of the right size", async () => {
+  const { env } = makeEnv();
+  const created = await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: PAYLOAD, name: "Bad Bytes" }),
+  });
+  const { id } = await created.json();
+  const capability = await capabilityFrom(env, id);
+
+  const notAJpeg = await run(`https://vibresia.com/api/share/${id}/picture`, {
+    env,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image: Buffer.from("not a picture at all").toString("base64"), capability }),
+  });
+  assert.equal(notAJpeg.status, 400);
+
+  const wrongSize = await run(`https://vibresia.com/api/share/${id}/picture`, {
+    env,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image: jpegBytes(640, 360).toString("base64"), capability }),
+  });
+  assert.equal(wrongSize.status, 400);
+});
+
+test("a picture cannot be bigger than the site will hold", async () => {
+  const { env } = makeEnv();
+  const created = await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: PAYLOAD, name: "Too Big" }),
+  });
+  const { id } = await created.json();
+  const capability = await capabilityFrom(env, id);
+
+  const response = await run(`https://vibresia.com/api/share/${id}/picture`, {
+    env,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      image: Buffer.alloc(500 * 1024, 0).toString("base64"),
+      capability,
+    }),
+  });
+  assert.equal(response.status, 400);
+});
+
+test("a picture for a share that does not exist is a 404", async () => {
+  const { env } = makeEnv();
+  const response = await run("https://vibresia.com/api/share/aaaaaa/picture", {
+    env,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image: jpegBytes().toString("base64"), capability: "x" }),
+  });
+  assert.equal(response.status, 404);
+});
+
+test("the app can give a share a picture, with its token", async () => {
+  const { env, shares } = makeEnv();
+  const created = await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: PAYLOAD, name: "Needs A Picture" }),
+  });
+  const { id } = await created.json();
+
+  const response = await run(`https://vibresia.com/api/share/${id}/picture`, {
+    env,
+    method: "POST",
+    headers: { "x-av-token": SHARE_TOKEN, "Content-Type": "application/json" },
+    body: JSON.stringify({ image: jpegBytes().toString("base64") }),
+  });
+  assert.equal(response.status, 200);
+  assert.equal((await response.json()).stored, true);
+  assert.ok(shares.rows.get(id).image, "the picture was not stored");
+});
+
+test("the app's token is needed for the app's way in", async () => {
+  const { env } = makeEnv();
+  const created = await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: PAYLOAD, name: "Needs A Picture" }),
+  });
+  const { id } = await created.json();
+
+  const response = await run(`https://vibresia.com/api/share/${id}/picture`, {
+    env,
+    method: "POST",
+    headers: { "x-av-token": "wrong", "Content-Type": "application/json" },
+    body: JSON.stringify({ image: jpegBytes().toString("base64") }),
+  });
+  assert.equal(response.status, 403);
+});
+
+test("the details say whether the share has a picture", async () => {
+  const { env } = makeEnv();
+  const withPicture = await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: PAYLOAD, name: "Has One", key: "hasone",
+                      image: jpegBytes().toString("base64") }),
+  });
+  const { id: withPictureId } = await withPicture.json();
+  const one = await (await run(`https://vibresia.com/api/share/${withPictureId}`, { env })).json();
+  assert.equal(one.hasImage, true);
+
+  resetRateLimiter();
+  const without = await run("https://vibresia.com/api/share", {
+    env,
+    ...shareRequest({ payload: `${PAYLOAD}y`, name: "Has None", key: "hasnone" }),
+  });
+  const { id: withoutId } = await without.json();
+  const none = await (await run(`https://vibresia.com/api/share/${withoutId}`, { env })).json();
+  assert.equal(none.hasImage, false);
 });
 
 // --- the gallery ------------------------------------------------------------
@@ -939,7 +1196,7 @@ test("a share with no name still gets a usable title and the payload", () => {
     url: "https://vibresia.com/s/aaaaaa",
   });
   assert.ok(out.includes("<title>A vibescape was shared with you — Vibresia</title>"));
-  assert.ok(out.includes(`window.__VIBRESIA_SHARE__ = {"d":"${PAYLOAD}","id":"aaaaaa"}`));
+  assert.ok(out.includes(`window.__VIBRESIA_SHARE__ = {"d":"${PAYLOAD}","id":"aaaaaa",`));
 });
 
 test("a payload cannot close the script tag it is in", () => {
@@ -1435,6 +1692,38 @@ test("gallery announcements can be switched off without taking the other message
     ...shareRequest({ payload: PAYLOAD, name: "Quiet", author: "Stephen", key: "quiet1", public: true }),
   });
   assert.equal(posts.length, 0, "the gallery is silent");
+});
+
+test("the picture endpoint has a budget of its own", async () => {
+  const { env } = makeEnv();
+  resetRateLimiter();
+  // A burst of picture writes, each for a share of its own. They are
+  // refused once the budget is spent, because a picture is a big row write
+  // and the quota is what sharing itself depends on.
+  //
+  // The shares are made first, because making one is what the sharing
+  // budget is for — and the two budgets have to be told apart.
+  const shares = [];
+  for (let n = 0; n < 210; n += 1) {
+    const created = await run("https://vibresia.com/api/share", {
+      env,
+      ...shareRequest({ payload: `${PAYLOAD}${n}`, name: `Pic ${n}`, author: "x", key: `pic${n}` }),
+    });
+    shares.push((await created.json()).id);
+    resetRateLimiter();
+  }
+  let refused = 0;
+  for (const id of shares) {
+    const capability = await capabilityFrom(env, id);
+    const response = await run(`https://vibresia.com/api/share/${id}/picture`, {
+      env,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image: jpegBytes().toString("base64"), capability }),
+    });
+    if (response.status === 429) refused += 1;
+  }
+  assert.ok(refused > 0, "the budget never ran out");
 });
 
 test("the gallery has its own budget, so a burst of shares cannot flood the channel", async () => {
