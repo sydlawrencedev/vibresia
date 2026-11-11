@@ -169,9 +169,16 @@ actor ShareLinkStore {
             guard let revision = json["revision"] as? Int else {
                 return .failure(.refused("the site did not say which version this is"))
             }
+            // Whether the site accepted the capability this Mac is holding.
+            // A share that already existed and was made by somebody else
+            // does not accept it, and the app must not keep a capability
+            // the site will refuse — that would lock the maker of the share
+            // out of their own share for good.
+            let ownsShare = json["owns"] as? Bool ?? false
             return .success(ShareLink(id: id, url: url,
                                       inGallery: json["public"] as? Bool ?? inGallery,
-                                      revision: revision))
+                                      revision: revision,
+                                      ownsShare: ownsShare))
         } catch {
             NSLog("[SHARE] could not reach the site: %@", error.localizedDescription)
             return .failure(.unreachable)
@@ -375,4 +382,14 @@ struct ShareLink: Equatable {
     let inGallery: Bool
     /// Which version of the share the site is at.
     let revision: Int
+    /// Whether the capability this Mac is holding is the one the site has
+    /// for this share.
+    ///
+    /// The site says so. It has to: the app keeps a capability on the
+    /// vibescape, and the site keeps only its hash, so the app cannot tell
+    /// for itself whether the capability it holds is the one that works.
+    /// If the site did not accept it, the app must not keep it — otherwise
+    /// it holds a capability the site will refuse, and the maker of the
+    /// share can never change it again.
+    let ownsShare: Bool
 }

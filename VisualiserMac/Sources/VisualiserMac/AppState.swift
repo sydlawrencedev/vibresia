@@ -1106,7 +1106,8 @@ final class AppState: ObservableObject {
     /// it was given, so changing your name left the old share behind in the
     /// gallery with nothing pointing at it.
     func setCustomVibescapeShare(id: String, shareID: String, key: String,
-                                 revision: Int? = nil, editKey: String? = nil) {
+                                 revision: Int? = nil, editKey: String? = nil,
+                                 clearEditKey: Bool = false) {
         guard let i = customVibescapes.firstIndex(where: { $0.id == id }) else { return }
         // Only the fields that are actually being written count towards
         // "changed". A nil revision or a nil capability means "leave it
@@ -1120,11 +1121,24 @@ final class AppState: ObservableObject {
         if let editKey, customVibescapes[i].shareEditKey != editKey {
             changed = true
         }
+        // Clearing the capability is its own instruction, and not the same
+        // as leaving it alone. A nil capability means "leave it alone"
+        // everywhere else, so a Mac that has been told the site will not
+        // accept the capability it is holding would keep holding it, and
+        // every later publish would be refused with a capability the site
+        // has already said is not the right one.
+        if clearEditKey, customVibescapes[i].shareEditKey != nil {
+            changed = true
+        }
         guard changed else { return }
         customVibescapes[i].shareID = shareID
         customVibescapes[i].shareKey = key
         if let revision { customVibescapes[i].shareRevision = revision }
-        if let editKey { customVibescapes[i].shareEditKey = editKey }
+        if clearEditKey {
+            customVibescapes[i].shareEditKey = nil
+        } else if let editKey {
+            customVibescapes[i].shareEditKey = editKey
+        }
         try? CustomVibescapeStore.save(customVibescapes[i])
         lastCustomVibescapesStamp = Self.customVibescapesStamp
     }

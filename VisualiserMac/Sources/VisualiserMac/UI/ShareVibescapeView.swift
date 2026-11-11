@@ -707,8 +707,20 @@ struct ShareVibescapeView: View {
             ShareLinkCache.remember(shareID: link.id, for: key, isPublic: link.inGallery)
             // The vibescape remembers its own link, so that changing your
             // name later knows which share to publish a new version to.
+            //
+            // The capability is only kept when the site says it is the one
+            // the site has for this share. If the share already existed and
+            // was made by somebody else, the site did not accept ours —
+            // and keeping a capability the site will refuse would lock its
+            // maker out of their own share for good.
+            //
+            // "Not kept" means it is cleared, not left as it was: a Mac
+            // still holding a capability the site has already refused would
+            // send it again on the next publish, and be refused again.
             app.setCustomVibescapeShare(id: id, shareID: link.id, key: key,
-                                        revision: link.revision, editKey: editKey)
+                                        revision: link.revision,
+                                        editKey: link.ownsShare ? editKey : nil,
+                                        clearEditKey: !link.ownsShare)
         case .failure(let why):
             linkFailure = why
             NSLog("[SHARE] could not make the link: %@", why.detail)

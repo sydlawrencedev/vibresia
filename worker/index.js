@@ -20,7 +20,7 @@ import { handleMcp } from "./mcp.js";
 // The capability that proves a share is yours. It lives in its own file
 // because the public MCP server needs it too, and the MCP server is
 // imported here — importing back would make a cycle.
-import { editKeyMatches, hashEditKey, shareHasNoCapability, claimShareCapability } from "./share-capability.js";
+import { editKeyMatches, hashEditKey } from "./share-capability.js";
 // The caps on what one share can be. The public MCP server writes to the
 // same table, so it uses the same ones.
 import {
@@ -1045,15 +1045,12 @@ async function handleShareCreate(request, env, ctx) {
     // caller is told what it is — a share somebody else made, listed or not
     // by their choice, not by whoever happened to share the same vibescape.
     //
-    // A share that has no capability at all is a share made before
-    // capabilities did. There is no owner to take the capability away from,
-    // and the request that finds the row is holding the content key that
-    // finds it — so this is the maker claiming their own share. Without
-    // that, every share made by an older build of the app would be
-    // permanently unlistable and unpublishable.
-    if (editKey && await shareHasNoCapability(env, existing.id)) {
-      await claimShareCapability(env, existing.id, editKey);
-    }
+    // A share made before capabilities did has no capability, and there is
+    // no way to tell its maker from a stranger: the share id and the content
+    // key are both public — they are in the link. So such a share cannot be
+    // claimed, and it stays as it was made. That is what the migration that
+    // added the capability says: "the shares that already exist have no
+    // edit key, so nobody can update them".
     const ownsExisting = await editKeyMatches(env, existing.id, editKey);
     const wasInGallery = await isInGallery(env, existing.id);
     // A gallery write that failed must not be reported as one that worked.
@@ -1092,6 +1089,13 @@ async function handleShareCreate(request, env, ctx) {
       public: inGallery,
       existing: true,
       replaced,
+      // Whether the capability this request carried is the one this share
+      // has. The app keeps its capability on the vibescape, and the site
+      // keeps only the hash — so the app has to be told whether the
+      // capability it is holding is the one that works, or it will keep a
+      // capability the site will refuse and never be able to change its own
+      // share again.
+      owns: ownsExisting,
       // Which version this share is at. The app records it, and compares it
       // with what the site says later to decide whether the copy on the Mac
       // is behind. Leaving it out would make the app record the first
@@ -1130,6 +1134,9 @@ async function handleShareCreate(request, env, ctx) {
         public: isPublic,
         existing: false,
         replaced,
+        // The row was made by this request, so the capability it carried is
+        // this share's capability.
+        owns: true,
         revision: 1,
       });
     } catch (error) {
@@ -1144,14 +1151,10 @@ async function handleShareCreate(request, env, ctx) {
           await ensureImage(env, raced, image);
           const racedWasInGallery = await isInGallery(env, raced.id);
           // The gallery flag is the maker's to set, and only the capability
-          // says this is the maker.
-          //
-          // A share with no capability at all was made before capabilities
-          // did, so the maker claims it here rather than being locked out
-          // of their own share for ever.
-          if (editKey && await shareHasNoCapability(env, raced.id)) {
-            await claimShareCapability(env, raced.id, editKey);
-          }
+          // says this is the maker. A share made before capabilities did has
+          // none, and there is no way to tell its maker from a stranger — the
+          // share id and the content key are both public — so it stays as it
+          // was made.
           const ownsRaced = await editKeyMatches(env, raced.id, editKey);
           // A failed gallery write is not reported as one that worked: see
           // the same note on the existing-share path above.

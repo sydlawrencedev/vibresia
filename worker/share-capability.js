@@ -37,38 +37,17 @@ export async function editKeyMatches(env, id, editKey) {
   }
 }
 
-/// Whether this share has no capability yet.
-///
-/// The shares that existed before the capability did are in this state, and
-/// they are the ones whose maker needs to be able to claim them.
-export async function shareHasNoCapability(env, id) {
-  try {
-    const row = await env.SHARES.prepare("SELECT edit_key FROM shares WHERE id = ?")
-      .bind(id).first();
-    return !!row && !row.edit_key;
-  } catch (error) {
-    console.log(`[share] could not read the capability of ${id}: ${error}`);
-    return false;
-  }
-}
+// There is deliberately no way to give a share that has no capability one.
+//
+// The shares that existed before the capability did cannot be claimed by
+// their maker, because the maker and a stranger look the same from the
+// server's side: the share id and the content key that finds the row are
+// both public — they are in the link anybody can open. Letting the first
+// person to ask claim the row would hand a stranger the ability to publish
+// a new version of somebody else's vibescape, and every installed copy
+// would load it.
+//
+// So a share made before the capability stays as it was made. The migration
+// that added the capability says the same thing: "the shares that already
+// exist have no edit key, so nobody can update them".
 
-/// Gives a share that has no capability the one the maker is holding.
-///
-/// Only ever called on a row with no capability at all: the shares that
-/// existed before capabilities did. There is no owner to take it from, so
-/// the first person to claim it with the content key that finds the row is
-/// the maker of that share. A row that already has a capability is left
-/// alone, so this can never take a share away from somebody.
-export async function claimShareCapability(env, id, editKey) {
-  if (!editKey) return false;
-  const hash = await hashEditKey(editKey);
-  try {
-    const result = await env.SHARES.prepare(
-      "UPDATE shares SET edit_key = ? WHERE id = ? AND edit_key IS NULL"
-    ).bind(hash, id).run();
-    return (result?.meta?.changes ?? 0) > 0;
-  } catch (error) {
-    console.log(`[share] could not give ${id} a capability: ${error}`);
-    return false;
-  }
-}

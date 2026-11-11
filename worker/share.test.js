@@ -1069,7 +1069,7 @@ test("sharing an existing vibescape cannot list somebody else's share", async ()
   assert.equal(details.public, false, "the share is in the gallery");
 });
 
-test("a share made before capabilities did can be claimed by its maker", async () => {
+test("a share made before capabilities did cannot be claimed by a stranger", async () => {
     const { env, shares } = makeEnv();
     // A share from an older build of the app: it has a row and a link, but
     // no capability, because capabilities did not exist when it was made.
@@ -1081,34 +1081,45 @@ test("a share made before capabilities did can be claimed by its maker", async (
     });
     shares.byKey.set("legacy1", "egac2a");
 
-    // The maker re-shares it from the new app. The app has a capability now
-    // — it did not have one before, so this is the first time it can prove
-    // anything about the share.
+    // Somebody who is not the maker, with the app's token — which is in the
+    // bundle, so it is not proof of anything — and the content key that
+    // finds the row. The content key is public: it is in the share link.
+    // So is the share id. Neither says "I made this".
     resetRateLimiter();
     const second = await run("https://vibresia.com/api/share", {
         env,
         ...shareRequest({ payload: PAYLOAD, name: "Old World", author: "Stephen",
-                          key: "legacy1", public: true, editKey: "the-capability" }),
+                          key: "legacy1", public: true, editKey: "a-strangers-key" }),
     });
     assert.equal(second.status, 200);
     const body = await second.json();
     assert.equal(body.existing, true, "it made a second share instead of finding the first");
-    assert.equal(body.public, true, "the maker could not list their own share");
-    assert.equal(body.editKey, undefined, "the answer should not leak a capability");
+    assert.equal(body.owns, false, "it was told it owned somebody else's share");
+    assert.equal(body.public, false, "somebody else's share was listed");
 
-    // And the capability was kept, so the maker can change it later.
-    const detailsResponse = await run("https://vibresia.com/api/share/egac2a", { env });
-    const details = await detailsResponse.json();
-    assert.equal(detailsResponse.status, 200, `the details said: ${JSON.stringify(details)}`);
-    assert.equal(details.public, true);
+    // And the share still has no capability, so the stranger cannot use the
+    // key they just offered to change it.
+    const row = shares.rows.get("egac2a");
+    assert.equal(row.edit_key, null, "the stranger gave the share a capability");
 
     const patched = await run("https://vibresia.com/api/share/egac2a", {
         env,
         method: "PATCH",
         headers: { "x-av-token": SHARE_TOKEN, "Content-Type": "application/json" },
-        body: JSON.stringify({ public: false, editKey: "the-capability" }),
+        body: JSON.stringify({ public: false, editKey: "a-strangers-key" }),
     });
-    assert.equal(patched.status, 200, "the maker still cannot change their own share");
+    assert.equal(patched.status, 403, "the stranger can change the share");
+
+    // Nor can they publish a new version of it.
+    const updated = await run("https://vibresia.com/api/share/egac2a", {
+        env,
+        method: "POST",
+        headers: { "x-av-token": SHARE_TOKEN, "Content-Type": "application/json" },
+        body: JSON.stringify({ payload: "QU5PVEhFUi1wYXlsb2Fk", name: "Hijacked", author: "Stephen",
+                               editKey: "a-strangers-key" }),
+    });
+    assert.equal(updated.status, 403, "the stranger can publish a new version");
+    assert.equal(shares.rows.get("egac2a").payload, PAYLOAD, "the shader was replaced");
 });
 
 test("a gallery write that fails is not reported as a success", async () => {
