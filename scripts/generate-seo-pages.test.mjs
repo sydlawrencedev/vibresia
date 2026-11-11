@@ -140,6 +140,34 @@ test("a head-to-head that doesn't say who should pick the other app doesn't buil
     assert.throws(() => render(page({ template: "2c", rows }), records), /needs versus/);
 });
 
+test("the heading order never skips a level", () => {
+    // A screen reader moves between headings by level. H1 then H3 skips H2,
+    // which reads as a missing section rather than a subsection, so the
+    // outline is broken for anybody navigating by heading.
+    const levels = (html) => [...html.matchAll(/<h([1-6])[\s>]/g)].map((m) => Number(m[1]));
+    for (const { page, html } of built) {
+        const seen = levels(html);
+        for (let i = 1; i < seen.length; i++) {
+            assert.ok(
+                seen[i] - seen[i - 1] <= 1,
+                `${page.slug} jumps from H${seen[i - 1]} to H${seen[i]}`,
+            );
+        }
+    }
+});
+
+test("the verdict box headings sit one level under the page's first heading", () => {
+    // The "Pick X if" box is the first thing under the H1, so it has to be
+    // an H2. It was an H3, which made every comparison page open on a
+    // skipped level.
+    const rows = [{ label: "Price", value: (h, s) => h.priceCell(s) }];
+    const versus = { template: "2c", versus: "touchdesigner", rows, verdict: { pickUs: "you want it free.", pickThem: "you want control." } };
+    const html = render(page({ ...versus, faq: [{ q: "Is it free?", a: filler }] }), records);
+    assert.match(html, /<h2>Pick Vibresia if<\/h2>/);
+    assert.match(html, /<h2>Pick TouchDesigner if<\/h2>/);
+    assert.doesNotMatch(html, /<h3>Pick /);
+});
+
 test("every page file is a planned row in the URL plan, with one URL per query", () => {
     const rows = fs.readFileSync(path.join(path.dirname(DATA), "../url-plan.csv"), "utf8").trim().split("\n").slice(1);
     const plan = rows.map((r) => r.split(","));

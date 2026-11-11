@@ -67,7 +67,10 @@
   .fact code { color: var(--cyan); font-size: 14px; }
 
   .setup { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 4px 22px 20px; }
-  .setup h3 { margin: 22px 0 4px; }
+  /* The panel headings are the panel's own labels, not page sections, so
+     they keep the small size they had as h3. They are h2 because they sit
+     directly under the h1 and the outline must not skip a level. */
+  .setup h2, .setup h3 { font-size: 18px; margin: 22px 0 4px; }
   .setup p { color: var(--muted); font-size: 15px; margin-bottom: 8px; }
   .setup pre { background: #000; border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px;
     overflow-x: auto; font-size: 13.5px; line-height: 1.6; margin: 0 0 6px; }
@@ -195,7 +198,7 @@
     <p class="lede">Vibresia comes with a small local server that AI assistants can talk to. Point an agent at it and it can write a vibescape, check that it compiles, look at what it drew and try again — without you copying a line of code back and forth.</p>
 
     <div class="setup">
-      <h3>Or use the web version</h3>
+      <h2>Or use the web version</h2>
       <p>If your agent runs in a browser — ChatGPT, Claude on the web, anything that talks to a remote server — there is one here too, and it needs nothing installed:</p>
       <div class="cmd"><code id="cmd-web">https://vibresia.com/mcp</code><button data-copy>Copy</button></div>
       <p class="note">Add it as a custom connector. It can write a vibescape and hand you a link, and that link plays in any browser — the picture is drawn live on the page, so it works for whoever you send it to, with or without the app. It is a slightly smaller server than the local one: it cannot draw, so it cannot show you a preview or check that a shader compiles, and it cannot see the music playing on your Mac.</p>
