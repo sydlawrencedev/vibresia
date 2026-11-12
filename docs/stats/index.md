@@ -22,7 +22,7 @@ the page rather than republishing under a new path.
 
 | Metric | Question it answers | Status |
 |---|---|---|
-| | | |
+| What people look for when they look for a Mac music visualiser | What do people actually reach for when they are looking for a music visualiser for a Mac? | Drafted 2026-11-12, waiting on the owner's written sign-off. Not published. |
 
 ## Notes
 
@@ -30,3 +30,11 @@ the page rather than republishing under a new path.
   Later runs on the same metric need none unless the method changes.
 - `/stats/*` pages that restate published government or industry figures are
   not original statistics. They are excluded from this index.
+- The data source is PostHog, project `673583`, not Supabase. The routine's
+  `data_source` question defaults to `supabase` and that default is wrong for
+  this project. The Mac app reports into the same project but its cohort is 16
+  installs, below the privacy gate's floor of 50, so nothing app-side is
+  publishable. The website surface is the only source that clears the gate.
+- The privacy policy does not yet say that aggregate figures are published.
+  That is the open item for the owner on the first publication, and the draft
+  carries the marker "privacy policy does not cover this".
