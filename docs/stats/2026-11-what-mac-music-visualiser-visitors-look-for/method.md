@@ -2,7 +2,7 @@
 
 **Run date:** 2026-11-12
 **Routine:** `routines/original-statistics.md` (v1.0.0)
-**Status:** DRAFT. Not published. Awaiting the owner's written sign-off (privacy gate rule 6).
+**Status:** DRAFT. Not published. Awaiting the owner's written sign-off (privacy gate rule 6). Privacy gate rule 4 is closed: the privacy policy now has a section, "Aggregate figures we publish". The licence is CC BY 4.0, chosen by the owner on 2026-11-12.
 **Target URL (once approved):** `https://vibresia.com/stats/data/what-mac-music-visualiser-visitors-look-for`
 
 ## The buyer question
@@ -264,46 +264,33 @@ entirely.
 | 1. Aggregates only | Every published number is a `count(DISTINCT person_id)`. No row, no identifier, no URL, no string. Nothing was logged or pasted. |
 | 2. Minimum cohort of 50 | Cohort is 660. The smallest published cell is 52. Nothing below 50 is published. |
 | 3. No sensitive categories | No breakdown by health, religion, ethnicity or sexual orientation. No category that could embarrass a group of users. |
-| 4. Privacy policy covers aggregate publication | **Not clearly covered. See below.** |
+| 4. Privacy policy covers aggregate publication | **Closed on 2026-11-12.** The policy has a section, "Aggregate figures we publish". See below. |
 | 5. Test and internal accounts excluded | The project's own canary identifier is excluded. Internal referrers (owner's machine, staging, owner's other site) and probe paths are excluded. 6 people removed. |
 | 6. First publication needs the owner's sign-off | **This is the first publication of an original statistic. The draft stops here and waits for the owner's written sign-off.** |
 
-### Rule 4, for the owner
+### Rule 4, closed on 2026-11-12
 
-`site/privacy.html` says what the app and the site collect, who else sees it
+`site/privacy.html` said what the app and the site collect, who else sees it
 (PostHog, Cloudflare, GitHub, Discord, Stripe), and that the app's statistics are
-tied to a random install identifier rather than to you. It does not say anywhere
+tied to a random install identifier rather than to you. It did not say anywhere
 that aggregate usage figures are published on the site.
 
-The lines that are close, and what they do not do:
+The owner chose option 1 on 2026-11-12: a short section was added to
+`site/privacy.html`, titled **"Aggregate figures we publish"**, placed after
+"The website" and before "Downloads". It says that:
 
-- "The website counts visits and clicks anonymously: which pages are looked at,
-  which buttons are pressed, which vibescape cards are scrolled to." This says
-  what is counted. It does not say the counts are published.
-- "The count itself is done on our side, so the number of downloads is right even
-  when an ad blocker stops the website's own count. The count is anonymous: it is
-  a count, not a list of who." This is about the download count, and about the
-  count being anonymous. It is the closest the policy comes, and it still does
-  not say the number appears in public.
+- aggregate counts are published as pages under `/stats/data`;
+- every published number stands for a group of **at least fifty people**, and
+  smaller groups are merged or left out;
+- nothing identifying a visitor goes into them, and they cannot be worked
+  backwards into an individual;
+- each page carries the method, the cohort size and the machine-readable
+  numbers, so a reader can check the figure rather than take it on trust;
+- measurement can be switched off at any time, and a reader can ask for their
+  own visits to be taken out of the count.
 
-**This is the one thing the owner needs to decide.** Two ways to close it:
-
-1. Add a short section to `site/privacy.html` saying that aggregate usage
-   figures are published, that they are counts of groups of at least 50 people,
-   and that they can be checked at `/stats/data/*`. This is the better answer,
-   because it makes the published numbers auditable by the people whose data they
-   are, which is what the section would be for.
-2. Confirm that publishing the figures is already covered by the existing
-   wording, and record that decision here.
-
-Until one of those happens, the draft carries the marker **"privacy policy does
-not cover this"** in the method section of the page, exactly as the routine
-requires. The same marker is recorded here, because this is where the decision
-is tracked:
-
-> **privacy policy does not cover this**
-
-Owner decision required before publication.
+The marker **"privacy policy does not cover this"** has been removed from the
+page copy and replaced with a note recording that the rule is closed.
 
 ## What the build needs, when it is signed off
 
@@ -312,20 +299,43 @@ touched. When it is built:
 
 - The page needs `index, follow` in its robots meta, unlike `/privacy` and
   `/terms`, which are `noindex, follow` by design. This page exists to be found
-  and cited, so it has to be indexable.
+  and cited, so it has to be indexable. **Done.**
 - The page needs an entry in a sitemap. The site runs four of them
   (`/sitemaps/blog.xml`, `/sitemaps/comparisons.xml`, `/sitemaps/questions.xml`,
   `/sitemaps/gallery.xml`) plus the small `/sitemap.xml`. A statistics page does
   not belong in the blog, comparison, question or gallery lists, so it wants a
-  fifth, `/sitemaps/stats.xml`, referenced from `robots.txt`.
+  fifth, `/sitemaps/stats.xml`, referenced from `robots.txt`. **Done.**
+  The generator owns it: `statsSitemap()` in `scripts/generate-seo-pages.mjs`
+  reads the pages from `site/stats/data/` on disk, so publishing a new
+  statistic is a matter of adding the page rather than editing a list. The
+  `lastmod` comes from the page's own `stats-updated` meta tag, not from the
+  file's mtime, because a fresh checkout would otherwise rewrite every date
+  and leave the generator's check permanently out of date.
 - The page needs to be in `site/llms.txt`. The AI visibility check of 2026-11-12
   found that only 18 of the 30 monthly prompts that have an answer are reachable
   by an answer engine, because they are in `llms.txt` **and** carry FAQPage. A
   dataset page carrying `Dataset` structured data is exactly the kind of page
-  that belongs in that file.
-- The `license` property in the `Dataset` schema points at `/terms` as a
-  placeholder. The owner should pick a real reuse licence for the figures. A
-  dataset nobody is allowed to quote cannot do the job this page exists to do.
+  that belongs in that file. **Done**, under a new "Original statistics"
+  section. The site's link checker fails a sitemap page that `llms.txt` does
+  not mention, so this is enforced rather than remembered.
+- The page needs the shared `Organization` and `WebSite` nodes from
+  `content/data/schema.json`, word for word, and a `FAQPage` whose questions
+  are visible on the page. `scripts/check-schema.mjs` enforces this on every
+  indexable page. **Done.** The FAQs are four real questions a reader of this
+  page would ask, answered in the body as well as in the schema.
+- There is also an index page at `/stats/data/`, listing the published
+  figures. The privacy policy links to it, and the link checker fails a link
+  to a page that does not exist, so it cannot be a dangling promise.
+- The `license` property in the `Dataset` schema is **CC BY 4.0**, chosen by
+  the owner on 2026-11-12: `https://creativecommons.org/licenses/by/4.0/`. The
+  figures are a separate work from the MIT-licensed code and carry their own
+  licence.
+- Privacy gate rule 4 is **closed**. `site/privacy.html` has a section, "Aggregate
+  figures we publish", that says aggregate counts are published under `/stats/data`,
+  that every published number stands for a group of at least fifty people, that
+  nothing identifying a visitor goes into them, that each page carries its method
+  and its machine-readable numbers, and that a reader can ask for their visits to
+  be taken out of the count.
 
 ## What a later run needs
 

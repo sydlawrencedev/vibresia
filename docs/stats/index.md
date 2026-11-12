@@ -35,6 +35,14 @@ the page rather than republishing under a new path.
   this project. The Mac app reports into the same project but its cohort is 16
   installs, below the privacy gate's floor of 50, so nothing app-side is
   publishable. The website surface is the only source that clears the gate.
-- The privacy policy does not yet say that aggregate figures are published.
-  That is the open item for the owner on the first publication, and the draft
-  carries the marker "privacy policy does not cover this".
+- The privacy policy now covers aggregate publication. `site/privacy.html` has
+  a section, "Aggregate figures we publish", saying that aggregate counts are
+  published under `/stats/data`, that every published number stands for a group
+  of at least fifty people, that nothing identifying a visitor goes into them,
+  that each page carries its method and its machine-readable numbers, and that
+  a reader can ask for their visits to be taken out of the count. The first
+  publication's privacy gate rule 4 is closed.
+- The figures are published under **CC BY 4.0**
+  (`https://creativecommons.org/licenses/by/4.0/`), chosen by the owner on
+  2026-11-12. The code stays MIT licensed; the figures are a separate work with
+  their own licence.

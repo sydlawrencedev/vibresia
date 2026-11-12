@@ -34,7 +34,9 @@ own traffic
 **Notes for Syd before sending:**
 
 - The page is not live yet. This note goes out only after the page is published
-  and the privacy question is settled.
+  and the owner's written sign-off is given. The privacy question is settled:
+  the policy now has a section, "Aggregate figures we publish", and the figures
+  are licensed CC BY 4.0.
 - The number is a reach count, not a preference ranking. It says which kind of
   page people reached, not which one they liked. If a journalist asks "so what do
   people want", the honest answer is that this does not measure that, and we

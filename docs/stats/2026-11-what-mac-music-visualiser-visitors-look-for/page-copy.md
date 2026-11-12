@@ -2,7 +2,7 @@
 title: "What people look for when they look for a Mac music visualiser"
 meta_description: "Between 19 October and 12 November 2026, 215 of the 660 people who visited vibresia.com reached a shared vibescape, more than twice as many as reached a comparison page. The numbers, and how they were counted."
 canonical: "https://vibresia.com/stats/data/what-mac-music-visualiser-visitors-look-for"
-status: DRAFT, awaiting the owner's written sign-off (privacy gate rule 6)
+status: DRAFT, awaiting the owner's written sign-off (privacy gate rule 6). Privacy gate rule 4 closed on 2026-11-12: the privacy policy now has a section, "Aggregate figures we publish". Licence chosen by the owner on 2026-11-12: CC BY 4.0.
 byline: "Syd Lawrence, a visual artist and developer who makes Vibresia"
 ---
 
@@ -77,6 +77,10 @@ between the people we can see.
 > 19 October to 12 November 2026, cohort of 660 visitors.
 > https://vibresia.com/stats/data/what-mac-music-visualiser-visitors-look-for
 
+The figures are published under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Use
+them freely, quote them, write about them and republish them, with a link back. Credit
+Vibresia and the date, and say if you changed anything.
+
 ## Method
 
 Who is counted: every distinct browser that loaded a page on vibresia.com
@@ -102,13 +106,12 @@ There is no public benchmark for this, so there is nothing to compare it
 against. Published engagement figures for 2026 are platform numbers, measured on
 TikTok and LinkedIn, and they are not measuring the same thing.
 
-> **Review marker: privacy policy does not cover this.**
-> `site/privacy.html` says what the site collects and who else sees it, but it
-> does not say that aggregate usage figures are published. This needs the
-> owner's decision before the page goes live: either add a short section to the
-> privacy policy saying that aggregate figures are published, that they are
-> counts of groups of at least 50 people, and that they can be checked here, or
-> confirm that the existing wording already covers it.
+> **Review marker: closed.** The privacy policy now covers this. `site/privacy.html`
+> has a section, "Aggregate figures we publish", which says that aggregate counts are
+> published as pages under `/stats/data`, that every published number stands for a
+> group of at least fifty people, that nothing identifying a visitor goes into them,
+> that each page carries its method and its machine-readable numbers, and that a
+> reader can ask for their visits to be taken out of the count.
 
 ## See it on your own Mac
 
@@ -127,6 +130,14 @@ something you like, and watch the screen.
 - One next step, not a menu.
 - The privacy marker is deliberately visible and is in the routine's exact
   wording. It comes out when the owner closes rule 4.
+- **Rule 4 is now closed.** The privacy policy carries a section, "Aggregate
+  figures we publish", which covers all three points the marker asked for: that
+  aggregate figures are published, that every number stands for a group of at
+  least fifty people, and that the method and the machine-readable numbers are
+  on the page so the figure can be checked.
+- **The licence is CC BY 4.0**, chosen by the owner on 2026-11-12. The schema
+  points at the canonical deed, and the "How to cite it" section states the
+  terms in plain words for a reader who never sees the schema.
 - The copy says "our own traffic" and "our test account". The page is written in
   the first person plural because the byline is Syd and the data is the
   project's own. If the owner would rather it read as a neutral dataset, the
@@ -152,7 +163,7 @@ something you like, and watch the screen.
         "@id": "https://vibresia.com/author/syd-lawrence#person"
       },
       "isAccessibleForFree": true,
-      "license": "https://vibresia.com/terms",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
       "keywords": [
         "music visualiser",
         "Mac",
@@ -235,9 +246,16 @@ something you like, and watch the screen.
 
 ### A note on the `license` property
 
-`https://vibresia.com/terms` is used as the licence reference because the
-project's terms page is the closest thing to a reuse statement the site has. If
-the owner would rather these figures carry an explicit Creative Commons licence
-instead, that is a one-line change and worth doing: a dataset nobody is allowed
-to quote cannot do the job this page exists to do. The owner should pick the
-licence. Not published until they do.
+The figures are published under **CC BY 4.0**, the licence the owner chose on
+2026-11-12. It is the standard for citable datasets: reuse and republication are
+allowed, including commercially, on the condition that Vibresia is credited and
+the link is included. It is also the licence editors and data journalists
+already know, and the one a `Dataset` schema is expected to carry.
+
+The `license` property points at the canonical licence deed rather than a
+page of our own, which is what makes it machine-readable. The terms of the
+licence are on the page itself, in the "How to cite it" section, so a reader
+who does not follow the schema link still sees what they are allowed to do.
+
+The code stays MIT licensed. The figures are a separate work with their own
+licence, and the two do not need to match.

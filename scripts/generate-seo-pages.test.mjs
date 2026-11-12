@@ -223,6 +223,26 @@ test("no page in a sitemap is an orphan, and no internal link is broken", () => 
     assert.deepEqual(broken, [], "internal links to pages that don't exist");
 });
 
+test("the statistics sitemap lists every dataset page, and its dates come from the page", async () => {
+    const { statsSitemap } = await import("./generate-seo-pages.mjs");
+    const xml = statsSitemap();
+    const dir = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../site/stats/data");
+    const files = fs.readdirSync(dir).filter((f) => f.endsWith(".html"));
+    assert.ok(files.length > 0, "there are statistics pages to list");
+    for (const f of files) {
+        const html = fs.readFileSync(path.join(dir, f), "utf8");
+        const slug = f.replace(/\.html$/, "").replace(/^index$/, "");
+        const loc = slug ? `/stats/data/${slug}` : "/stats/data/";
+        assert.ok(xml.includes(`<loc>https://vibresia.com${loc}</loc>`), `${loc} is not in the statistics sitemap`);
+        // The date has to come from the page, not from the file's mtime: a
+        // fresh checkout would rewrite every lastmod and leave the
+        // generator's own check permanently out of date.
+        const updated = html.match(/<meta name="stats-updated" content="(\d{4}-\d{2}-\d{2})"/);
+        assert.ok(updated, `${f} has no stats-updated meta`);
+        assert.ok(xml.includes(`<lastmod>${updated[1]}</lastmod>`), `${loc} does not carry the date the page says`);
+    }
+});
+
 test("every indexable page has the shared Organization node and FAQs it shows", async () => {
     const { check, checkPage, SCHEMA } = await import("./check-schema.mjs");
     assert.deepEqual(check(), []);

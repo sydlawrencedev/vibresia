@@ -43,3 +43,10 @@ Every fact about another app on these pages comes from that app's own site, stor
 - [Does Plex have a visualizer on Mac?](https://vibresia.com/blog/plex-visualizer-mac): partly, Plex has visualisers in Plexamp and the mobile apps as a Plex Pass feature, and what works in the desktop app or browser
 - [Does Twitch have a visualizer?](https://vibresia.com/blog/twitch-visualizer-mac): no, Twitch has no visualiser of its own: its graphics are alerts for stream events, so the visuals come from the broadcaster, and how to capture them on a Mac
 - [Does Parachord have a visualizer?](https://vibresia.com/blog/parachord-visualizer-mac): no, it is a multi-source player with no visualiser of its own, and Vibresia draws whatever the Mac is playing
+
+## Original statistics
+
+Figures from Vibresia's own traffic, published with the method behind them, so anybody can check them. Every number is a count of a group of at least fifty people, never a record of a person. Licensed CC BY 4.0: quote them, write about them, republish them, with a link back.
+
+- [Our own data](https://vibresia.com/stats/data/): the list of published figures
+- [What people look for when they look for a Mac music visualiser](https://vibresia.com/stats/data/what-mac-music-visualiser-visitors-look-for): of 660 people who visited vibresia.com between 19 October and 12 November 2026, 215 reached a shared vibescape, 101 reached a comparison page and 285 reached the homepage. The method, the cohort size and the known biases are on the page.

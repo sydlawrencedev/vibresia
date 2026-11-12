@@ -78,6 +78,59 @@ a:hover { color: var(--text); }
   font-weight: 600;
 }
 
+/* The statistics pages carry a table of figures. The blog pages style their
+   own tables in the page; these two share legal.css, so the table rules
+   live here. */
+.legal .table-scroll {
+  overflow-x: auto;
+  margin: 22px 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.legal table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 520px;
+}
+
+.legal th,
+.legal td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 15px;
+  vertical-align: top;
+}
+
+.legal thead th {
+  color: var(--muted);
+  font: 600 12px "JetBrains Mono", monospace;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.legal tbody tr:last-child > * { border-bottom: 0; }
+
+/* The download button on a statistics page. It is a link inside a paragraph
+   of body text, so it needs to read as a button rather than as another
+   sentence. */
+.legal .get-it { margin: 18px 0 4px; }
+
+.legal .get-it-link {
+  display: inline-block;
+  padding: 11px 18px;
+  border: 1px solid var(--pink);
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.legal .get-it-link:hover {
+  color: var(--bg);
+  background: var(--pink);
+}
+
 @media (max-width: 640px) {
   .wrap { padding: 0 16px 32px; }
 }
