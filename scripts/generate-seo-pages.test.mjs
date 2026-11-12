@@ -18,6 +18,10 @@ const records = JSON.parse(fs.readFileSync(DATA, "utf8"));
 const pages = await loadPages(records);
 const all = pages.map((p) => p.page);
 const built = pages.map(({ fn, page }) => ({ page, html: render(fn, records, all) }));
+// The comparisons hub is built by renderHub, not render, so it does not
+// come back from loadPages. Without this line the hub is outside every
+// check below, which is how it shipped with a skipped heading level.
+const hub = { page: { slug: "comparison", template: "hub" }, html: renderHub(all.filter((p) => p.template === "2b" || p.template === "2c"), records) };
 
 const filler = Array(MIN_WORDS).fill("word").join(" ");
 
@@ -145,13 +149,45 @@ test("the heading order never skips a level", () => {
     // which reads as a missing section rather than a subsection, so the
     // outline is broken for anybody navigating by heading.
     const levels = (html) => [...html.matchAll(/<h([1-6])[\s>]/g)].map((m) => Number(m[1]));
-    for (const { page, html } of built) {
+    for (const { page, html } of [...built, hub]) {
         const seen = levels(html);
         for (let i = 1; i < seen.length; i++) {
             assert.ok(
                 seen[i] - seen[i - 1] <= 1,
                 `${page.slug} jumps from H${seen[i - 1]} to H${seen[i]}`,
             );
+        }
+    }
+});
+
+test("the comparisons hub opens its list under a heading of its own", () => {
+    // The hub's entries are H3, one per comparison. The first group had no
+    // section heading above it, so the page went H1 then straight to H3 and
+    // a screen reader moving by heading started part-way down the page.
+    const html = hub.html;
+    assert.match(html, /<h2>Vibresia vs another app<\/h2>/);
+    // The first entry heading comes after that H2, not straight after the H1.
+    const h1 = html.indexOf("<h1>");
+    const h2 = html.indexOf("<h2>Vibresia vs another app</h2>");
+    const firstH3 = html.search(/<h3>/);
+    assert.ok(h1 < h2, "the section heading is not under the page's H1");
+    assert.ok(h2 < firstH3, "the first entry heading is not under the section heading");
+});
+
+test("every table header cell has a name", () => {
+    // The first column of a side-by-side table is the row's label — "Price",
+    // "What it is" — and its header cell was empty. A screen reader reads the
+    // header row as a blank and then an app name, with nothing saying what
+    // the first column holds. The name is for the screen reader only, so the
+    // layout is unchanged.
+    for (const { page, html } of [...built, hub]) {
+        // <th, not <th: the naive pattern also matches <thead>, and then the
+        // header cells that follow it are never seen at all.
+        const cells = [...html.matchAll(/<th(\s[^>]*)>([\s\S]*?)<\/th>/g)];
+        for (const [, attrs, inner] of cells) {
+            if (!/scope="col"/.test(attrs)) continue;
+            const text = inner.replace(/<[^>]*>/g, "").trim();
+            assert.ok(text, `${page.slug} has a table header cell with no name`);
         }
     }
 });

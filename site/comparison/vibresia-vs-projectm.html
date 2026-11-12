@@ -56,6 +56,14 @@
   thead th { color: var(--muted); font: 600 12px "JetBrains Mono", monospace; letter-spacing: 1px; text-transform: uppercase; }
   tbody th { position: sticky; left: 0; background: var(--bg); font-weight: 700; }
   tbody tr:last-child > * { border-bottom: 0; }
+  /* A name for a header cell that the design does not show. The first column
+     of a side-by-side table is the row's label — "Price", "What it is" — and
+     it has no heading of its own. Left empty, a screen reader reads the
+     header row as a blank, then an app name, with nothing saying what the
+     first column holds. The name is for the screen reader; the layout is
+     unchanged. */
+  .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+    overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
   .entry { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px 8px; margin: 16px 0; }
   .entry .meta { color: var(--gold); font-size: 14px; }
   .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 26px 0; }
@@ -274,7 +282,7 @@
     <p class="answer">If you want a music visualiser on your Mac that installs like any other app and reacts to whatever is playing, Vibresia is the easier choice: it's free, signed and notarised, checks for updates from inside, and listens to Spotify, Apple Music or a browser with no plug-in. <a href="https://github.com/projectM-visualizer/projectm">projectM</a> is the open-source rebuild of MilkDrop, and if it's MilkDrop's presets you want, it's the one to pick, though its own page calls the Mac apps previews. Both are free and open source. We make Vibresia, so check our reasons against the sources at the bottom.</p>
     
     <div class="table-scroll"><table class="versus">
-        <thead><tr><th scope="col"></th><th scope="col">Vibresia</th><th scope="col">projectM</th></tr></thead>
+        <thead><tr><th scope="col"><span class="visually-hidden">What to compare</span></th><th scope="col">Vibresia</th><th scope="col">projectM</th></tr></thead>
         <tbody>
           <tr><th scope="row">What it is</th><td>A finished Mac app with 18 built-in scenes</td><td>An open-source reimplementation of Winamp's MilkDrop, as a cross-platform library with several front-ends.</td></tr>
           <tr><th scope="row">Price</th><td>Free, every feature</td><td>Free</td></tr>

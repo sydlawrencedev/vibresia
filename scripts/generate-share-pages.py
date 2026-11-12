@@ -144,6 +144,7 @@ def render(slug: str, title: str, desc: str) -> str:
   <!-- chrome:nav -->
   <!-- /chrome:nav -->
 
+  <main>
   <section class="hero">
     <h1>{safe_title}.</h1>
     <p class="lede">{safe_desc}</p>
@@ -192,6 +193,7 @@ def render(slug: str, title: str, desc: str) -> str:
       <a href="/vibe">Make one — describe a world and an agent writes it</a>
     </p>
   </section>
+  </main>
 
   <!-- chrome:footer -->
   <!-- /chrome:footer -->
