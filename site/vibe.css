@@ -87,7 +87,10 @@ a:hover { color: var(--text); }
   color: var(--muted);
 }
 
-.panel-label.dim { color: rgba(167, 159, 196, 0.6); }
+/* The world name is 11px, so it needs 4.5:1 against the panel. At 0.6 alpha
+   it composited to #69627d on #0c0713, which is 3.45:1 and failed WCAG AA.
+   0.8 alpha gives 5.38:1 and still reads as the quieter of the two labels. */
+.panel-label.dim { color: rgba(167, 159, 196, 0.8); }
 
 .panel-note {
   margin: 12px 0 0;

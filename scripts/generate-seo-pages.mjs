@@ -185,7 +185,7 @@ function appVerdictHtml(a) {
         ["Works with Vibresia", withUs],
     ];
     return `<div class="table-scroll"><table class="versus verdict-table">
-        <thead><tr><th scope="col"></th><th scope="col">${escapeHtml(a.name)} on a Mac</th></tr></thead>
+        <thead><tr><th scope="col"><span class="visually-hidden">What to compare</span></th><th scope="col">${escapeHtml(a.name)} on a Mac</th></tr></thead>
         <tbody>
           ${rows.filter(([, v]) => v).map(([k, v]) => `<tr><th scope="row">${escapeHtml(k)}</th><td>${escapeHtml(v)}</td></tr>`).join("\n          ")}
         </tbody>
@@ -606,7 +606,7 @@ function tableHtml(h, page) {
  */
 function versusTableHtml(h, page) {
     const pair = sides(page);
-    const head = `<th scope="col"></th>${pair.map((s) => `<th scope="col">${escapeHtml(h.name(s))}</th>`).join("")}`;
+    const head = `<th scope="col"><span class="visually-hidden">What to compare</span></th>${pair.map((s) => `<th scope="col">${escapeHtml(h.name(s))}</th>`).join("")}`;
     const rows = page.rows.map((row) =>
         `<tr><th scope="row">${escapeHtml(row.label)}</th>${pair.map((s) => `<td>${escapeHtml(row.value(h, s))}</td>`).join("")}</tr>`);
     return `<div class="table-scroll"><table class="versus">\n        <thead><tr>${head}</tr></thead>\n        <tbody>\n          ${rows.join("\n          ")}\n        </tbody>\n      </table></div>`;
@@ -642,7 +642,7 @@ function connectionsHtml(h, page) {
     const pair = sides(page);
     const kinds = Object.keys(IO_LABELS).filter((kind) => pair.some((s) => h.io(s, kind).status !== "unknown"));
     if (!kinds.length) throw new Error(`${page.slug}: a connections table with nothing in it`);
-    const head = `<th scope="col"></th>${pair.map((s) => `<th scope="col">${escapeHtml(h.name(s))}</th>`).join("")}`;
+    const head = `<th scope="col"><span class="visually-hidden">Connection</span></th>${pair.map((s) => `<th scope="col">${escapeHtml(h.name(s))}</th>`).join("")}`;
     const rows = kinds.map((kind) =>
         `<tr><th scope="row">${escapeHtml(IO_LABELS[kind])}</th>${pair.map((s) => `<td>${ioCell(h, s, kind)}</td>`).join("")}</tr>`);
     return `<h2>Control and connections</h2>
@@ -810,6 +810,14 @@ const STYLE = `  :root {
   thead th { color: var(--muted); font: 600 12px "JetBrains Mono", monospace; letter-spacing: 1px; text-transform: uppercase; }
   tbody th { position: sticky; left: 0; background: var(--bg); font-weight: 700; }
   tbody tr:last-child > * { border-bottom: 0; }
+  /* A name for a header cell that the design does not show. The first column
+     of a side-by-side table is the row's label — "Price", "What it is" — and
+     it has no heading of its own. Left empty, a screen reader reads the
+     header row as a blank, then an app name, with nothing saying what the
+     first column holds. The name is for the screen reader; the layout is
+     unchanged. */
+  .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+    overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
   .entry { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px 8px; margin: 16px 0; }
   .entry .meta { color: var(--gold); font-size: 14px; }
   .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 26px 0; }
@@ -1043,7 +1051,13 @@ export function renderHub(comparisons, records) {
     };
     const ours = comparisons.filter((c) => c.template === "2c").map(entry);
     const referee = comparisons.filter((c) => c.template === "2b").map(entry);
-    const entries = [...ours, ...(referee.length ? ["<h2>Other apps, side by side</h2>\n    <p>Comparisons of two other apps, for people choosing between them. We refer; we only mention Vibresia where it fills a gap both leave.</p>", ...referee] : [])];
+    // The entries are H3, one per comparison, so each group needs an H2 over
+    // it. The first group had none, and the page went H1 then straight to
+    // H3, which read as a missing section to anybody moving by heading.
+    const entries = [
+        ...(ours.length ? ["<h2>Vibresia vs another app</h2>\n    <p>One app against Vibresia, for people deciding whether to make the switch or stick with what they have.</p>", ...ours] : []),
+        ...(referee.length ? ["<h2>Other apps, side by side</h2>\n    <p>Comparisons of two other apps, for people choosing between them. We refer; we only mention Vibresia where it fills a gap both leave.</p>", ...referee] : []),
+    ];
     const page = { title: HUB.title, description: HUB.description, template: "hub", slug: "comparison" };
     const graph = [
         {

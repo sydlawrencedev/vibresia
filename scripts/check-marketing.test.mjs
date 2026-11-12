@@ -168,6 +168,54 @@ test("the gallery is indexed and has a sitemap", () => {
         "the gallery sitemap does not list the gallery");
 });
 
+// --- Every page has a main landmark ---------------------------------------
+
+test("every page in the site has exactly one main landmark", () => {
+    // A screen reader user moves between regions with the landmarks rotor.
+    // Content that sits outside a landmark is not in the rotor at all, so a
+    // page with no <main> offers no way past the header.
+    //
+    // The count is on the element, not on the string: "main" also appears in
+    // "domain", and the pages are HTML, not a tidy data structure.
+    const pages = [
+        "site/index.html",
+        "site/agents.html",
+        "site/vibe.html",
+        "site/vibescapes.html",
+        "site/privacy.html",
+        "site/terms.html",
+        "site/admin.html",
+        "site/author/syd-lawrence.html",
+        "site/comparison.html",
+        "site/share/index.html",
+    ];
+    const shareDir = path.join(ROOT, "site", "share");
+    for (const name of fs.readdirSync(shareDir)) {
+        if (name.endsWith(".html")) pages.push(path.join("site", "share", name));
+    }
+    for (const file of pages) {
+        const html = read(file);
+        const opens = (html.match(/<main[\s>]/g) || []).length;
+        const closes = (html.match(/<\/main>/g) || []).length;
+        assert.equal(opens, 1, `${file} has ${opens} <main> elements, expected 1`);
+        assert.equal(closes, 1, `${file} has ${closes} </main> elements, expected 1`);
+    }
+});
+
+test("the main landmark wraps the content, not the header or the footer", () => {
+    // A <main> that swallowed the navigation would put the nav inside the
+    // main landmark, which is its own kind of wrong: the header is a banner,
+    // the footer is content information, and neither belongs in main.
+    for (const file of ["site/index.html", "site/vibe.html", "site/vibescapes.html", "site/share/index.html"]) {
+        const html = read(file);
+        const header = html.indexOf("</header>");
+        const main = html.indexOf("<main>");
+        const footer = html.indexOf('<footer class="site-footer"');
+        assert.ok(header < main, `${file} puts <main> before the header closes`);
+        assert.ok(main < footer, `${file} puts <main> after the footer starts`);
+    }
+});
+
 // --- The author's credentials are stated as facts --------------------------
 
 test("the author's track record is stated plainly", () => {

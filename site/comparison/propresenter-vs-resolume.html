@@ -56,6 +56,14 @@
   thead th { color: var(--muted); font: 600 12px "JetBrains Mono", monospace; letter-spacing: 1px; text-transform: uppercase; }
   tbody th { position: sticky; left: 0; background: var(--bg); font-weight: 700; }
   tbody tr:last-child > * { border-bottom: 0; }
+  /* A name for a header cell that the design does not show. The first column
+     of a side-by-side table is the row's label — "Price", "What it is" — and
+     it has no heading of its own. Left empty, a screen reader reads the
+     header row as a blank, then an app name, with nothing saying what the
+     first column holds. The name is for the screen reader; the layout is
+     unchanged. */
+  .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+    overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
   .entry { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px 8px; margin: 16px 0; }
   .entry .meta { color: var(--gold); font-size: 14px; }
   .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 26px 0; }
@@ -314,7 +322,7 @@
       <p>If you are after a visual for whatever your Mac is playing, <a href="/">Vibresia</a> is the free app that does that. If you are setting up a show, this page is the right one.</p>
     </aside>
     <div class="table-scroll"><table class="versus">
-        <thead><tr><th scope="col"></th><th scope="col">ProPresenter</th><th scope="col">Resolume</th></tr></thead>
+        <thead><tr><th scope="col"><span class="visually-hidden">What to compare</span></th><th scope="col">ProPresenter</th><th scope="col">Resolume</th></tr></thead>
         <tbody>
           <tr><th scope="row">What it is</th><td>Presentation and live production software for showing lyrics, slides and media, and for driving screens and video outputs.</td><td>VJ and media-server software (Avenue, Arena) and a visual programming tool (Wire), for macOS and Windows.</td></tr>
           <tr><th scope="row">Price</th><td>Free version; paid from US$29</td><td>€299, one-time</td></tr>
@@ -327,7 +335,7 @@
       </table></div>
     <h2>Control and connections</h2>
     <div class="table-scroll"><table class="versus">
-        <thead><tr><th scope="col"></th><th scope="col">ProPresenter</th><th scope="col">Resolume</th></tr></thead>
+        <thead><tr><th scope="col"><span class="visually-hidden">Connection</span></th><th scope="col">ProPresenter</th><th scope="col">Resolume</th></tr></thead>
         <tbody>
           <tr><th scope="row">MIDI</th><td><b>Yes</b>: ProPresenter sends and receives MIDI, and can use incoming notes to trigger slides, media and macros.</td><td><b>Yes</b>: Avenue and Arena take MIDI in and send MIDI out, including pad colour feedback, from multiple enabled devices, and Wire adds MIDI In and MIDI Out nodes for generating and reading MIDI data.</td></tr>
           <tr><th scope="row">OSC</th><td><b>No</b>: No OSC support was found; the maker documents HTTP and TCP/IP control, MIDI, DMX and timecode, and its own help centre search returns no OSC article.</td><td><b>Yes</b>: Avenue and Arena accept OSC input and can send OSC output to other applications over the network, and Wire adds OSC In and OSC Out nodes for reading and writing OSC inside a patch.</td></tr>

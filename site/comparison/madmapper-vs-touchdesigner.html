@@ -56,6 +56,14 @@
   thead th { color: var(--muted); font: 600 12px "JetBrains Mono", monospace; letter-spacing: 1px; text-transform: uppercase; }
   tbody th { position: sticky; left: 0; background: var(--bg); font-weight: 700; }
   tbody tr:last-child > * { border-bottom: 0; }
+  /* A name for a header cell that the design does not show. The first column
+     of a side-by-side table is the row's label — "Price", "What it is" — and
+     it has no heading of its own. Left empty, a screen reader reads the
+     header row as a blank, then an app name, with nothing saying what the
+     first column holds. The name is for the screen reader; the layout is
+     unchanged. */
+  .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+    overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
   .entry { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px 8px; margin: 16px 0; }
   .entry .meta { color: var(--gold); font-size: 14px; }
   .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 26px 0; }
@@ -321,7 +329,7 @@
       <p>If you are after a visual for whatever your Mac is playing, <a href="/">Vibresia</a> is the free app that does that. If you are setting up a show, this page is the right one.</p>
     </aside>
     <div class="table-scroll"><table class="versus">
-        <thead><tr><th scope="col"></th><th scope="col">MadMapper</th><th scope="col">TouchDesigner</th></tr></thead>
+        <thead><tr><th scope="col"><span class="visually-hidden">What to compare</span></th><th scope="col">MadMapper</th><th scope="col">TouchDesigner</th></tr></thead>
         <tbody>
           <tr><th scope="row">What it is</th><td>Video and LED mapping software for macOS and Windows, with mesh warping, DMX and Art-Net lighting control, and a live GLSL shader editor.</td><td>Derivative's node-based visual programming environment for real-time interactive media.</td></tr>
           <tr><th scope="row">Price</th><td>Free version; paid from €39</td><td>Free version; paid from US$300</td></tr>
@@ -334,7 +342,7 @@
       </table></div>
     <h2>Control and connections</h2>
     <div class="table-scroll"><table class="versus">
-        <thead><tr><th scope="col"></th><th scope="col">MadMapper</th><th scope="col">TouchDesigner</th></tr></thead>
+        <thead><tr><th scope="col"><span class="visually-hidden">Connection</span></th><th scope="col">MadMapper</th><th scope="col">TouchDesigner</th></tr></thead>
         <tbody>
           <tr><th scope="row">MIDI</th><td><b>Yes</b>: MadMapper takes MIDI in and out, and any MIDI or OSC controller can drive parameters live.</td><td><b>Yes</b>: TouchDesigner reads MIDI with the MIDI In CHOP and sends MIDI with the MIDI Out CHOP, which can address any available MIDI device.</td></tr>
           <tr><th scope="row">OSC</th><td><b>Yes</b>: MadMapper takes OSC in and out, and supports OSC Query for browsing its address space on the network.</td><td><b>Yes</b>: TouchDesigner supports Open Sound Control through four operators, the OSC In CHOP and OSC Out CHOP for CHOP channels and the OSC In DAT and OSC Out DAT for raw messages, all over UDP.</td></tr>
