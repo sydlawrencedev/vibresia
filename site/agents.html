@@ -214,7 +214,7 @@
     <div class="setup">
       <h2>Or use the web version</h2>
       <p>If your agent runs in a browser — ChatGPT, Claude on the web, anything that talks to a remote server — there is one here too, and it needs nothing installed:</p>
-      <div class="cmd"><code id="cmd-web">https://vibresia.com/mcp</code><button data-copy>Copy</button></div>
+      <div class="cmd"><code id="cmd-web">https://vibresia.com/mcp</code><button data-copy data-command="mcp-web">Copy</button></div>
       <p class="note">Add it as a custom connector. It can write a vibescape and hand you a link, and that link plays in any browser — the picture is drawn live on the page, so it works for whoever you send it to, with or without the app. It is a slightly smaller server than the local one: it cannot draw, so it cannot show you a preview or check that a shader compiles, and it cannot see the music playing on your Mac.</p>
     </div>
 
@@ -225,7 +225,7 @@
     <div class="setup">
       <h3>The one thing to know</h3>
       <p>Vibresia is the server. It needs the app on <em>your</em> Mac, so if you moved it, use where it actually is — usually <code>/Applications/Vibresia.app</code>.</p>
-      <div class="cmd"><code id="cmd">Connect to this mcp: vibresia -- "/Applications/Vibresia.app/Contents/MacOS/Vibresia" --mcp</code><button data-copy>Copy</button></div>
+      <div class="cmd"><code id="cmd">Connect to this mcp: vibresia -- "/Applications/Vibresia.app/Contents/MacOS/Vibresia" --mcp</code><button data-copy data-command="mcp-local">Copy</button></div>
       <p class="note">That's the whole thing: a name, the program to run, and the argument to run it with. Every client below wants the same three, just spelled its own way.</p>
     </div>
 
