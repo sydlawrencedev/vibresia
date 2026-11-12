@@ -97,11 +97,18 @@ fi
 
 # The bundle has to be signed with hardened runtime and a real identity before
 # it is worth submitting. Catching it here beats Apple's rejection email.
+#
+# The flags are tested with a here-string rather than a pipe. `echo "$flags" |
+# grep -q ...` finds the match, grep exits, the pipe closes, and echo dies of
+# SIGPIPE — which, with pipefail on, reads as the whole pipeline failing. So
+# the check said "the app is not signed with hardened runtime" about an app
+# that was signed with it, and the release stopped for no reason. release.sh
+# has the same note about the same trap.
 if [ -n "$IDENTITY" ]; then
     flags="$(codesign -dv --verbose=4 "$APP" 2>&1 || true)"
-    echo "$flags" | grep -q 'flags=.*runtime' \
+    grep -q 'flags=.*runtime' <<<"$flags" \
         || die "the app is not signed with hardened runtime. Re-run ./build-app.sh release."
-    echo "$flags" | grep -q "Authority=$IDENTITY" \
+    grep -q "Authority=$IDENTITY" <<<"$flags" \
         || die "the app is not signed with '$IDENTITY'."
 fi
 
@@ -231,7 +238,12 @@ say "Checking Gatekeeper's own view"
 # spctl is the authority that matters at the user's end: it's what double-clicking
 # the app goes through, so it catches a signature Gatekeeper rejects even though
 # notarization succeeded.
-if spctl --assess --type execute --verbose=4 "$APP" 2>&1 | grep -q 'accepted'; then
+#
+# The output is captured rather than piped, for the same reason as the flags
+# above: `spctl | grep -q` closes the pipe the moment grep has its match, and
+# spctl dies of SIGPIPE, which pipefail reads as a failure.
+gatekeeper="$(spctl --assess --type execute --verbose=4 "$APP" 2>&1 || true)"
+if grep -q 'accepted' <<<"$gatekeeper"; then
     echo "    Gatekeeper: accepted"
 else
     echo "    Gatekeeper did not accept it yet — this is normal on the first" >&2
