@@ -23,7 +23,7 @@ Found a bug or have an idea? [File an issue](https://github.com/sydlawrencedev/v
 | `site/` | The landing page, installer (`install.sh`) and AI install instructions (`install.md`, `llms.txt`). |
 | `site/analytics.js` | Anonymous page-view / click tracking for the landing page. |
 | `site/github.js` | Changelog and open issues, fetched from the GitHub API when scrolled into view. |
-| `worker/index.js` | Cloudflare Worker: serves `./site` and handles `/download` (redirect + Discord notification). |
+| `worker/index.js` | Cloudflare Worker: serves `./site` and handles `/download` (redirect + download count). |
 | `worker/share.test.js` | Tests for the shared-vibescape endpoints. |
 | `migrations/` | D1 schema — one table, one row per shared vibescape. |
 | `site/sitemap.xml`, `site/robots.txt` | What Google is pointed at. One URL; the plain-text agent pages are deliberately left crawlable but unlisted. |
@@ -98,15 +98,18 @@ PY
 The footer has a one-click opt-out, and Do Not Track is honoured: both stop the
 page sending anything at all.
 
-## Download notifications (Discord)
+## Discord notifications
 
-Every download goes through `/download` on the Worker, which 302s to the latest
-GitHub release and posts an embed to Discord. Server-side rather than from the
-page, for two reasons: a webhook URL in the HTML would be public, and a click
-that never completes isn't a download.
+Discord gets two things, and **not** downloads: an announcement when a vibescape
+joins the public gallery, and a crash report from the app.
 
-The embed carries source, city/country (from Cloudflare's geo), referrer,
-browser, and whether that browser has downloaded before.
+Every download goes through `/download` on the Worker, which 302s to the GitHub
+release and counts the download in PostHog. It posts nothing to Discord. It
+used to: there was an embed per download carrying source, city/country (from
+Cloudflare's geo), referrer, browser, and whether that browser had downloaded
+before. A download link is a public URL, so anything that fetched it posted a
+message of its own with whatever the caller had put in the link. The count
+moved into the analytics, where it belongs, and the message went.
 
 ```bash
 npx wrangler secret put DISCORD_WEBHOOK_URL     # once; the webhook URL in Discord
@@ -136,14 +139,14 @@ for that source explicitly, and a dead input is a bug nothing else will show.
 sent is app state — vibescape, genre, error text — never audio or track
 names. Errors get their own cooldown (one a minute, 60/hour) so a broken
 install can't flood the channel, and `DISCORD_ERRORS_ENABLED = "false"` turns
-them off without touching download alerts.
+them off.
 
 Locally, `.dev.vars` (gitignored) points the webhook at a stub:
 
 ```bash
 npx wrangler dev --port 8787
 curl -s 'http://127.0.0.1:8787/download?src=hero&seen=0' -A 'Mozilla/5.0'
-npm test                                        # 13 tests, no network
+npm test                                        # no network
 ```
 
 Notes:
@@ -152,14 +155,11 @@ Notes:
   `scripts/check-no-webhook-leak.sh` fails if either appears in the tree — delphina had the same problem and it ended up
   baked into dozens of release tags. If it ever leaks, recreate the webhook in
   Discord and put the new one back with `wrangler secret put`.
-- Bots and link previewers are filtered out, a double-clicked button only posts
-  once (5s debounce, 30/hour), and the post goes out via `ctx.waitUntil` with a
-  timeout and one retry — so Discord being down can't slow down or break a
-  download.
-- Switch it off by setting `DISCORD_NOTIFICATIONS_ENABLED` to `"false"` in
-  `wrangler.toml` and redeploying; the site keeps working either way.
-- `install.sh` still downloads straight from GitHub, so script installs don't
-  produce notifications.
+- Gallery announcements and app reports go out via `ctx.waitUntil` with a
+  timeout and one retry, so Discord being down can't slow down or break a
+  share or a download.
+- The gallery announcement has its own cooldown (one every 10 seconds, 30/hour),
+  and the app reports have theirs (one a minute, 60/hour).
 
 ## Shared vibescapes
 
@@ -545,7 +545,7 @@ scripts/band-eval.py --only jazz
 
 1. Add any new vibescape to `site/index.html` (a card with `data-vibescape="<case name>"`).
 2. `VisualiserMac/release.sh` runs both site checks, decides the version from the date, records it in `VisualiserMac/VERSION` and the landing page, builds, zips `Vibresia.app` and publishes GitHub release `v<VERSION>`. The installer and the app's update check always use the latest release. If a Developer ID certificate is in the keychain, the release is notarized as part of this — the ticket is stapled onto the app between the build and the zip, because signing the bundle again would invalidate it. See [Signing and notarization](VisualiserMac/README.md#signing-and-notarization).
-3. `npx wrangler deploy` if the site or worker changed, then re-submit the sitemap. First deploy after cloning needs `npx wrangler secret put DISCORD_WEBHOOK_URL` (see [Download notifications](#download-notifications-discord)).
+3. `npx wrangler deploy` if the site or worker changed, then re-submit the sitemap. First deploy after cloning needs `npx wrangler secret put DISCORD_WEBHOOK_URL` (see [Discord notifications](#discord-notifications)).
 
 If a release has to be taken back — the app, the Worker, or the commit
 itself — see [Rolling back a release](docs/rollback.md). It says which lever
