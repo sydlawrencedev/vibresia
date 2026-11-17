@@ -178,6 +178,38 @@ test("the check notices a tag that is not the version in the tree", () => {
   assert.match(result.out, /windows-v0\.1\.0/);
 });
 
+test("the check fails when the tag is stale, even if the release is published", () => {
+  // This is the case that matters. The stale release IS published and the
+  // asset IS in it, so every other part of the check passes. Without this
+  // the site would go on serving the old package to everybody who
+  // downloads it, and nothing would notice: the file is there, the
+  // redirect works, the count goes up.
+  const root = fixture({
+    worker: `const WINDOWS_RELEASE_ZIP =\n  "https://github.com/sydlawrencedev/vibresia/releases/download/windows-v0.0.1/Vibresia-Windows-x64.zip";\n`,
+    version: "0.1.0\n",
+  });
+  const stale = releaseRecord({
+    tag: "windows-v0.0.1",
+    assets: ["Vibresia-Windows-x64.zip"],
+  });
+  const result = runCheck(["--check", "--release-json", stale, root]);
+  assert.equal(result.code, 1, `expected a failure, got:\n${result.out}`);
+  assert.match(result.out, /stale package/i);
+});
+
+test("the check fails when the tag is stale and the release is not published either", () => {
+  const root = fixture({
+    worker: `const WINDOWS_RELEASE_ZIP =\n  "https://github.com/sydlawrencedev/vibresia/releases/download/windows-v0.0.1/Vibresia-Windows-x64.zip";\n`,
+    version: "0.1.0\n",
+  });
+  const result = runCheck(["--check", "--release-json", absentRecord(), root]);
+  assert.equal(result.code, 1, `expected a failure, got:\n${result.out}`);
+  // Both problems are reported: the package is the wrong one AND it is
+  // not published. Saying only one of them is half the answer.
+  assert.match(result.out, /stale package/i);
+  assert.match(result.out, /no published release/i);
+});
+
 test("the check fails when the Worker has no Windows asset at all", () => {
   const root = fixture({
     worker: 'const RELEASE_ZIP = "https://example.com/Vibresia.zip";\n',

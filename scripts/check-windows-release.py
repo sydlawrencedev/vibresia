@@ -159,14 +159,33 @@ def main():
     expected = expected_tag(ROOT)
     print(f"Configured asset: {asset}")
     print(f"Release tag:      {tag}")
-    if expected and tag != expected:
+
+    # Every problem is reported, not just the first one.
+    #
+    # Somebody reading the output of a failed release wants to know what is
+    # wrong, and a check that stops at the first thing it finds makes them
+    # run it again to find the next thing. The exit code says whether
+    # there was a problem; the output says all of them.
+    problems = 0
+
+    # Whether the configured tag is the version in the tree.
+    #
+    # This is its own failure, not a footnote on another one. A stale tag
+    # means the site is serving the old package to everybody who downloads
+    # it, and every other part of this check passes: the release is
+    # published, the asset is in it, the redirect works and the count goes
+    # up. It looks like a working site serving a working file.
+    stale = bool(expected) and tag != expected
+    if stale:
         print(f"VisualiserWindows/VERSION is {expected}, so the tag should be {expected}.")
         print("The site would be serving a stale package.")
+        problems += 1
 
     release = fetch_release(tag, release_json)
     if not release:
         print(f"There is no published release for {tag}.")
         print("The Windows download would redirect to a 404.")
+        problems += 1
         if check:
             print("")
             print("Publish it first, then run this again:")
@@ -180,6 +199,7 @@ def main():
     if filename not in names:
         print(f"The release {tag} exists but has no {filename}.")
         print(f"It has: {', '.join(names) if names else 'no assets at all'}")
+        problems += 1
         if check:
             return 1
         return 0
@@ -189,8 +209,10 @@ def main():
         print("The release is not marked as a prerelease.")
         print("The Mac app finds its updates through releases/latest, so a Windows")
         print("release there would stop every Mac install from updating.")
-        if check:
-            return 1
+        problems += 1
+
+    if problems and check:
+        return 1
     return 0
 
 
