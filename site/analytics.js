@@ -289,6 +289,15 @@
       if (el.dataset.target) props.target = el.dataset.target;
       // Which page, and where on it: the template comes with every event.
       if (el.dataset.slug) props.slug = el.dataset.slug;
+      // Which platform was asked for, when the element knows. The download
+      // script puts it on every download button it changes, and the
+      // explicit chooser links carry it in the markup, so a click on either
+      // says whether it was for the Mac package or the Windows one.
+      //
+      // Only when it is a download: a click on the coffee button was not
+      // for a platform, and an empty property on every event is noise in
+      // the dashboard.
+      if (el.dataset.platform) props.platform = el.dataset.platform;
       track(el.dataset.track, props);
       return;
     }

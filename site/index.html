@@ -409,7 +409,7 @@
       <a class="btn primary" data-install data-install-platform data-track="download_clicked" data-placement="hero" href="/download?src=hero">Download for Mac</a>
       <a class="btn coffee" data-track="coffee_clicked" data-placement="hero" href="https://buy.stripe.com/7sY3cuekN6z66L1c0cbEA01">☕ Buy me a coffee</a>
     </div>
-    <p class="platform-choices">Not sure which one? <a href="/download?src=hero-mac" data-track="download_clicked" data-placement="hero-mac">macOS</a> · <a href="/download/windows?src=hero-windows" data-track="download_clicked" data-placement="hero-windows">Windows beta</a></p>
+    <p class="platform-choices">Not sure which one? <a href="/download?src=hero-mac" data-track="download_clicked" data-placement="hero-mac" data-platform="mac">macOS</a> · <a href="/download/windows?src=hero-windows" data-track="download_clicked" data-placement="hero-windows" data-platform="windows">Windows beta</a></p>
     <p class="small">macOS 14.2 or later, Apple silicon · Windows 10 or 11, 64-bit · updates from inside the app · <a href="#shareware">proudly shareware</a> · <a href="https://github.com/sydlawrencedev/vibresia/issues" rel="noopener" data-track="bug_report_link_clicked" data-placement="hero">report a bug</a></p>
   </div>
 
@@ -429,7 +429,7 @@
     <details class="install" id="install" open>
       <summary><h2>Install</h2></summary>
       <div class="install-body">
-        <p class="install-choose">Pick your platform: <a href="/download?src=install-choose-mac" data-track="download_clicked" data-placement="install-choose-mac">macOS</a> · <a href="/download/windows?src=install-choose-windows" data-track="download_clicked" data-placement="install-choose-windows">Windows beta</a></p>
+        <p class="install-choose">Pick your platform: <a href="/download?src=install-choose-mac" data-track="download_clicked" data-placement="install-choose-mac" data-platform="mac">macOS</a> · <a href="/download/windows?src=install-choose-windows" data-track="download_clicked" data-placement="install-choose-windows" data-platform="windows">Windows beta</a></p>
         <h3 class="install-os">On a Mac</h3>
         <p style="margin:0 0 4px">Ask your AI assistant (Claude, ChatGPT, …):</p>
         <div class="cmd"><code>install vibresia from https://vibresia.com and walk me through vibing my first vibescape</code><button data-copy data-command="ask-ai">Copy</button></div>
@@ -483,7 +483,7 @@
     <h2>Get it for your Mac or PC</h2>
     <p>Free to use, and yours to share. macOS 14.2 or later on Apple silicon, or Windows 10 or 11, 64-bit.</p>
     <a class="btn primary" data-install data-install-platform data-track="download_clicked" data-placement="after_gallery" href="/download?src=after_gallery">Download for Mac</a>
-    <p class="platform-choices"><a href="/download?src=after_gallery-mac" data-track="download_clicked" data-placement="after_gallery-mac">macOS</a> · <a href="/download/windows?src=after_gallery-windows" data-track="download_clicked" data-placement="after_gallery-windows">Windows beta</a></p>
+    <p class="platform-choices"><a href="/download?src=after_gallery-mac" data-track="download_clicked" data-placement="after_gallery-mac" data-platform="mac">macOS</a> · <a href="/download/windows?src=after_gallery-windows" data-track="download_clicked" data-placement="after_gallery-windows" data-platform="windows">Windows beta</a></p>
   </div>
 
   <section id="make">
@@ -524,7 +524,7 @@
     <h2>For AI assistants</h2>
     <div class="agents">
       <p>If someone asked you to <b>install Vibresia from vibresia.com</b>, here's how:</p>
-      <p class="small">First work out which machine it is for. The steps below are the Mac ones. On 64-bit Windows 10 or 11, the app is a portable ZIP instead: send the user to <a href="/download/windows?src=ai-install-windows" data-track="download_clicked" data-placement="ai-install-windows">vibresia.com/download/windows</a>, tell them to unzip the whole ZIP and run <code>Vibresia.exe</code>, and expect a SmartScreen warning they clear with <b>More info</b> then <b>Run anyway</b>. There is no installer and no terminal step on Windows.</p>
+      <p class="small">First work out which machine it is for. The steps below are the Mac ones. On 64-bit Windows 10 or 11, the app is a portable ZIP instead: send the user to <a href="/download/windows?src=ai-install-windows" data-track="download_clicked" data-placement="ai-install-windows" data-platform="windows">vibresia.com/download/windows</a>, tell them to unzip the whole ZIP and run <code>Vibresia.exe</code>, and expect a SmartScreen warning they clear with <b>More info</b> then <b>Run anyway</b>. There is no installer and no terminal step on Windows.</p>
       <ol>
         <li>Check the Mac runs macOS 14.2 or later (<code>sw_vers -productVersion</code>) on Apple silicon (<code>uname -m</code> is <code>arm64</code>).</li>
         <li>Run the installer: <code>curl -fsSL https://vibresia.com/install.sh | bash</code>. It downloads the latest release from <a href="https://github.com/sydlawrencedev/vibresia/releases/latest">GitHub</a>, puts <code>Vibresia.app</code> in <code>/Applications</code> (or <code>~/Applications</code>), clears the download quarantine flag and opens it. The app is signed with a Developer ID certificate and notarised by Apple, so Gatekeeper opens it without an override; the quarantine flag is cleared so macOS runs it from <code>/Applications</code> rather than from a temporary copy of itself.</li>
