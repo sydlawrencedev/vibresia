@@ -16,7 +16,7 @@ const SITE = path.join(ROOT, "site");
 
 // Paths the Worker answers rather than a file (worker/index.js). A link to
 // one of these isn't broken just because site/ has no file for it.
-const WORKER_ROUTES = [/^\/download$/, /^\/vibescapes$/, /^\/s\/[^/]+$/, /^\/og\//, /^\/mcp$/, /^\/api\//, /^\/ingest\//];
+const WORKER_ROUTES = [/^\/download$/, /^\/download\/windows$/, /^\/vibescapes$/, /^\/s\/[^/]+$/, /^\/og\//, /^\/mcp$/, /^\/api\//, /^\/ingest\//];
 
 // Not for the public: never linked, never in a sitemap.
 const PRIVATE = new Set(["/admin"]);

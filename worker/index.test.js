@@ -13,6 +13,14 @@ import worker, { buildDownloadEmbed, buildErrorEmbed, resetRateLimiter } from ".
 const RELEASE_ZIP =
   "https://github.com/sydlawrencedev/vibresia/releases/latest/download/Vibresia.zip";
 
+// The Windows beta's package, on the versioned prerelease.
+//
+// Not GitHub's `latest` release: that one is the Mac app's, and the file in
+// it is `Vibresia.zip` — the Mac updater and installer fetch that name. A
+// Windows visitor sent there would get the Mac app, or nothing at all.
+const WINDOWS_RELEASE_ZIP =
+  "https://github.com/sydlawrencedev/vibresia/releases/download/windows-v0.1.0/Vibresia-Windows-x64.zip";
+
 function makeEnv(overrides = {}) {
   return {
     ASSETS: { fetch: async () => new Response("asset", { status: 200 }) },
@@ -200,6 +208,87 @@ test("a real download is counted on the server", async () => {
   assert.equal(event.properties.source, "hero");
   assert.equal(event.properties.seen, false);
   assert.equal(event.properties.surface, "web");
+});
+
+test("the Windows download redirects to the Windows beta asset", async () => {
+  const { response, posts } = await run("https://vibresia.com/download/windows?src=hero", {
+    headers: { "user-agent": BROWSER_UA, referer: "https://vibresia.com/" },
+  });
+  assert.equal(response.status, 302);
+  assert.equal(response.headers.get("location"), WINDOWS_RELEASE_ZIP);
+  assert.equal(posts.length, 0, "a download posts nothing to Discord");
+});
+
+test("the Mac download is still the Mac download", async () => {
+  // The two routes are separate, so a change to one cannot quietly move the
+  // other: /download must keep handing over Vibresia.zip and nothing else.
+  const { response } = await run("https://vibresia.com/download?src=hero", {
+    headers: { "user-agent": BROWSER_UA },
+  });
+  assert.equal(response.status, 302);
+  assert.equal(response.headers.get("location"), RELEASE_ZIP);
+  assert.notEqual(response.headers.get("location"), WINDOWS_RELEASE_ZIP);
+});
+
+test("download analytics distinguish macOS and Windows", async () => {
+  const mac = await run("https://vibresia.com/download?src=hero&seen=0", {
+    headers: { "user-agent": BROWSER_UA },
+  });
+  assert.equal(mac.events.length, 1);
+  assert.equal(mac.events[0].body[0].properties.platform, "mac");
+
+  const windows = await run("https://vibresia.com/download/windows?src=hero&seen=0", {
+    headers: { "user-agent": BROWSER_UA },
+  });
+  assert.equal(windows.events.length, 1);
+  assert.equal(windows.events[0].body[0].properties.platform, "windows");
+});
+
+test("a Windows download is counted the same way a Mac download is", async () => {
+  // The two routes share their counting rules. A Windows download that was
+  // filtered out, or not counted, would make the two platforms look like
+  // they behave differently when they do not.
+  const windows = await run("https://vibresia.com/download/windows?src=hero&seen=0", {
+    headers: { "user-agent": BROWSER_UA, referer: "https://vibresia.com/" },
+  });
+  assert.equal(windows.events.length, 1);
+  const [event] = windows.events[0].body;
+  assert.equal(event.event, "download_requested");
+  assert.equal(event.properties.source, "hero");
+  assert.equal(event.properties.seen, false);
+  assert.equal(event.properties.surface, "web");
+
+  // A link preview gets the file and is not counted, on either route.
+  const preview = await run("https://vibresia.com/download/windows?src=hero", {
+    headers: { "user-agent": LINK_PREVIEW_AGENT },
+  });
+  assert.equal(preview.response.status, 302);
+  assert.equal(preview.response.headers.get("location"), WINDOWS_RELEASE_ZIP);
+  assert.equal(preview.events.length, 0);
+
+  // A HEAD request is a check, not a download.
+  const head = await run("https://vibresia.com/download/windows?src=hero", {
+    method: "HEAD",
+    headers: { "user-agent": BROWSER_UA },
+  });
+  assert.equal(head.response.status, 302);
+  assert.equal(head.events.length, 0);
+
+  // And a bot is not a person, on either route.
+  const bot = await run("https://vibresia.com/download/windows?src=hero", {
+    headers: { "user-agent": "curl/8.4.0" },
+  });
+  assert.equal(bot.response.status, 302);
+  assert.equal(bot.events.length, 0);
+});
+
+test("the old hostname sends the Windows route to the canonical one", async () => {
+  const windows = await run("https://audiovane.minithlabs.com/download/windows?src=hero");
+  assert.equal(windows.response.status, 301);
+  assert.equal(
+    windows.response.headers.get("location"),
+    "https://vibresia.com/download/windows?src=hero"
+  );
 });
 
 test("http and www are redirected to the canonical URL", async () => {

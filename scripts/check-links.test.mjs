@@ -14,7 +14,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { check, llmsGaps, llmsPaths, sitemapPaths } from "./check-links.mjs";
+import { check, crawl, llmsGaps, llmsPaths, sitemapPaths } from "./check-links.mjs";
 
 /** A throwaway site tree with the files the check reads. */
 function fixture({ llms, sitemaps }) {
@@ -92,4 +92,15 @@ test("llmsPaths finds the paths in the site's own llms.txt", () => {
     const paths = llmsPaths();
     assert.ok(paths.has("/blog/apple-music-visualizer"));
     assert.ok(paths.has("/vibescapes"));
+});
+
+test("the download routes are Worker routes, not broken links", () => {
+    // The Mac and Windows download routes are answered by the Worker, so
+    // site/ has no file for either. A link to one that the check does not
+    // know about reads as a link to nowhere, and the check would fail the
+    // build over a route that works.
+    const { broken } = crawl(new Map([
+        ["/", `<a href="/download?src=hero">Mac</a><a href="/download/windows?src=hero">Windows</a>`],
+    ]));
+    assert.deepEqual(broken, []);
 });

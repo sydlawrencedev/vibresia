@@ -70,6 +70,21 @@ const LEGACY_HOSTS = ["audiovane.minithlabs.com"];
 const RELEASE_ZIP =
   "https://github.com/sydlawrencedev/vibresia/releases/latest/download/Vibresia.zip";
 
+// The Windows beta's package, on the versioned prerelease.
+//
+// Not GitHub's `latest` release: that one belongs to the Mac app, and the
+// file in it is `Vibresia.zip` — the name the Mac updater and installer
+// fetch. A Windows visitor sent to `latest` would be offered the Mac app, or
+// nothing at all. So the Windows route names the versioned prerelease
+// explicitly, and this constant is the one place that name lives: the
+// release process updates it, and nothing else has to know.
+//
+// It is a fixed URL rather than a lookup, so a download never depends on
+// GitHub answering. If a release lookup were unavailable, the Worker would
+// keep serving the last configured URL rather than failing the request.
+const WINDOWS_RELEASE_ZIP =
+  "https://github.com/sydlawrencedev/vibresia/releases/download/windows-v0.1.0/Vibresia-Windows-x64.zip";
+
 // Same table as delphina's PRIORITY_STYLE, so a download and a signup look
 // like the same family of message.
 const STYLES = {
@@ -352,7 +367,7 @@ async function postDiscord(env, payload, webhookUrl) {
   return { ok: false, status: response.status };
 }
 
-function handleDownload(request, url, env, ctx) {
+function handleDownload(request, url, env, ctx, platform = "mac") {
   const source = url.searchParams.get("src") || "";
   const referer = request.headers.get("referer") || "";
   const agent = request.headers.get("user-agent") || "";
@@ -389,6 +404,7 @@ function handleDownload(request, url, env, ctx) {
       country: request.cf?.country || "",
       city: request.cf?.city || "",
       seen: seen === null ? false : seen === "1",
+      platform,
     }));
   }
 
@@ -405,7 +421,7 @@ function handleDownload(request, url, env, ctx) {
   // The gallery announcement and the app's error reports are separate
   // messages and are not affected by this.
 
-  return Response.redirect(RELEASE_ZIP, 302);
+  return Response.redirect(platform === "windows" ? WINDOWS_RELEASE_ZIP : RELEASE_ZIP, 302);
 }
 
 /// A download, counted on the server.
@@ -420,7 +436,7 @@ function handleDownload(request, url, env, ctx) {
 /// not: the browser's id is in its local storage, and putting it in a
 /// download link would hand it to every service that fetched the link. So
 /// this event counts downloads, and the count of people comes from the site.
-function postDownloadEvent(env, { source, referer, country, city, seen }) {
+function postDownloadEvent(env, { source, referer, country, city, seen, platform = "mac" }) {
   const key = env.POSTHOG_KEY;
   if (!key) return Promise.resolve();
   const host = (env.POSTHOG_HOST || "https://us.i.posthog.com").replace(/\/+$/, "");
@@ -436,6 +452,10 @@ function postDownloadEvent(env, { source, referer, country, city, seen }) {
       country,
       city,
       seen,
+      // Which package was asked for. Without it a Mac and a Windows download
+      // are the same number, and the two platforms cannot be told apart in
+      // the dashboard at all.
+      platform,
     },
     timestamp: new Date().toISOString(),
   };
@@ -2081,6 +2101,11 @@ export default {
       }
     }
 
+    // The Windows route comes first, because it is the longer path: `/download`
+    // is checked for equality, so the order here is not load-bearing, but
+    // reading them in the order they are served is clearer than relying on
+    // that.
+    if (url.pathname === "/download/windows") return handleDownload(request, url, env, ctx, "windows");
     if (url.pathname === "/download") return handleDownload(request, url, env, ctx);
     if (url.pathname.startsWith("/ingest/")) return handleIngest(request, url, env);
     if (url.pathname === "/api/notify") return handleNotify(request, env, ctx);
