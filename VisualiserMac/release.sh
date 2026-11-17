@@ -109,6 +109,13 @@ python3 ../scripts/check-plugin-manifests.py "$(pwd)/.."
 # that by itself: three definitions of .brand is survivable, three that drift
 # apart quietly is not.
 python3 ../scripts/inject-chrome.py --check "$(pwd)/.."
+# The Windows release the site points at has to be published, or the Windows
+# download button redirects to a 404. The site looks fine and the Worker
+# answers, so nothing else in the build notices.
+#
+# This one needs the network, which is why it is a release check and not a
+# pull-request one.
+python3 ../scripts/check-windows-release.py --check "$(pwd)/.."
 # The share picture's encoder must never give up and drop the picture: a
 # share with no picture of its own falls back to the placeholder, and
 # nobody could say why. The check runs the app's own encoder, so it cannot

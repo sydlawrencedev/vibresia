@@ -308,10 +308,22 @@ Replace the test version in `WINDOWS_RELEASE_ZIP` with the published `windows-vX
 Run:
 
 ```bash
-gh release view "windows-v$(cat VisualiserWindows/VERSION | tr -d '[:space:]')" --json isPrerelease,assets
+python3 scripts/check-windows-release.py --check "$PWD"
 ```
 
-Expected: `isPrerelease: true` and `Vibresia-Windows-x64.zip` plus its checksum asset.
+Expected: `The asset is published: Vibresia-Windows-x64.zip in windows-vX.Y.Z`.
+
+The check reads the configured URL out of the Worker's own source, so it
+cannot fall out of step with it, and it resolves the URL against GitHub. It
+fails when the release is not published, when the release has no such asset,
+when the release is a draft, when the release is not a prerelease (the Mac
+app finds its updates through `releases/latest`, so a Windows release there
+would stop every Mac install from updating), and when the tag is not the
+version in `VisualiserWindows/VERSION`.
+
+The check runs as part of the release script, not the pull-request gate: it
+needs the network, and until the first prerelease is published it fails on
+purpose.
 
 - [ ] **Step 5: Run and commit the Worker tests**
 
