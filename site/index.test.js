@@ -31,6 +31,66 @@ function visibleText(html) {
 
 const TEXT = visibleText(HOME);
 
+/// The page's structured data, parsed once.
+function structured() {
+  const [, body] = HOME.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+  return JSON.parse(body);
+}
+
+/// The SoftwareApplication node for the Mac app.
+function macNode() {
+  const data = structured();
+  const apps = (data["@graph"] || [data]).filter((n) => n["@type"] === "SoftwareApplication");
+  const node = apps.find((n) => n["@id"] === "https://vibresia.com/#app");
+  assert.ok(node, "the Mac app has no SoftwareApplication node");
+  return node;
+}
+
+/// The SoftwareApplication node for the Windows app.
+function windowsNode() {
+  const data = structured();
+  const apps = (data["@graph"] || [data]).filter((n) => n["@type"] === "SoftwareApplication");
+  const node = apps.find((n) => n["@id"] === "https://vibresia.com/#windows-app");
+  assert.ok(node, "the Windows app has no SoftwareApplication node");
+  return node;
+}
+
+/// Follows a node reference to the node it points at.
+///
+/// A reference with an "@id" and nothing else is a pointer, and the thing
+/// it points at is somewhere else in the graph. Reading the pointer alone
+/// tells you who it points at, not who they are.
+function resolve(reference) {
+  if (!reference) return null;
+  if (typeof reference === "string") {
+    const data = structured();
+    return (data["@graph"] || [data]).find((n) => n["@id"] === reference) || null;
+  }
+  // A reference that carries its own fields is the node itself.
+  if (reference.name) return reference;
+  const data = structured();
+  return (data["@graph"] || [data]).find((n) => n["@id"] === reference["@id"]) || null;
+}
+
+/// One piece of text, the same way a reader gets it: tags gone, entities
+/// decoded, whitespace collapsed.
+///
+/// The visible FAQ and the structured FAQ have to be compared word for
+/// word, so both go through this. A comparison that normalises less than
+/// this would let a difference through, and a difference here is a lie.
+///
+/// A tag becomes a space, so a link in the middle of a sentence leaves the
+/// space it needs: "built by <a>Llew Roberts</a>," is "built by Llew Roberts ,"
+/// until the space before a comma is put right. A reader never sees that
+/// space, so neither does this.
+function clean(text) {
+  return visibleText(String(text ?? ""))
+    .replace(/\s+([,.;:!?])/g, "$1")
+    .replace(/\(\s+/g, "(")
+    .replace(/\s+\)/g, ")")
+    .trim();
+}
+
 test("the homepage does not claim there is no Windows version", () => {
   // The old copy: "There is no Intel, Windows, Linux, iPhone or Android
   // version, and there is not going to be one."
@@ -114,6 +174,30 @@ test("no editorial CTA is marked as a platform button", () => {
   }
 });
 
+test("every download link on the page is tracked", () => {
+  // A download link with no tracking is a download nobody can attribute.
+  // The chooser links are the ones that were missed: they were added
+  // after the buttons, and the buttons already had data-track.
+  for (const [markup] of HOME.matchAll(/<a\b[^>]*href="\/download[^"]*"[^>]*>/g)) {
+    assert.match(markup, /data-track="download_clicked"/, `tracked: ${markup}`);
+    assert.match(markup, /data-placement="[^"]+"/, `placed: ${markup}`);
+  }
+});
+
+test("every download link on the page has its own placement", () => {
+  // The placement says where on the page the click came from. Two links
+  // sharing one placement cannot be told apart in the dashboard, so the
+  // chooser links have to have their own.
+  const placements = [...HOME.matchAll(/<a\b[^>]*href="\/download[^"]*"[^>]*data-placement="([^"]+)"/g)]
+    .map(([, placement]) => placement);
+  assert.ok(placements.length > 0, "the page has download links");
+  assert.equal(
+    new Set(placements).size,
+    placements.length,
+    `every download link has its own placement: ${placements.join(", ")}`
+  );
+});
+
 test("the homepage credits the Windows author, with a link", () => {
   assert.match(TEXT, /Llew Roberts/);
   assert.match(HOME, /href="https:\/\/github\.com\/L13w"/, "a link to their GitHub profile");
@@ -134,7 +218,6 @@ test("the structured data describes both packages", () => {
 
   assert.match(mac.operatingSystem, /macOS/);
   assert.match(windows.operatingSystem, /Windows/);
-  assert.match(mac.operatingSystem, /Windows/, "the Mac node says the app is for Windows too");
 
   // Both packages are downloadable, and the page names them by the site's
   // own routes. The Worker owns the asset URLs: a GitHub release URL
@@ -153,6 +236,81 @@ test("the structured data describes both packages", () => {
   assert.ok(
     !windowsUrls.some((u) => /github\.com/.test(u)),
     "the page names no release asset URL: the Worker owns those"
+  );
+});
+
+test("the Mac application node describes only the Mac app", () => {
+  // One node for two applications is one node that is wrong about both.
+  // A search engine reading `operatingSystem: "macOS …; Windows …"` and
+  // `downloadUrl: [mac, windows]` cannot tell which package it is being
+  // told about, and the Windows package is a beta with different
+  // features, so merging them says something untrue.
+  const mac = macNode();
+  assert.doesNotMatch(
+    mac.operatingSystem,
+    /Windows/i,
+    `the Mac node names Windows: ${mac.operatingSystem}`
+  );
+  assert.doesNotMatch(
+    mac.downloadUrl,
+    /windows/i,
+    `the Mac node points at the Windows package: ${mac.downloadUrl}`
+  );
+  assert.doesNotMatch(
+    mac.installUrl,
+    /windows/i,
+    `the Mac node points at the Windows installer: ${mac.installUrl}`
+  );
+  assert.doesNotMatch(
+    mac.featureList.join(" "),
+    /Windows/i,
+    "the Mac node lists a Windows feature"
+  );
+});
+
+test("the Windows application node describes only the Windows app", () => {
+  const windows = windowsNode();
+  assert.match(windows.operatingSystem, /Windows/);
+  assert.doesNotMatch(
+    windows.operatingSystem,
+    /macOS/i,
+    `the Windows node names macOS: ${windows.operatingSystem}`
+  );
+
+  // The version, the download and the install are the Windows ones.
+  assert.match(windows.softwareVersion, /^0\./, `the Windows version: ${windows.softwareVersion}`);
+  assert.match(
+    windows.downloadUrl,
+    /\/download\/windows$/,
+    `the Windows download: ${windows.downloadUrl}`
+  );
+  assert.match(
+    windows.installUrl,
+    /\/download\/windows$/,
+    `the Windows install: ${windows.installUrl}`
+  );
+
+  // And it is Llew Roberts's app, which is the whole reason it is a
+  // separate node.
+  const author = resolve(windows.author);
+  assert.ok(author, "the Windows app has no author");
+  assert.match(author.name, /Llew Roberts/, `the Windows author: ${author.name}`);
+  assert.match(
+    [author.url, ...(author.sameAs || [])].join(" "),
+    /github\.com\/L13w/i,
+    "the Windows author is not linked to their GitHub profile"
+  );
+});
+
+test("the Mac application node is not credited to the Windows author", () => {
+  const mac = macNode();
+  const author = resolve(mac.author);
+  const id = typeof mac.author === "string" ? mac.author : mac.author["@id"];
+  assert.doesNotMatch(id, /L13w/i, `the Mac author: ${id}`);
+  assert.doesNotMatch(
+    [author?.name, author?.url, ...(author?.sameAs || [])].filter(Boolean).join(" "),
+    /L13w/i,
+    "the Mac app is credited to the Windows author"
   );
 });
 
@@ -195,6 +353,63 @@ test("the FAQ asks about both platforms and the page shows both questions", () =
   // The schema check requires each question to be visible on the page.
   for (const question of questions) {
     assert.ok(TEXT.includes(question), `"${question}" is on the page`);
+  }
+});
+
+test("the structured FAQ answers say what the visible ones say", () => {
+  // Structured data that says something the page does not is the kind
+  // search engines penalise (docs/seo.md, Phase 4), and it is a lie to
+  // somebody reading it in a search result.
+  //
+  // Three of the answers drifted when the copy was rewritten for two
+  // platforms: the visible answer said "your system's audio" and the
+  // structured one still said "the Mac's system audio". The question was
+  // the same on both sides, so nothing noticed.
+  const [, body] = HOME.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+  const data = JSON.parse(body);
+  const faq = (data["@graph"] || [data]).find((n) => n["@type"] === "FAQPage");
+
+  // The visible FAQ, in the same shape as the structured one.
+  const section = HOME.match(/<section id="faq">([\s\S]*?)<\/section>/);
+  assert.ok(section, "the page has a visible FAQ section");
+  const visible = new Map();
+  for (const [, question, answer] of section[1].matchAll(
+    /<h3>([^<]*)<\/h3><p>([\s\S]*?)<\/p>/g,
+  )) {
+    visible.set(clean(question), clean(answer));
+  }
+  assert.ok(visible.size > 0, "the visible FAQ has answers");
+
+  for (const entry of faq.mainEntity) {
+    const question = clean(entry.name);
+    const answer = clean(entry.acceptedAnswer.text);
+    assert.ok(
+      visible.has(question),
+      `the question is on the page: "${question}"`
+    );
+    assert.equal(
+      answer,
+      visible.get(question),
+      `the structured answer matches the visible one: "${question}"`
+    );
+  }
+});
+
+test("every visible FAQ question is in the structured data", () => {
+  // The other direction: a question that is only on the page is not
+  // searchable as a FAQ, and a question that is only in the structured
+  // data is not on the page at all.
+  const [, body] = HOME.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+  const data = JSON.parse(body);
+  const faq = (data["@graph"] || [data]).find((n) => n["@type"] === "FAQPage");
+  const structured = new Set(faq.mainEntity.map((q) => clean(q.name)));
+
+  const section = HOME.match(/<section id="faq">([\s\S]*?)<\/section>/);
+  for (const [, question] of section[1].matchAll(/<h3>([^<]*)<\/h3>/g)) {
+    assert.ok(
+      structured.has(clean(question)),
+      `the visible question is in the structured data: "${clean(question)}"`
+    );
   }
 });
 

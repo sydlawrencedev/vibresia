@@ -66,6 +66,16 @@
       }
     },
     {
+      "@type": "Person",
+      "@id": "https://vibresia.com/#llew-roberts",
+      "name": "Llew Roberts",
+      "url": "https://github.com/L13w",
+      "sameAs": [
+        "https://github.com/L13w"
+      ],
+      "description": "Built the Vibresia Windows port, a community beta of the Mac app."
+    },
+    {
       "@type": "SoftwareApplication",
       "@id": "https://vibresia.com/#app",
       "name": "Vibresia",
@@ -74,12 +84,9 @@
       "url": "https://vibresia.com/",
       "applicationCategory": "MultimediaApplication",
       "applicationSubCategory": "Music visual worlds",
-      "operatingSystem": "macOS 14.2 or later, Apple silicon; Windows 10 or 11, 64-bit",
+      "operatingSystem": "macOS 14.2 or later, Apple silicon",
       "softwareVersion": "0.11.1610",
-      "downloadUrl": [
-        "https://vibresia.com/download",
-        "https://vibresia.com/download/windows"
-      ],
+      "downloadUrl": "https://vibresia.com/download",
       "installUrl": "https://vibresia.com/install.sh",
       "screenshot": "https://vibresia.com/media/share.jpg",
       "image": "https://vibresia.com/media/share.jpg",
@@ -132,7 +139,11 @@
         "Free, no account, and it makes no network connections"
       ],
       "author": {
-        "@id": "https://github.com/L13w"
+        "@id": "https://vibresia.com/#llew-roberts",
+        "@type": "Person",
+        "name": "Llew Roberts",
+        "url": "https://github.com/L13w",
+        "description": "Built the Vibresia Windows port, a community beta of the Mac app."
       },
       "publisher": {
         "@id": "https://minithlabs.com/#org"
@@ -162,7 +173,7 @@
           "name": "Is the Windows version the same as the Mac one?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Not quite. The Windows beta plays the same vibescapes, but it has no Auto Scan, no The Band or Machine, no song identification, no MIDI input, and no vibescape editor, sharing or gallery. It is a beta, built by Llew Roberts, and the differences are listed on the site."
+            "text": "Not quite. The Windows beta plays the same vibescapes, but it has no Auto Scan, no The Band or Machine, no song identification, no MIDI input, and no vibescape editor, sharing or gallery. It is a beta, built by Llew Roberts, and the differences are listed in the Windows build's own README."
           }
         },
         {
@@ -170,7 +181,7 @@
           "name": "Does it work with Spotify?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes. Vibresia listens to the Mac's system audio, so it reacts to Spotify, Apple Music, a browser or a film, with no plug-in. It can use the microphone instead."
+            "text": "Yes. Vibresia listens to your system's audio, so it reacts to Spotify, Apple Music, a browser or a film, with no plug-in. It can use the microphone instead."
           }
         },
         {
@@ -178,7 +189,7 @@
           "name": "Does it upload my music?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "No. Audio is analysed on your Mac and never uploaded or stored. When your music app says what's playing, the title and artist are looked up in Apple's public catalogue to work out the genre."
+            "text": "No. Audio is analysed on your machine and never uploaded or stored. On the Mac, when your music app says what's playing, the title and artist are looked up in Apple's public catalogue to work out the genre."
           }
         },
         {
@@ -398,7 +409,7 @@
       <a class="btn primary" data-install data-install-platform data-track="download_clicked" data-placement="hero" href="/download?src=hero">Download for Mac</a>
       <a class="btn coffee" data-track="coffee_clicked" data-placement="hero" href="https://buy.stripe.com/7sY3cuekN6z66L1c0cbEA01">☕ Buy me a coffee</a>
     </div>
-    <p class="platform-choices">Not sure which one? <a href="/download?src=hero-mac">macOS</a> · <a href="/download/windows?src=hero-windows">Windows beta</a></p>
+    <p class="platform-choices">Not sure which one? <a href="/download?src=hero-mac" data-track="download_clicked" data-placement="hero-mac">macOS</a> · <a href="/download/windows?src=hero-windows" data-track="download_clicked" data-placement="hero-windows">Windows beta</a></p>
     <p class="small">macOS 14.2 or later, Apple silicon · Windows 10 or 11, 64-bit · updates from inside the app · <a href="#shareware">proudly shareware</a> · <a href="https://github.com/sydlawrencedev/vibresia/issues" rel="noopener" data-track="bug_report_link_clicked" data-placement="hero">report a bug</a></p>
   </div>
 
@@ -418,7 +429,7 @@
     <details class="install" id="install" open>
       <summary><h2>Install</h2></summary>
       <div class="install-body">
-        <p class="install-choose">Pick your platform: <a href="/download?src=install-choose-mac">macOS</a> · <a href="/download/windows?src=install-choose-windows">Windows beta</a></p>
+        <p class="install-choose">Pick your platform: <a href="/download?src=install-choose-mac" data-track="download_clicked" data-placement="install-choose-mac">macOS</a> · <a href="/download/windows?src=install-choose-windows" data-track="download_clicked" data-placement="install-choose-windows">Windows beta</a></p>
         <h3 class="install-os">On a Mac</h3>
         <p style="margin:0 0 4px">Ask your AI assistant (Claude, ChatGPT, …):</p>
         <div class="cmd"><code>install vibresia from https://vibresia.com and walk me through vibing my first vibescape</code><button data-copy data-command="ask-ai">Copy</button></div>
@@ -472,7 +483,7 @@
     <h2>Get it for your Mac or PC</h2>
     <p>Free to use, and yours to share. macOS 14.2 or later on Apple silicon, or Windows 10 or 11, 64-bit.</p>
     <a class="btn primary" data-install data-install-platform data-track="download_clicked" data-placement="after_gallery" href="/download?src=after_gallery">Download for Mac</a>
-    <p class="platform-choices"><a href="/download?src=after_gallery-mac">macOS</a> · <a href="/download/windows?src=after_gallery-windows">Windows beta</a></p>
+    <p class="platform-choices"><a href="/download?src=after_gallery-mac" data-track="download_clicked" data-placement="after_gallery-mac">macOS</a> · <a href="/download/windows?src=after_gallery-windows" data-track="download_clicked" data-placement="after_gallery-windows">Windows beta</a></p>
   </div>
 
   <section id="make">
@@ -513,7 +524,7 @@
     <h2>For AI assistants</h2>
     <div class="agents">
       <p>If someone asked you to <b>install Vibresia from vibresia.com</b>, here's how:</p>
-      <p class="small">First work out which machine it is for. The steps below are the Mac ones. On 64-bit Windows 10 or 11, the app is a portable ZIP instead: send the user to <a href="/download/windows">vibresia.com/download/windows</a>, tell them to unzip the whole ZIP and run <code>Vibresia.exe</code>, and expect a SmartScreen warning they clear with <b>More info</b> then <b>Run anyway</b>. There is no installer and no terminal step on Windows.</p>
+      <p class="small">First work out which machine it is for. The steps below are the Mac ones. On 64-bit Windows 10 or 11, the app is a portable ZIP instead: send the user to <a href="/download/windows?src=ai-install-windows" data-track="download_clicked" data-placement="ai-install-windows">vibresia.com/download/windows</a>, tell them to unzip the whole ZIP and run <code>Vibresia.exe</code>, and expect a SmartScreen warning they clear with <b>More info</b> then <b>Run anyway</b>. There is no installer and no terminal step on Windows.</p>
       <ol>
         <li>Check the Mac runs macOS 14.2 or later (<code>sw_vers -productVersion</code>) on Apple silicon (<code>uname -m</code> is <code>arm64</code>).</li>
         <li>Run the installer: <code>curl -fsSL https://vibresia.com/install.sh | bash</code>. It downloads the latest release from <a href="https://github.com/sydlawrencedev/vibresia/releases/latest">GitHub</a>, puts <code>Vibresia.app</code> in <code>/Applications</code> (or <code>~/Applications</code>), clears the download quarantine flag and opens it. The app is signed with a Developer ID certificate and notarised by Apple, so Gatekeeper opens it without an override; the quarantine flag is cleared so macOS runs it from <code>/Applications</code> rather than from a temporary copy of itself.</li>
