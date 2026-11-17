@@ -42,6 +42,13 @@ REQUIRED_SCRIPTS = [
 # The share pages are generated, so they are not in the repo as a thing you
 # edit — but they are in the repo as files that ship, so they are checked like
 # anything else. generate-share-pages.py calls this at the end for that reason.
+#
+# The dataset pages under site/stats/data/ are hand-written, and they carry
+# the shared chrome too. They were left out of this list, so their footer was
+# a hand-maintained copy that quietly drifted: it kept working, and it was
+# the one place on the site whose download button never learned about the
+# Windows package. A page is on the list or it is not; "not on the list" is
+# not a way of saying "it does not need the shared footer".
 PAGES = ["site/index.html", "site/agents.html", "site/vibescapes.html", "site/vibe.html",
          "site/admin.html", "site/privacy.html", "site/terms.html",
          "site/author/syd-lawrence.html"]
@@ -63,6 +70,12 @@ def pages(root):
             for name in sorted(os.listdir(folder)):
                 if name.endswith(".html"):
                     found.append(f"site/{section}/{name}")
+    # The dataset pages. Hand-written, but they ship with the shared chrome.
+    stats = os.path.join(root, "site", "stats", "data")
+    if os.path.isdir(stats):
+        for name in sorted(os.listdir(stats)):
+            if name.endswith(".html"):
+                found.append(f"site/stats/data/{name}")
     return [p for p in found if os.path.exists(os.path.join(root, p))]
 
 

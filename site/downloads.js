@@ -6,8 +6,8 @@
 // wants the package their machine can run, and a button that says "Download
 // for Mac" on a Windows PC is a dead end.
 //
-// So this script works out what the visitor is on and changes the button to
-// match. Two rules keep it honest:
+// So this script works out what the visitor is on and points the buttons at
+// the package that matches. Three rules keep it honest:
 //
 //   - Detection is an accelerator, never a gate. The static markup says
 //     "Download for Mac", because that is what a visitor with no JavaScript
@@ -15,6 +15,21 @@
 //   - An explicit choice is always there too. The homepage offers macOS and
 //     Windows side by side, so somebody who came to the wrong button — or
 //     whose browser says the wrong thing — can pick the other one.
+//   - Only a generic platform label is rewritten. The search pages say
+//     things like "Try Vibresia free with Spotify", and that sentence is
+//     the page's editorial point: it is about the app, not about the
+//     platform, and it is still true on Windows. So an editorial button
+//     keeps its words and only its route changes.
+//
+// The attribute contract:
+//
+//   data-install              this is a download button. Its route changes
+//                             to match the visitor's platform.
+//   data-install-platform     this button's text IS a platform label
+//                             ("Download for Mac"), so its text may be
+//                             rewritten too.
+//
+// A button with only `data-install` is an editorial CTA and keeps its text.
 //
 // The script is loaded from the shared footer, before mobile.js. That order
 // matters: mobile.js remembers what each button said so it can put the
@@ -74,6 +89,12 @@
 
   /// Changes every install button on the page to the given platform.
   ///
+  /// Every `[data-install]` button's route changes, because the package the
+  /// visitor can run is the package they should be sent to. Only the
+  /// buttons marked `data-install-platform` have their text rewritten: the
+  /// others say something specific about the app, and that sentence is
+  /// still true on the other platform.
+  ///
   /// A platform of null changes nothing at all: the page keeps the Mac CTA
   /// it shipped with, and the explicit chooser does the rest.
   function applyDownloads(doc, platform, body) {
@@ -82,7 +103,12 @@
     var buttons = doc.querySelectorAll("[data-install]");
     for (var i = 0; i < buttons.length; i++) {
       var el = buttons[i];
-      el.textContent = chosen.label;
+      // The label a platform button should carry. It is written down
+      // before the text changes, because the text is about to change and
+      // the label is the original.
+      if (isPlatformButton(el)) {
+        el.textContent = chosen.label;
+      }
       el.href = routeFor(el.getAttribute("href"), platform);
       el.dataset.platform = platform;
     }
@@ -91,9 +117,20 @@
     if (body) body.dataset.platform = platform;
   }
 
+  /// Whether this button's text is a generic platform label.
+  ///
+  /// The attribute is the whole answer. Guessing from the text would be
+  /// wrong in both directions: "Download for Mac" is a platform label, and
+  /// "Try Vibresia free with Spotify" is not, and no rule that reads the
+  /// words gets both right for the whole site.
+  function isPlatformButton(el) {
+    return !!(el.hasAttribute && el.hasAttribute("data-install-platform"));
+  }
+
   var api = {
     detectPlatform: detectPlatform,
     applyDownloads: applyDownloads,
+    isPlatformButton: isPlatformButton,
     routeFor: routeFor,
     PLATFORMS: PLATFORMS,
   };
