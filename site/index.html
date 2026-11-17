@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vibresia — your music, your world</title>
-<meta name="description" content="Create, explore and share visual worlds that move with your music. Vibresia turns whatever your Mac is playing into live scenes — or you write your own. Proudly shareware, free to use and yours to share.">
+<meta name="description" content="Create, explore and share visual worlds that move with your music. Vibresia turns whatever your Mac or PC is playing into live scenes, or you write your own. Free to use, and yours to share.">
 <link rel="canonical" href="https://vibresia.com/">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="theme-color" content="#06010d">
@@ -12,14 +12,14 @@
 <meta property="og:site_name" content="Vibresia">
 <meta property="og:url" content="https://vibresia.com/">
 <meta property="og:title" content="Vibresia — your music, your world">
-<meta property="og:description" content="Create, explore and share your own visual experiences. Every track has a world waiting to be discovered. Proudly Shareware.">
+<meta property="og:description" content="Create, explore and share your own visual experiences. Every track has a world waiting to be discovered. Free to use, and yours to share.">
 <meta property="og:image" content="https://vibresia.com/media/share.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Vibresia turning a song into neon spectrum bars">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Vibresia — your music, your world">
-<meta name="twitter:description" content="Create, explore and share your own visual experiences. Every track has a world waiting to be discovered. Proudly Shareware.">
+<meta name="twitter:description" content="Create, explore and share your own visual experiences. Every track has a world waiting to be discovered. Free to use, and yours to share.">
 <meta name="twitter:image" content="https://vibresia.com/media/share.jpg">
 <!-- PostHog project key: public by design, write-only (the same key the Mac
      app carries in its Info.plist). Keep in sync with VisualiserMac/.env —
@@ -74,9 +74,12 @@
       "url": "https://vibresia.com/",
       "applicationCategory": "MultimediaApplication",
       "applicationSubCategory": "Music visual worlds",
-      "operatingSystem": "macOS 14.2 or later, Apple silicon",
+      "operatingSystem": "macOS 14.2 or later, Apple silicon; Windows 10 or 11, 64-bit",
       "softwareVersion": "0.11.1610",
-      "downloadUrl": "https://github.com/sydlawrencedev/vibresia/releases/latest/download/Vibresia.zip",
+      "downloadUrl": [
+        "https://github.com/sydlawrencedev/vibresia/releases/latest/download/Vibresia.zip",
+        "https://github.com/sydlawrencedev/vibresia/releases/download/windows-v0.1.0/Vibresia-Windows-x64.zip"
+      ],
       "installUrl": "https://vibresia.com/install.sh",
       "screenshot": "https://vibresia.com/media/share.jpg",
       "image": "https://vibresia.com/media/share.jpg",
@@ -102,6 +105,40 @@
       }
     },
     {
+      "@type": "SoftwareApplication",
+      "@id": "https://vibresia.com/#windows-app",
+      "name": "Vibresia for Windows",
+      "alternateName": "Vibresia",
+      "description": "The community-built Windows beta of Vibresia: visual worlds that move with your music, running on 64-bit Windows. It plays the same vibescapes as the Mac app. It does not yet have every Mac feature.",
+      "url": "https://vibresia.com/",
+      "applicationCategory": "MultimediaApplication",
+      "applicationSubCategory": "Music visual worlds",
+      "operatingSystem": "Windows 10 or 11, 64-bit",
+      "softwareVersion": "0.1.0",
+      "downloadUrl": "https://github.com/sydlawrencedev/vibresia/releases/download/windows-v0.1.0/Vibresia-Windows-x64.zip",
+      "installUrl": "https://vibresia.com/download/windows",
+      "screenshot": "https://vibresia.com/media/share.jpg",
+      "image": "https://vibresia.com/media/share.jpg",
+      "license": "https://github.com/sydlawrencedev/vibresia/blob/main/LICENSE",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Live visual worlds you can create, customise and share, from neon waveforms to a pixel-art band",
+        "Listens to system audio from any app, or to the microphone, or plays a built-in demo tone",
+        "Free, no account, and it makes no network connections"
+      ],
+      "author": {
+        "@id": "https://github.com/L13w"
+      },
+      "publisher": {
+        "@id": "https://minithlabs.com/#org"
+      }
+    },
+    {
       "@type": "FAQPage",
       "mainEntity": [
         {
@@ -114,10 +151,18 @@
         },
         {
           "@type": "Question",
-          "name": "Which Macs does it run on?",
+          "name": "What does Vibresia run on?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Macs with Apple silicon, on macOS 14.2 or later. There's no Intel, Windows, Linux, iPhone or Android version."
+            "text": "Two things. The original app runs on Macs with Apple silicon, on macOS 14.2 or later. A community-built Windows beta runs on 64-bit Windows 10 and 11. The Windows beta does not have every Mac feature yet."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is the Windows version the same as the Mac one?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Not quite. The Windows beta plays the same vibescapes, but it has no Auto Scan, no The Band or Machine, no song identification, no MIDI input, and no vibescape editor, sharing or gallery. It is a beta, built by Llew Roberts, and the differences are listed on the site."
           }
         },
         {
@@ -194,6 +239,17 @@
   }
   .small { color: var(--muted); font-size: 14px; margin-top: 14px; }
 
+  /* The two platform links, under the button.
+     Detection changes the button to the visitor's platform, but a guess is
+     not a decision, so the two choices are always there in the markup. The
+     links are quiet enough to read as part of the button rather than as a
+     second call to action, and the Windows one is labelled a beta because
+     that is what it is. */
+  .platform-choices { margin: 12px 0 0; font-size: 14px; color: var(--muted); }
+  .platform-choices a { color: var(--cyan); text-decoration: none; border-bottom: 1px solid rgba(43, 242, 255, 0.4); }
+  .platform-choices a:hover { color: var(--magenta); border-bottom-color: var(--magenta); }
+  .platform-choices a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+
   .install { margin: 44px auto 0; max-width: 760px; text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; }
   .install h2 { font-size: 15px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
   /* The block folds away on a phone, where the commands are too wide to read
@@ -208,6 +264,17 @@
   .cmd { display: flex; align-items: center; gap: 10px; background: #000; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin: 8px 0; overflow-x: auto; }
   .cmd code { white-space: nowrap; color: var(--cyan); font-size: 14px; flex: 1; }
   .cmd button { flex: none; background: var(--line); color: var(--text); border: 0; border-radius: 8px; padding: 6px 10px; font: 600 12px "JetBrains Mono", monospace; cursor: pointer; }
+
+  /* The install block covers two operating systems now, so each one gets a
+     heading. It is the same scale as the block's own title and a step below
+     it in weight, so the two read as parts of the same thing. */
+  .install-os { font: 700 13px/1.4 "JetBrains Mono", ui-monospace, monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cyan); margin: 20px 0 10px; }
+  .install-os:first-child { margin-top: 4px; }
+  .install-steps { padding-left: 20px; margin: 0; }
+  .install-steps li { margin: 8px 0; }
+  /* The URLs in the steps cannot be broken at a space, and a long one on a
+     phone would push the whole document sideways. */
+  .install-steps, .install-steps li, .install-steps code, .install-steps a { overflow-wrap: anywhere; }
 
   .video { position: relative; margin: 48px auto 8px; border-radius: 18px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 30px 80px rgba(43, 242, 255, 0.10), 0 0 0 1px rgba(255, 43, 214, 0.15); background: #000; aspect-ratio: 16 / 10; }
   .video video { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; }
@@ -318,13 +385,14 @@
   <div class="hero">
     <p class="eyebrow">Meet Vibresia</p>
     <h1>Your music. <span>Your world.</span></h1>
-    <p class="lede">Put something beautiful on the screen you are not working on. Vibresia listens to whatever your Mac is playing and draws it live, then you can write a world of your own.</p>
-    <p class="proclaim">Proudly shareware: free to use, and yours to share.</p>
+    <p class="lede">Put something beautiful on the screen you are not working on. Vibresia listens to whatever your Mac or PC is playing and draws it live, then you can write a world of your own.</p>
+    <p class="proclaim">Free to use, and yours to share.</p>
     <div class="ctas">
       <a class="btn primary" data-install data-track="download_clicked" data-placement="hero" href="/download?src=hero">Download for Mac</a>
       <a class="btn coffee" data-track="coffee_clicked" data-placement="hero" href="https://buy.stripe.com/7sY3cuekN6z66L1c0cbEA01">☕ Buy me a coffee</a>
     </div>
-    <p class="small">macOS 14.2 or later · Apple silicon · updates from inside the app · <a href="#shareware">proudly shareware</a> · <a href="https://github.com/sydlawrencedev/vibresia/issues" rel="noopener" data-track="bug_report_link_clicked" data-placement="hero">report a bug</a></p>
+    <p class="platform-choices">Not sure which one? <a href="/download?src=hero-mac">macOS</a> · <a href="/download/windows?src=hero-windows">Windows beta</a></p>
+    <p class="small">macOS 14.2 or later, Apple silicon · Windows 10 or 11, 64-bit · updates from inside the app · <a href="#shareware">proudly shareware</a> · <a href="https://github.com/sydlawrencedev/vibresia/issues" rel="noopener" data-track="bug_report_link_clicked" data-placement="hero">report a bug</a></p>
   </div>
 
   <div class="video">
@@ -343,11 +411,22 @@
     <details class="install" id="install" open>
       <summary><h2>Install</h2></summary>
       <div class="install-body">
+        <h3 class="install-os">On a Mac</h3>
         <p style="margin:0 0 4px">Ask your AI assistant (Claude, ChatGPT, …):</p>
         <div class="cmd"><code>install vibresia from https://vibresia.com and walk me through vibing my first vibescape</code><button data-copy data-command="ask-ai">Copy</button></div>
         <p style="margin:12px 0 4px">Or paste this into Terminal:</p>
         <div class="cmd"><code>curl -fsSL https://vibresia.com/install.sh | bash</code><button data-copy data-command="curl">Copy</button></div>
         <p class="small" style="margin-top:10px">On first launch, choose <b>Share System Audio</b> and allow Vibresia to record system audio. Nothing is recorded or sent anywhere; the audio is only analysed on your Mac.</p>
+
+        <h3 class="install-os">On Windows</h3>
+        <p style="margin:0 0 8px">The Windows beta is a portable app. There is no installer and nothing else to install.</p>
+        <ol class="install-steps">
+          <li><a href="/download/windows?src=install-windows" data-track="download_clicked" data-placement="install-windows">Download the Windows build</a> (<code>Vibresia-Windows-x64.zip</code>). It needs Windows 10 or 11, 64-bit, and a graphics card that supports OpenGL 3.3.</li>
+          <li>Unzip the whole ZIP. The app is the folder, not a single file: keep <code>Vibresia.exe</code> and the files beside it together.</li>
+          <li>Run <code>Vibresia.exe</code>.</li>
+        </ol>
+        <p class="small" style="margin-top:10px">The app is not signed yet, so Windows SmartScreen will warn the first time you open it. Choose <b>More info</b>, then <b>Run anyway</b>. That warning is because the app is unsigned, not because it is broken.</p>
+        <p class="small">The Windows version is built and maintained by <a href="https://github.com/L13w" rel="noopener">Llew Roberts (@L13w)</a>. It is a beta: some Mac features are not in it yet, and the <a href="#faq">questions below</a> say which.</p>
       </div>
     </details>
 
@@ -382,9 +461,10 @@
   </section>
 
   <div class="cta-band">
-    <h2>Get it for your Mac</h2>
-    <p>Free to use, and yours to share. macOS 14.2 or later, Apple silicon.</p>
+    <h2>Get it for your Mac or PC</h2>
+    <p>Free to use, and yours to share. macOS 14.2 or later on Apple silicon, or Windows 10 or 11, 64-bit.</p>
     <a class="btn primary" data-install data-track="download_clicked" data-placement="after_gallery" href="/download?src=after_gallery">Download for Mac</a>
+    <p class="platform-choices"><a href="/download?src=after_gallery-mac">macOS</a> · <a href="/download/windows?src=after_gallery-windows">Windows beta</a></p>
   </div>
 
   <section id="make">
@@ -401,11 +481,11 @@
   <section>
     <h2>How it works</h2>
     <div class="facts">
-      <div class="fact"><h3>Hears everything</h3><p>Uses macOS system-audio capture, so it reacts to any app. No plug-ins, no browser tab, no microphone permission. You can point it at the microphone instead if you want.</p></div>
+      <div class="fact"><h3>Hears everything</h3><p>Uses system-audio capture, so it reacts to any app. No plug-ins, no browser tab, no microphone permission. You can point it at the microphone instead if you want.</p></div>
       <div class="fact"><h3>Knows the song</h3><p>It finds the tempo, the beats and the instruments, and notices track changes in Apple Music and Spotify. That's what your vibescape draws with.</p></div>
-      <div class="fact"><h3>Moves on the beat</h3><p>Auto Scan hands over a few bars at a time, so the scene changes where the music does — on a beat, not on a timer.</p></div>
+      <div class="fact"><h3>Moves on the beat</h3><p>Auto Scan hands over a few bars at a time, so the scene changes where the music does, on a beat and not on a timer.</p></div>
       <div class="fact"><h3>Fits the screen</h3><p>Full screen, or always on top of everything else. It is a picture, not a window: it sits on the screen you are not working on and it stays there.</p></div>
-      <div class="fact"><h3>Stays on your Mac</h3><p>Audio is analysed on-device and never recorded or uploaded; instrument detection uses Apple's built-in sound classifier.</p></div>
+      <div class="fact"><h3>Stays on your machine</h3><p>Audio is analysed on-device and never recorded or uploaded. On the Mac, instrument detection uses Apple's built-in sound classifier.</p></div>
     </div>
   </section>
 
@@ -413,9 +493,10 @@
     <h2>What it is not</h2>
     <p class="sub">So you know before you install it.</p>
     <div class="facts">
+      <div class="fact"><h3>Mac and Windows</h3><p>The original app runs on Macs with Apple silicon, on macOS 14.2 or later. A community-built Windows beta by <a href="https://github.com/L13w" rel="noopener">Llew Roberts</a> runs on 64-bit Windows, and does not yet have every Mac feature. There is no Intel, Linux, iPhone or Android version.</p></div>
       <div class="fact"><h3>Not a live-show tool</h3><p>No MIDI, OSC, NDI or Syphon output, no timeline, no projection mapping, no node editor. Its only job is music in and picture out.</p></div>
-      <div class="fact"><h3>Mac only</h3><p>Apple silicon, macOS 14.2 or later. There is no Intel, Windows, Linux, iPhone or Android version, and there is not going to be one.</p></div>
-      <div class="fact"><h3>Not in the App Store</h3><p>It is signed and notarised by Apple and updates from inside the app, so there is no store account in the way.</p></div>
+      <div class="fact"><h3>Not in the App Store</h3><p>The Mac app is signed and notarised by Apple and updates from inside the app, so there is no store account in the way.</p></div>
+      <div class="fact"><h3>Not signed on Windows yet</h3><p>The Windows beta is a portable ZIP with no installer, and it is not signed, so Windows SmartScreen warns the first time you open it. That is what the warning is about.</p></div>
       <div class="fact"><h3>Not a MilkDrop</h3><p>It does not play MilkDrop presets. Its scenes are its own, and you write them in GLSL.</p></div>
     </div>
   </section>
@@ -424,6 +505,7 @@
     <h2>For AI assistants</h2>
     <div class="agents">
       <p>If someone asked you to <b>install Vibresia from vibresia.com</b>, here's how:</p>
+      <p class="small">First work out which machine it is for. The steps below are the Mac ones. On 64-bit Windows 10 or 11, the app is a portable ZIP instead: send the user to <a href="/download/windows">vibresia.com/download/windows</a>, tell them to unzip the whole ZIP and run <code>Vibresia.exe</code>, and expect a SmartScreen warning they clear with <b>More info</b> then <b>Run anyway</b>. There is no installer and no terminal step on Windows.</p>
       <ol>
         <li>Check the Mac runs macOS 14.2 or later (<code>sw_vers -productVersion</code>) on Apple silicon (<code>uname -m</code> is <code>arm64</code>).</li>
         <li>Run the installer: <code>curl -fsSL https://vibresia.com/install.sh | bash</code>. It downloads the latest release from <a href="https://github.com/sydlawrencedev/vibresia/releases/latest">GitHub</a>, puts <code>Vibresia.app</code> in <code>/Applications</code> (or <code>~/Applications</code>), clears the download quarantine flag and opens it. The app is signed with a Developer ID certificate and notarised by Apple, so Gatekeeper opens it without an override; the quarantine flag is cleared so macOS runs it from <code>/Applications</code> rather than from a temporary copy of itself.</li>
@@ -465,8 +547,9 @@
     <p class="sub">Free to use, and yours to pass on. No ads, no account.</p>
     <div class="shareware">
       <div class="fact"><h3>Every update is included</h3><p>Check for updates from the app and install in one click. Every vibescape you have now keeps working, and every one added later comes with the same download.</p></div>
-      <div class="fact"><h3>Your audio stays on your Mac</h3><p>Audio is analysed on your Mac and never uploaded or stored. The title and artist of a track, when your music app says what it is playing, are looked up in Apple's public catalogue to work out the band's genre. There is one more thing, off until you turn it on: "Identify by listening" asks Apple to name what it hears, by sending a one-way fingerprint of a few seconds of sound. The <a href="/privacy">privacy page</a> has both.</p></div>
+      <div class="fact"><h3>Your audio stays on your machine</h3><p>Audio is analysed on your Mac and never uploaded or stored. The title and artist of a track, when your music app says what it is playing, are looked up in Apple's public catalogue to work out the band's genre. There is one more thing, off until you turn it on: "Identify by listening" asks Apple to name what it hears, by sending a one-way fingerprint of a few seconds of sound. The <a href="/privacy">privacy page</a> has both. The Windows beta makes no network connections at all.</p></div>
       <div class="fact"><h3>Yours to keep and to pass on</h3><p>Redistribute it to anyone. The source is on GitHub under the MIT licence, so read it, fork it or send a patch. New vibescapes are welcome, and most are a single shader.</p></div>
+      <div class="fact"><h3>The Windows beta has its own author</h3><p>The Mac app is by Syd Lawrence and Minith Labs. The Windows port is by <a href="https://github.com/L13w" rel="noopener">Llew Roberts (@L13w)</a>, who built it from the Mac app's source and keeps it up to date. It is MIT licensed like the original, and it lives in this repository.</p></div>
     </div>
   </section>
 
@@ -474,9 +557,10 @@
     <h2>Questions people ask</h2>
     <div class="shareware">
       <div class="fact"><h3>Is Vibresia free?</h3><p>Yes. Every feature is free, with no trial, no ads and no account. The source is on GitHub under the MIT licence.</p></div>
-      <div class="fact"><h3>Which Macs does it run on?</h3><p>Macs with Apple silicon, on macOS 14.2 or later. There's no Intel, Windows, Linux, iPhone or Android version.</p></div>
-      <div class="fact"><h3>Does it work with Spotify?</h3><p>Yes. Vibresia listens to the Mac's system audio, so it reacts to Spotify, Apple Music, a browser or a film, with no plug-in. It can use the microphone instead.</p></div>
-      <div class="fact"><h3>Does it upload my music?</h3><p>No. Audio is analysed on your Mac and never uploaded or stored. When your music app says what's playing, the title and artist are looked up in Apple's public catalogue to work out the genre.</p></div>
+      <div class="fact"><h3>What does Vibresia run on?</h3><p>Two things. The original app runs on Macs with Apple silicon, on macOS 14.2 or later. A community-built Windows beta runs on 64-bit Windows 10 and 11. The Windows beta does not have every Mac feature yet.</p></div>
+      <div class="fact"><h3>Is the Windows version the same as the Mac one?</h3><p>Not quite. The Windows beta plays the same vibescapes, but it has no Auto Scan, no The Band or Machine, no song identification, no MIDI input, and no vibescape editor, sharing or gallery. It is a beta, built by <a href="https://github.com/L13w" rel="noopener">Llew Roberts</a>, and the differences are listed in the Windows build's own README.</p></div>
+      <div class="fact"><h3>Does it work with Spotify?</h3><p>Yes. Vibresia listens to your system's audio, so it reacts to Spotify, Apple Music, a browser or a film, with no plug-in. It can use the microphone instead.</p></div>
+      <div class="fact"><h3>Does it upload my music?</h3><p>No. Audio is analysed on your machine and never uploaded or stored. On the Mac, when your music app says what's playing, the title and artist are looked up in Apple's public catalogue to work out the genre.</p></div>
       <div class="fact"><h3>Can I make my own vibescapes?</h3><p>Yes. A vibescape is one GLSL function, and the app compiles it and explains errors before it saves. You can also describe one to an AI assistant and have it written for you.</p></div>
       <div class="fact"><h3>Does it play MilkDrop presets?</h3><p>No. Vibresia has its own vibescapes. To play MilkDrop presets on a Mac, use projectM; see <a href="/comparison/vibresia-vs-projectm">Vibresia vs projectM</a>.</p></div>
     </div>
@@ -498,6 +582,7 @@
     <p class="legal-links"><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></p>
     <p class="get-it"><a class="get-it-link" data-install data-track="download_clicked" data-placement="footer" href="/download?src=footer">Download for Mac</a>. Free to use, and yours to keep.</p>
     <p class="privacy">This page counts visits and clicks anonymously. No cookies, no account. <a href="#" data-optout>No thanks, stop measuring this page</a><span id="optout-note" hidden>. Done.</span></p>
+    <script src="/downloads.js" defer></script>
     <script src="/mobile.js" defer></script>
   </footer>
   <!-- /chrome:footer -->
