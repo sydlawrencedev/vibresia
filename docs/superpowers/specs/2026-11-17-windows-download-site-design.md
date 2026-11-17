@@ -33,7 +33,17 @@ A shared script, `site/downloads.js`, detects the visitor's platform and updates
 - macOS becomes `Download for Mac` and links to `/download`.
 - Unknown platforms keep the Mac CTA in the static markup so the page remains useful without JavaScript.
 
-A small platform chooser is rendered beside the hero CTA and in the install section. It always offers explicit macOS and Windows links, so detection is an accelerator rather than a gate. The Windows choice is labelled as a community-built beta and links to the Windows download route. Mobile behaviour continues to use the existing share-sheet flow.
+The label rewrite applies only to buttons whose text is a generic platform
+label, which are marked `data-install-platform`. The search pages' calls to
+action say things like "Try Vibresia free with Spotify": that sentence is the
+page's editorial point, it is about the app rather than about the platform,
+and it is still true on Windows. So an editorial button marked only
+`data-install` keeps its words and only its route changes. Every button's
+route changes, because the package the visitor can run is the package they
+should be sent to.
+
+A small platform chooser is rendered beside the hero CTA, in the install
+section, and after the gallery. It always offers explicit macOS and Windows links, so detection is an accelerator rather than a gate. The Windows choice is labelled as a community-built beta and links to the Windows download route. Mobile behaviour continues to use the existing share-sheet flow.
 
 ## Website content
 

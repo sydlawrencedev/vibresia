@@ -18,9 +18,20 @@
 - `site/downloads.test.js`: browser-behaviour unit tests using lightweight DOM fixtures.
 - `site/index.html`: two-platform hero, install instructions, metadata, structured data, FAQ and author credit.
 - `site/_partials/footer.html`: shared platform-aware download CTA and script include.
-- `site/_partials/nav.html`: shared script include in the site chrome.
-- `scripts/inject-chrome.py`: preserves the shared footer/nav script includes.
+- `scripts/inject-chrome.py`: preserves the shared footer script include, and checks the order it loads in.
 - `.github/workflows/windows.yml`: publishes the versioned prerelease asset used by the Worker.
+
+The script is loaded from the shared footer, not the nav. The footer is
+where `mobile.js` already lives, and the two have to load in that order:
+`mobile.js` remembers each button's label so it can put it back when the
+visitor is not on a phone, and it takes that label from the button as it
+finds it. So `downloads.js` changes the button first. `site/_partials/nav.html`
+does not change, and `scripts/inject-chrome.py` is what enforces the order.
+
+The site's pages name the packages by the site's own routes
+(`/download` and `/download/windows`), never by a GitHub asset URL. The Worker
+holds the one copy of a release asset URL, so a release republished under a
+new tag changes one constant rather than the page and the Worker at once.
 
 ### Task 1: Add the Windows release and Worker route
 
@@ -98,8 +109,8 @@ git commit -m "feat: route Windows downloads separately"
 - Create: `site/downloads.js`
 - Create: `site/downloads.test.js`
 - Modify: `site/_partials/footer.html`
-- Modify: `site/_partials/nav.html`
 - Modify: `scripts/inject-chrome.py`
+- Modify: `scripts/generate-share-pages.py`
 
 - [ ] **Step 1: Write failing platform-detection tests**
 
@@ -163,6 +174,16 @@ if (typeof document !== "undefined") {
 }
 ```
 
+**The attribute contract.** `data-install` marks a download button, and its
+route changes to match the visitor's platform. `data-install-platform` marks
+the buttons whose *text* is a generic platform label ("Download for Mac"),
+and only those have their text rewritten. A button with only `data-install`
+is an editorial CTA: the search pages say "Try Vibresia free with Spotify",
+and that sentence is the page's editorial point, so on Windows it keeps its
+words and only its route changes. The link's query string is carried over
+either way, because the `src` on it is which button was pressed and the
+analytics read it.
+
 - [ ] **Step 4: Run the tests and verify they pass**
 
 Run: `node --test site/downloads.test.js`
@@ -170,7 +191,12 @@ Expected: PASS.
 
 - [ ] **Step 5: Include the script in shared chrome**
 
-Add `<script src="/downloads.js" defer></script>` to `site/_partials/footer.html` and update `scripts/inject-chrome.py` so the chrome check expects it.
+Add `<script src="/downloads.js" defer></script>` to `site/_partials/footer.html`, **before** the `mobile.js` line, and update `scripts/inject-chrome.py` so the chrome check expects it and fails a page that loads the two the other way round.
+
+Mark the generic platform buttons with `data-install-platform`: the footer's
+download link in the partial, the homepage's hero and after-gallery buttons,
+and the share pages' fallback CTA in `scripts/generate-share-pages.py`. The
+search pages' editorial CTAs are left unmarked.
 
 - [ ] **Step 6: Run the chrome check**
 
@@ -180,7 +206,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add site/downloads.js site/downloads.test.js site/_partials/footer.html site/_partials/nav.html scripts/inject-chrome.py
+git add site/downloads.js site/downloads.test.js site/_partials/footer.html scripts/inject-chrome.py
 git commit -m "feat: detect the visitor's download platform"
 ```
 
@@ -193,9 +219,16 @@ git commit -m "feat: detect the visitor's download platform"
 
 Describe macOS and Windows in the description and `operatingSystem`, add `downloadUrl` values for both packages, and keep the Mac installer as `installUrl`.
 
+The `downloadUrl` values are the site's own routes — `https://vibresia.com/download`
+and `https://vibresia.com/download/windows` — not GitHub asset URLs. The Worker
+holds the one copy of a release asset URL, so a release republished under a new
+tag changes one constant rather than the page and the Worker at once. A copy on
+the page goes stale the day the release moves, and a stale copy points at a
+file that is not there.
+
 - [ ] **Step 2: Update hero and install copy**
 
-Use “your Mac or PC”, label the hero CTA `data-install`, and add an explicit chooser:
+Use “your Mac or PC”, label the hero CTA `data-install` and `data-install-platform`, and add an explicit chooser:
 
 ```html
 <p class="platform-choices">
@@ -203,6 +236,11 @@ Use “your Mac or PC”, label the hero CTA `data-install`, and add an explicit
   <a href="/download/windows?src=hero-windows">Windows beta</a>
 </p>
 ```
+
+The chooser goes in three places, not two: beside the hero CTA, inside the
+install section, and after the gallery. The install block is where somebody
+who came to install the thing actually is, and on a phone it may be the only
+part of the page still open.
 
 Add separate Windows instructions: unzip the ZIP, run `Vibresia.exe`, and expect an unsigned-app SmartScreen warning with “More info” then “Run anyway”.
 
