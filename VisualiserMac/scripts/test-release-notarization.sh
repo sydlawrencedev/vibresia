@@ -46,7 +46,7 @@ printf 'import sys\nsys.exit(0)\n' > "$WORK/scripts/inject-chrome.py"
 for s in check-admin-page.mjs check-competitors.mjs generate-seo-pages.mjs check-links.mjs check-schema.mjs check-d1-schema.mjs; do
     printf 'process.exit(0);\n' > "$WORK/scripts/$s"
 done
-for s in check-mcp-reference.py check-plugin-manifests.py; do
+for s in check-mcp-reference.py check-plugin-manifests.py check-windows-release.py; do
     printf 'import sys\nsys.exit(0)\n' > "$WORK/scripts/$s"
 done
 printf '#!/bin/bash\nexit 0\n' > "$WORK/scripts/check-no-webhook-leak.test.sh"
