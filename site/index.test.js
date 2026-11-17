@@ -66,6 +66,22 @@ test("the Windows choice is labelled as a beta", () => {
   assert.match(HOME, />Windows beta</, "the Windows link says it is a beta");
 });
 
+test("there is an explicit chooser inside the install section", () => {
+  // The install block is where somebody who came to install the thing
+  // actually is, so it is where the choice has to be. A chooser in the
+  // hero and another one after the gallery are not enough: the page is
+  // very long, and on a phone the install block may be folded away
+  // entirely by the time the visitor is reading it.
+  const install = HOME.match(/<details class="install" id="install"[\s\S]*?<\/details>/);
+  assert.ok(install, "the install block is there");
+
+  const block = install[0];
+  assert.match(block, /class="install-choose"/, "the install block has a chooser");
+  assert.match(block, /href="\/download\/windows\?src=[^"]*"/, "it offers the Windows route");
+  assert.match(block, /href="\/download\?src=[^"]*"/, "it offers the Mac route");
+  assert.match(block, /Windows beta</, "the Windows choice says it is a beta");
+});
+
 test("the install steps say how to install on Windows", () => {
   assert.match(TEXT, /On a Mac/);
   assert.match(TEXT, /On Windows/);
@@ -75,6 +91,27 @@ test("the install steps say how to install on Windows", () => {
   assert.match(TEXT, /SmartScreen/);
   assert.match(TEXT, /More info/);
   assert.match(TEXT, /Run anyway/);
+});
+
+test("every generic platform button is marked so its label may be rewritten", () => {
+  // The contract: `data-install` says "this is a download button, its
+  // route changes". `data-install-platform` says "its text IS a platform
+  // label, so the text may be rewritten too". A generic label without the
+  // second attribute keeps saying "Download for Mac" on a Windows PC.
+  const generic = [...HOME.matchAll(/<a\b[^>]*>(?:Download for Mac|Download Vibresia for Mac)<\/a>/g)];
+  assert.ok(generic.length > 0, "the homepage has generic platform buttons");
+  for (const [markup] of generic) {
+    assert.match(markup, /data-install-platform/, `marked: ${markup}`);
+  }
+});
+
+test("no editorial CTA is marked as a platform button", () => {
+  // A search page says "Try Vibresia free with Spotify". That sentence is
+  // the page's editorial point and it is still true on Windows, so it must
+  // not be rewritten into "Download for Windows".
+  for (const [markup] of HOME.matchAll(/<a\b[^>]*>[^<]*(?:Try Vibresia|Get Vibresia)[^<]*<\/a>/g)) {
+    assert.doesNotMatch(markup, /data-install-platform/, `not marked: ${markup}`);
+  }
 });
 
 test("the homepage credits the Windows author, with a link", () => {
@@ -99,19 +136,47 @@ test("the structured data describes both packages", () => {
   assert.match(windows.operatingSystem, /Windows/);
   assert.match(mac.operatingSystem, /Windows/, "the Mac node says the app is for Windows too");
 
-  // Both packages are downloadable, and the Windows one is not the Mac's
-  // `latest` release: that release holds Vibresia.zip, the Mac updater's
-  // file, and a Windows visitor sent there gets the wrong app.
+  // Both packages are downloadable, and the page names them by the site's
+  // own routes. The Worker owns the asset URLs: a GitHub release URL
+  // written into the page is a second copy of a fact that changes when
+  // the release is republished, and the copy that gets forgotten is the
+  // one that sends somebody to an asset that is not there.
   const windowsUrls = [].concat(mac.downloadUrl, windows.downloadUrl);
-  assert.ok(windowsUrls.some((u) => /Vibresia-Windows-x64\.zip$/.test(u)), "a Windows package");
   assert.ok(
-    windowsUrls.some((u) => /windows-v/.test(u)),
-    "the Windows package is on a versioned prerelease"
+    windowsUrls.some((u) => /\/download\/windows$/.test(u)),
+    "the Windows package is named by the site's own route"
   );
   assert.ok(
-    !windowsUrls.some((u) => /releases\/latest\/download\/Vibresia\.zip/.test(u) && u === windows.downloadUrl),
-    "the Windows download is not GitHub's latest release"
+    windowsUrls.some((u) => /\/download$/.test(u)),
+    "the Mac package is named by the site's own route"
   );
+  assert.ok(
+    !windowsUrls.some((u) => /github\.com/.test(u)),
+    "the page names no release asset URL: the Worker owns those"
+  );
+});
+
+test("the homepage names no release asset URL at all", () => {
+  // The Worker holds the one copy of the Windows asset URL. A second copy
+  // here would go stale the day the release is republished, and a stale
+  // copy points at a file that is not there.
+  assert.doesNotMatch(HOME, /windows-v\d+\.\d+\.\d+/, "no versioned Windows tag");
+  // A release *asset* is a file inside a release. A link to the releases
+  // index is a page, and the Mac installer's link to it is legitimate.
+  assert.doesNotMatch(
+    HOME,
+    /github\.com\/sydlawrencedev\/vibresia\/releases\/(download|latest\/download)/,
+    "no release asset URL"
+  );
+
+  // The filename itself may appear once, in the prose that tells a Windows
+  // visitor what the download will be called. It must not appear as part
+  // of a link.
+  const links = [...HOME.matchAll(/href="([^"]*)"/g)].map(([, href]) => href);
+  for (const href of links) {
+    assert.doesNotMatch(href, /Vibresia-Windows-x64/, `no asset in a link: ${href}`);
+    assert.doesNotMatch(href, /windows-v/, `no versioned tag in a link: ${href}`);
+  }
 });
 
 test("the FAQ asks about both platforms and the page shows both questions", () => {
