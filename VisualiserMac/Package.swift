@@ -30,7 +30,13 @@ let package = Package(
         // The test framework. It ships with Xcode, but this machine has only
         // the Command Line Tools, and the minifier's tests are the ones that
         // have to run.
-        .package(url: "https://github.com/swiftlang/swift-testing.git", from: "6.2.0")
+        .package(url: "https://github.com/swiftlang/swift-testing.git", from: "6.2.0"),
+        // Syphon, which shares the picture with other apps on the Mac. Upstream
+        // (Syphon/Syphon-Framework) ships an Xcode project and no Package.swift,
+        // so this is a fork of it (branch swiftpm-metal), which adds one and changes
+        // nothing else about how Syphon works; see SWIFTPM.md there.
+        .package(url: "https://github.com/sydlawrencedev/Syphon-Framework.git",
+                 revision: "76f08a24a136ac085d756c773482437992fdeb63")
     ],
     targets: [
         // The logo, in one place. The app draws it in its header and on the
@@ -117,6 +123,35 @@ let package = Package(
             path: "Tests/VibresiaMCPShareTests",
             linkerSettings: testingLinkerSettings
         ),
+        // Publishes the picture the app draws as a Syphon server.
+        //
+        // On its own, and with tests of its own, because which way up the
+        // picture arrives in other apps is easy to get wrong and has to be
+        // checked against a real Syphon client, not against a copy of the code.
+        .target(
+            name: "VibresiaSyphon",
+            dependencies: [
+                .product(name: "SyphonGL", package: "Syphon-Framework")
+            ],
+            path: "Sources/VibresiaSyphon",
+            swiftSettings: [
+                .define("GL_SILENCE_DEPRECATION")
+            ]
+        ),
+        .testTarget(
+            name: "VibresiaSyphonTests",
+            dependencies: [
+                "VibresiaSyphon",
+                .product(name: "Syphon", package: "Syphon-Framework"),
+                .product(name: "SyphonGL", package: "Syphon-Framework"),
+                .product(name: "Testing", package: "swift-testing")
+            ],
+            path: "Tests/VibresiaSyphonTests",
+            swiftSettings: [
+                .define("GL_SILENCE_DEPRECATION")
+            ],
+            linkerSettings: testingLinkerSettings
+        ),
         .executableTarget(
             name: "AudioVane",
             dependencies: [
@@ -126,6 +161,7 @@ let package = Package(
                 "VibresiaMinify",
                 "VibresiaOSC",
                 "VibresiaShareImage",
+                "VibresiaSyphon",
             ],
             path: "Sources/VisualiserMac",
             swiftSettings: [

@@ -3,6 +3,7 @@ import AppKit
 import OpenGL.GL3
 import simd
 import VibresiaOSC
+import VibresiaSyphon
 
 /// OpenGL 3.3 Core renderer. Drives NSOpenGLView's draw loop.
 /// Uses CVDisplayLink for vsync-paced redraws.
@@ -15,6 +16,26 @@ final class OpenGLRenderer: NSObject {
 
     let audio: AudioEngine
     private(set) var glContext: NSOpenGLContext?
+
+    /// Whether the finished picture is shared over Syphon. Switched from the
+    /// menu (`AppState.setSyphonEnabled`); off until the person asks.
+    var syphonEnabled = false
+    private var syphon: SyphonPublisher?
+
+    /// Another app's picture to show in place of the vibescape, chosen from the
+    /// menu (`AppState.setSyphonSource`). Set from the main thread, picked up by
+    /// the draw loop at the start of its next frame.
+    private let syphonSourceLock = NSLock()
+    private var pendingSyphonSource: [String: Any]?
+    private var syphonSourceChanged = false
+    private var syphonReceiver: SyphonReceiver?
+
+    func setSyphonSource(_ description: [String: Any]?) {
+        syphonSourceLock.lock()
+        pendingSyphonSource = description
+        syphonSourceChanged = true
+        syphonSourceLock.unlock()
+    }
     private(set) var pixelFormat: NSOpenGLPixelFormat?
     private(set) var isReady: Bool = false
     private var offscreenContext: NSOpenGLContext?
@@ -1290,7 +1311,10 @@ final class OpenGLRenderer: NSObject {
         advanceAutoScan(now: CACurrentMediaTime())
         let mode = currentVibescape == .builtin(.autoScan) ? autoScanTarget : currentVibescape
         effectiveVibescape = mode
-        switch mode {
+        if drawSyphonSource() {
+            // Another app's picture stands in for the vibescape.
+        } else {
+            switch mode {
         case .builtin(let v):
             switch v {
             case .tunnel:
@@ -1307,6 +1331,7 @@ final class OpenGLRenderer: NSObject {
         case .custom(let id):
             drawCustomVibescape(id, time: time, snap: snap)
         }
+        }
 
         // A note of what this frame was, so a recording can be put back
         // together later. The picture is the thing being recorded, so what
@@ -1318,7 +1343,47 @@ final class OpenGLRenderer: NSObject {
         glViewport(0, 0, GLsizei(viewWidth), GLsizei(viewHeight))
         glDisable(GLbitfield(GL_BLEND))
         drawGrade(sampling: sceneTex, mode: mode)
+        publishToSyphon(mode: mode)
         // Note: flushBuffer is called by the view after this returns.
+    }
+
+    /// Draws the chosen Syphon source into the scene, if there is one and it is
+    /// sending. Returns false otherwise, and the vibescape is drawn as usual, so
+    /// a source that has stopped never leaves an empty window.
+    private func drawSyphonSource() -> Bool {
+        syphonSourceLock.lock()
+        let changed = syphonSourceChanged
+        let description = pendingSyphonSource
+        syphonSourceChanged = false
+        syphonSourceLock.unlock()
+        if changed {
+            if let description, syphonReceiver == nil, let cgl = glContext?.cglContextObj {
+                syphonReceiver = SyphonReceiver(context: cgl)
+            }
+            syphonReceiver?.connect(to: description)
+        }
+        guard let syphonReceiver, syphonReceiver.isConnected else { return false }
+        return syphonReceiver.drawNewestFrame()
+    }
+
+    /// Shares the finished frame over Syphon. The frame is graded once more
+    /// into the server's own target, and only while sharing is on and some
+    /// other app is receiving, so it costs nothing when nobody is listening.
+    private func publishToSyphon(mode: VibescapeID) {
+        guard syphonEnabled, let ctx = glContext, let cgl = ctx.cglContextObj else {
+            if syphon != nil {
+                syphon?.stop()
+                syphon = nil
+            }
+            return
+        }
+        if syphon == nil { syphon = SyphonPublisher(name: "Output", context: cgl) }
+        guard let syphon, syphon.hasClients else { return }
+        let width = Int(viewWidth), height = Int(viewHeight)
+        syphon.publish(width: width, height: height) {
+            glViewport(0, 0, GLsizei(width), GLsizei(height))
+            drawGrade(sampling: sceneTex, mode: mode)
+        }
     }
 
     // MARK: - Custom vibescapes

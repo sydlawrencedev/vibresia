@@ -1,6 +1,7 @@
 import SwiftUI
 import Combine
 import AppKit
+import VibresiaSyphon
 
 final class AppState: ObservableObject {
     @Published var activeVibescape: VibescapeID = .builtin(.tunnel) {
@@ -166,6 +167,20 @@ final class AppState: ObservableObject {
         UserDefaults.standard.bool(forKey: "audiovane.osc")
     }()
 
+    /// Whether the picture is shared with other apps over Syphon. Off until the
+    /// person turns it on, and it stays as they left it.
+    @Published private(set) var syphonEnabled: Bool = {
+        UserDefaults.standard.bool(forKey: "audiovane.syphon")
+    }()
+
+    /// The Syphon servers other apps are running, kept up to date, and the one
+    /// chosen to show in place of the vibescape (by title: the server's own id
+    /// changes every time the other app starts). Nothing is chosen until the
+    /// person picks one, and the choice is remembered.
+    let syphonSources = SyphonSourceList()
+    @Published private(set) var syphonSourceTitle: String? = UserDefaults.standard.string(forKey: "audiovane.syphonSource")
+    private var syphonSourceWatch: AnyCancellable?
+
     /// Whether the credits / support popover is open.
     @Published var showAbout: Bool = false
 
@@ -221,6 +236,16 @@ final class AppState: ObservableObject {
         let savedOSCPort = UserDefaults.standard.integer(forKey: "audiovane.oscPort")
         if (1 ... 65535).contains(savedOSCPort) { self.renderer.oscPort = UInt16(savedOSCPort) }
         self.renderer.oscEnabled = self.oscEnabled
+        self.renderer.syphonEnabled = self.syphonEnabled
+        // A chosen source that was not running at launch is picked up when it
+        // starts, and the menu follows the list as other apps come and go.
+        self.syphonSourceWatch = self.syphonSources.objectWillChange.sink { [weak self] _ in
+            DispatchQueue.main.async {
+                self?.objectWillChange.send()
+                self?.applySyphonSource()
+            }
+        }
+        self.applySyphonSource()
         // Whether to name the song by listening is the person's choice, so it
         // survives a relaunch rather than quietly resetting.
         self.identifyByListening = Self.savedIdentifyByListening
@@ -1384,6 +1409,27 @@ final class AppState: ObservableObject {
         renderer.oscEnabled = on
         UserDefaults.standard.set(on, forKey: "audiovane.osc")
         Task { await Analytics.shared.track("osc_changed", ["on": on]) }
+    }
+
+    /// Shows the Syphon source called `title` in place of the vibescape, or goes
+    /// back to the vibescape when it is nil.
+    func setSyphonSource(title: String?) {
+        syphonSourceTitle = title
+        UserDefaults.standard.set(title, forKey: "audiovane.syphonSource")
+        applySyphonSource()
+        Task { await Analytics.shared.track("syphon_source_changed", ["chosen": title != nil]) }
+    }
+
+    private func applySyphonSource() {
+        let source = SyphonSources.source(titled: syphonSourceTitle, in: syphonSources.sources)
+        renderer.setSyphonSource(source?.description)
+    }
+
+    func setSyphonEnabled(_ on: Bool) {
+        syphonEnabled = on
+        renderer.syphonEnabled = on
+        UserDefaults.standard.set(on, forKey: "audiovane.syphon")
+        Task { await Analytics.shared.track("syphon_changed", ["on": on]) }
     }
 
     /// Called when the window first appears, so a preference set last session
