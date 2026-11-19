@@ -166,6 +166,12 @@ final class AppState: ObservableObject {
         UserDefaults.standard.bool(forKey: "audiovane.osc")
     }()
 
+    /// Whether the picture is shared with other apps over Syphon. Off until the
+    /// person turns it on, and it stays as they left it.
+    @Published private(set) var syphonEnabled: Bool = {
+        UserDefaults.standard.bool(forKey: "audiovane.syphon")
+    }()
+
     /// Whether the credits / support popover is open.
     @Published var showAbout: Bool = false
 
@@ -221,6 +227,7 @@ final class AppState: ObservableObject {
         let savedOSCPort = UserDefaults.standard.integer(forKey: "audiovane.oscPort")
         if (1 ... 65535).contains(savedOSCPort) { self.renderer.oscPort = UInt16(savedOSCPort) }
         self.renderer.oscEnabled = self.oscEnabled
+        self.renderer.syphonEnabled = self.syphonEnabled
         // Whether to name the song by listening is the person's choice, so it
         // survives a relaunch rather than quietly resetting.
         self.identifyByListening = Self.savedIdentifyByListening
@@ -1384,6 +1391,13 @@ final class AppState: ObservableObject {
         renderer.oscEnabled = on
         UserDefaults.standard.set(on, forKey: "audiovane.osc")
         Task { await Analytics.shared.track("osc_changed", ["on": on]) }
+    }
+
+    func setSyphonEnabled(_ on: Bool) {
+        syphonEnabled = on
+        renderer.syphonEnabled = on
+        UserDefaults.standard.set(on, forKey: "audiovane.syphon")
+        Task { await Analytics.shared.track("syphon_changed", ["on": on]) }
     }
 
     /// Called when the window first appears, so a preference set last session

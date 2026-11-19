@@ -98,6 +98,9 @@ struct VisualiserApp: App {
                 Toggle("Send Analysis over OSC", isOn: Binding(
                     get: { app.oscEnabled },
                     set: { app.setOSCEnabled($0) }))
+                Toggle("Share to Syphon", isOn: Binding(
+                    get: { app.syphonEnabled },
+                    set: { app.setSyphonEnabled($0) }))
                 Button(app.isFullScreen ? "Exit Full Screen" : "Enter Full Screen") {
                     app.toggleFullScreen()
                 }
