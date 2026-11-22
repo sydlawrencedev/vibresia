@@ -11,7 +11,7 @@ export default (h) => ({
     hub: true,
     app: "apple-music",
     publishedISO: "2026-11-02",
-    updatedISO: "2026-11-02",
+    updatedISO: "2026-11-22",
     title: "Does Apple Music Have a Visualizer? Yes, on Mac. Here's How",
     description: "Apple Music's visualiser is in the Music app on a Mac: Window, then Visualizer. It only works with the Music app. Here's what works with every app.",
     eyebrow: "Music visualizers on Mac",
@@ -24,6 +24,11 @@ export default (h) => ({
             h2: "How to turn on the Apple Music visualizer",
             html: `<p>On a Mac, open the Music app and start a song. Then choose <b>Window</b>, then <b>Visualizer</b> in the menu bar. Apple's guide says the effects change with the type of music and with whether it's playing or paused, and that the visualiser can show music videos instead of effects, from its settings.</p>
     <p>${h.limit("apple-music-visualizer")}. That's the catch: it's a feature of the Music app, so it's only there for Apple Music and your own library in that app.</p>`,
+        },
+        {
+            h2: "Looking for the iTunes visualizer?",
+            html: `<p>If you searched for iTunes, what you want is Apple's own: ${h.rec("apple-music-visualizer").tagline.replace(/^The/, "the")} ${h.strength("apple-music-visualizer", 0).replace(/>/g, "&gt;")}. ${h.strength("apple-music-visualizer", 1).replace(/^Effects/, "The effects")}, and ${h.strength("apple-music-visualizer", 2).replace(/^Can/, "it can").replace(/>/g, "&gt;")}.</p>
+    <p>Its one limit is the one that catches people out. ${h.limit("apple-music-visualizer")}. If all your music is in the Music app, you will never meet that limit. If some of your music is in Spotify, a browser or another app, <a href="/blog/best-music-visualizer-for-mac-2026">the best music visualizer for Mac in 2026</a> compares what there is, including the ones that follow whatever is playing.</p>`,
         },
         {
             h2: "A visualiser for every music app",
@@ -44,6 +49,7 @@ export default (h) => ({
         { q: "Does Apple Music have a visualizer?", a: "Yes, in the Music app on a Mac: choose Window, then Visualizer, while a song plays." },
         { q: "Does the Apple Music visualizer work with Spotify?", a: "No. It only visualises songs playing in the Music app. For Spotify and other apps, use a visualiser that hears the Mac's system audio, such as Vibresia." },
         { q: "What happens when I share my sound?", a: "Only if you press the button and allow it does the scene hear anything. The sound is analysed in the page to move the scene; nothing is recorded or sent anywhere." },
+        { q: "Is there an iTunes music visualizer?", a: `Yes: ${h.rec("apple-music-visualizer").tagline.replace(/^The/, "the")} ${h.limit("apple-music-visualizer")}.` },
     ],
     related: [
         { href: "/blog/best-music-visualizer-for-mac-2026", text: "The best music visualizer for Mac in 2026" },
