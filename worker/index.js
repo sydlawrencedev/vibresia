@@ -405,6 +405,7 @@ function handleDownload(request, url, env, ctx, platform = "mac") {
       city: request.cf?.city || "",
       seen: seen === null ? false : seen === "1",
       platform,
+      userAgent: agent,
     }));
   }
 
@@ -436,7 +437,7 @@ function handleDownload(request, url, env, ctx, platform = "mac") {
 /// not: the browser's id is in its local storage, and putting it in a
 /// download link would hand it to every service that fetched the link. So
 /// this event counts downloads, and the count of people comes from the site.
-function postDownloadEvent(env, { source, referer, country, city, seen, platform = "mac" }) {
+function postDownloadEvent(env, { source, referer, country, city, seen, platform = "mac", userAgent = "" }) {
   const key = env.POSTHOG_KEY;
   if (!key) return Promise.resolve();
   const host = (env.POSTHOG_HOST || "https://us.i.posthog.com").replace(/\/+$/, "");
@@ -456,6 +457,23 @@ function postDownloadEvent(env, { source, referer, country, city, seen, platform
       // are the same number, and the two platforms cannot be told apart in
       // the dashboard at all.
       platform,
+      // The browser's own user agent, so PostHog reads the download as a
+      // person rather than as automation.
+      //
+      // This event is counted on the server, and an event with no user
+      // agent is classified as automation — traffic type `Automation`,
+      // category `no_user_agent` — which drops it out of every PostHog view
+      // filtered to human traffic. The download count is the number this
+      // project is judged on, so being invisible in that view is not a
+      // cosmetic problem.
+      //
+      // The agent is here because the download was counted, and a request
+      // that reaches this point has already been through the automation
+      // and link-preview filters above: this was a browser. Measured on 22
+      // November 2026 against us.i.posthog.com, an event carrying only
+      // `$user_agent` still classified as automation — the property that
+      // counts is `$raw_user_agent`.
+      $raw_user_agent: userAgent,
     },
     timestamp: new Date().toISOString(),
   };
