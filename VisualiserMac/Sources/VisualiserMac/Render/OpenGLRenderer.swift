@@ -3,6 +3,7 @@ import AppKit
 import OpenGL.GL3
 import simd
 import VibresiaOSC
+import VibresiaSyphon
 
 /// OpenGL 3.3 Core renderer. Drives NSOpenGLView's draw loop.
 /// Uses CVDisplayLink for vsync-paced redraws.
@@ -15,6 +16,11 @@ final class OpenGLRenderer: NSObject {
 
     let audio: AudioEngine
     private(set) var glContext: NSOpenGLContext?
+
+    /// Whether the finished picture is shared over Syphon. Switched from the
+    /// menu (`AppState.setSyphonEnabled`); off until the person asks.
+    var syphonEnabled = false
+    private var syphon: SyphonPublisher?
     private(set) var pixelFormat: NSOpenGLPixelFormat?
     private(set) var isReady: Bool = false
     private var offscreenContext: NSOpenGLContext?
@@ -1318,7 +1324,28 @@ final class OpenGLRenderer: NSObject {
         glViewport(0, 0, GLsizei(viewWidth), GLsizei(viewHeight))
         glDisable(GLbitfield(GL_BLEND))
         drawGrade(sampling: sceneTex, mode: mode)
+        publishToSyphon(mode: mode)
         // Note: flushBuffer is called by the view after this returns.
+    }
+
+    /// Shares the finished frame over Syphon. The frame is graded once more
+    /// into the server's own target, and only while sharing is on and some
+    /// other app is receiving, so it costs nothing when nobody is listening.
+    private func publishToSyphon(mode: VibescapeID) {
+        guard syphonEnabled, let ctx = glContext, let cgl = ctx.cglContextObj else {
+            if syphon != nil {
+                syphon?.stop()
+                syphon = nil
+            }
+            return
+        }
+        if syphon == nil { syphon = SyphonPublisher(name: "Output", context: cgl) }
+        guard let syphon, syphon.hasClients else { return }
+        let width = Int(viewWidth), height = Int(viewHeight)
+        syphon.publish(width: width, height: height) {
+            glViewport(0, 0, GLsizei(width), GLsizei(height))
+            drawGrade(sampling: sceneTex, mode: mode)
+        }
     }
 
     // MARK: - Custom vibescapes

@@ -162,6 +162,29 @@ The code is a target of its own, `Sources/VibresiaOSC`, with tests of its own
 OSC 1.0 specification, the broadcaster against an independent decoder, and the
 sender over a real UDP socket on this Mac.
 
+## Sharing with other apps (Syphon)
+
+**Share to Syphon** (Visualizer menu) publishes the picture as a
+[Syphon](https://syphon.github.io) server, so another app on the same Mac (VJ
+software, a streaming or recording tool, a compositor) can use it live. It shows
+up in that app's list of Syphon sources as **Vibresia / Output**.
+
+What is shared is the picture on screen: the finished frame, after the palette
+grade, at the window's size. It is off until you turn it on and the choice is
+remembered. Nothing is drawn for Syphon unless something is receiving, so
+leaving it on costs nothing while no other app is listening.
+
+The code is a target of its own, `Sources/VibresiaSyphon`, with tests of its own
+(`Tests/VibresiaSyphonTests`): they draw a picture that is red above and blue
+below, publish it, and read it back through a real Syphon client, because which
+way up a picture arrives is the easy thing to get wrong. Syphon holds a picture
+bottom row first, which is the order OpenGL draws it in, so nothing is flipped.
+
+Syphon has no Swift package of its own, so the dependency is a fork of it
+(`sydlawrencedev/Syphon-Framework`, branch `swiftpm-metal`), pinned to a commit, which adds one and changes nothing about how
+Syphon works (see `SWIFTPM.md` there). Syphon's licence is in
+`THIRD_PARTY_NOTICES.md`.
+
 ## First launch
 
 A fresh install starts in **Auto Scan**, cycling every twenty seconds — with

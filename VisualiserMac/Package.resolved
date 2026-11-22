@@ -26,6 +26,14 @@
         "revision" : "804dc4530ef36664e31aaef3aaab1d7dc89a6cc4",
         "version" : "6.4.1"
       }
+    },
+    {
+      "identity" : "syphon-framework",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sydlawrencedev/Syphon-Framework.git",
+      "state" : {
+        "revision" : "76f08a24a136ac085d756c773482437992fdeb63"
+      }
     }
   ],
   "version" : 2
