@@ -210,6 +210,23 @@ test("a real download is counted on the server", async () => {
   assert.equal(event.properties.surface, "web");
 });
 
+test("a counted download says who it was", async () => {
+  // PostHog classifies an event with no user agent as automation, and an
+  // event filed as automation drops out of every view filtered to human
+  // traffic. The download count is the number this project is judged on, so
+  // it has to carry the browser's own user agent and not nothing.
+  //
+  // The property has to be `$raw_user_agent`: measured on 22 November 2026
+  // against us.i.posthog.com, an event carrying only `$user_agent` still
+  // classified as automation.
+  const { events } = await run("https://vibresia.com/download?src=hero&seen=0", {
+    headers: { "user-agent": BROWSER_UA, referer: "https://vibresia.com/" },
+  });
+  assert.equal(events.length, 1);
+  const [event] = events[0].body;
+  assert.equal(event.properties.$raw_user_agent, BROWSER_UA);
+});
+
 test("the Windows download redirects to the Windows beta asset", async () => {
   const { response, posts } = await run("https://vibresia.com/download/windows?src=hero", {
     headers: { "user-agent": BROWSER_UA, referer: "https://vibresia.com/" },

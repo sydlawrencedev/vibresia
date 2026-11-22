@@ -103,3 +103,43 @@ test("a chooser link's platform matches the route it points at", () => {
     );
   }
 });
+
+test("the analytics sends a user agent, so PostHog does not file the visit as a bot", () => {
+  // PostHog sorts traffic into human and not-human by reading the user
+  // agent on each event. An event that carries none is classified as
+  // automation — traffic type `Automation`, category `no_user_agent` — and
+  // `isLikelyBot` is true for it. Nothing errors; the events are stored and
+  // the counts are right, and they are filed under the wrong heading, so
+  // they drop out of every view filtered to human traffic.
+  //
+  // This client sent no user agent at all, so every pageview the site
+  // produced was classified as automation.
+  //
+  // The source is read without its comments: the comment that explains the
+  // property mentions the property, and a check that a comment can satisfy
+  // is a check that passes on a file that sends nothing.
+  const code = ANALYTICS.split("\n")
+    .map((line) => line.split("//")[0])
+    .join("\n");
+
+  assert.match(
+    code,
+    /\$raw_user_agent\s*:\s*navigator\.userAgent/,
+    "the analytics sends no user agent, so every event it sends is classified as automation traffic"
+  );
+});
+
+test("the analytics does not send only the user agent property that is ignored", () => {
+  // `$user_agent` looks right and is not what the classifier reads: an event
+  // carrying only `$user_agent` still classified as automation, measured by
+  // posting one and reading the classification back out of PostHog.
+  const code = ANALYTICS.split("\n")
+    .map((line) => line.split("//")[0])
+    .join("\n");
+
+  assert.doesNotMatch(
+    code,
+    /\$user_agent\s*:/,
+    "the analytics sends $user_agent, which the classifier ignores"
+  );
+});

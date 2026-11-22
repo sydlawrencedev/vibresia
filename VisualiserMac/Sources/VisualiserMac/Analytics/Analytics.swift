@@ -202,9 +202,43 @@ actor Analytics {
             "os_version": ProcessInfo.processInfo.operatingSystemVersionString,
             "arch": currentArch,
             "session_seconds": sessionLengthSeconds(),
+            // PostHog sorts the traffic it stores into human and not-human by
+            // reading the user agent on each event. An event that carries
+            // none is classified as automation — traffic type `Automation`,
+            // category `no_user_agent` — and `isLikelyBot` is true for it.
+            // That is right for a server-to-server call and wrong for a
+            // person using the app, and it is not a cosmetic label: an event
+            // filed as automation drops out of every PostHog view filtered to
+            // human traffic, which is the filter PostHog's own documentation
+            // gives for measuring people.
+            //
+            // So every event this client sent was counted as a bot, and the
+            // whole of the app's product analytics read as automation.
+            // Measured on 22 November 2026 against us.i.posthog.com: 3,818
+            // `genre_detected` events in the last 30 days, every one of them
+            // traffic type `Automation`, category `no_user_agent`.
+            //
+            // `$raw_user_agent` is the property that counts. `$user_agent` on
+            // its own is read by some PostHog functions and ignored by the
+            // classifier: an event carrying only `$user_agent` still
+            // classified as automation when it was posted and read back.
+            "$raw_user_agent": userAgent,
         ]
         props["locale"] = Locale.current.identifier
         return props
+    }
+
+    /// The user agent this app reports to PostHog.
+    ///
+    /// The app is a Mac app, and saying so is better than borrowing a
+    /// browser's string: the product, its version, and the platform, which
+    /// is the usual shape of a user agent and is what a reader of an event
+    /// expects to see. PostHog matches this against a list of bot and
+    /// crawler patterns, and this is not one of them.
+    private var userAgent: String {
+        let info = Bundle.main.infoDictionary ?? [:]
+        let version = info["CFBundleShortVersionString"] as? String ?? "0"
+        return "Vibresia/\(version) (macOS; \(currentArch))"
     }
 
     private var currentArch: String {

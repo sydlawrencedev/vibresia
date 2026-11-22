@@ -152,6 +152,25 @@
       path: location.pathname,
       title: document.title,
       language: navigator.language || "",
+      // PostHog sorts the traffic it stores into human and not-human by
+      // reading the user agent on each event. An event that carries none is
+      // classified as automation — traffic type `Automation`, category
+      // `no_user_agent` — and `isLikelyBot` is true for it. That is right for
+      // a server-to-server call and wrong for a person who opened the page,
+      // and it is not a cosmetic label: an event filed as automation drops
+      // out of every PostHog view filtered to human traffic, which is the
+      // filter PostHog's own documentation gives for measuring people.
+      //
+      // So every event this client sent was counted as a bot, and the whole
+      // of the site's analytics read as automation. Measured on 22 November
+      // 2026 against us.i.posthog.com: 1,565 of 1,565 pageviews in the last
+      // 30 days, traffic type `Automation`, category `no_user_agent`.
+      //
+      // `$raw_user_agent` is the property that counts. `$user_agent` on its
+      // own is read by some PostHog functions and ignored by the classifier:
+      // an event carrying only `$user_agent` still classified as automation
+      // when it was posted and read back.
+      $raw_user_agent: navigator.userAgent,
       // Query strings are dropped on purpose: the page has none it needs, and
       // UTM-ish params are the classic way to smuggle personal data into an
       // analytics payload.
