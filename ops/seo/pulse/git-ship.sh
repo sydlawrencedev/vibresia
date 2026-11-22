@@ -148,7 +148,20 @@ cmd_finish() {
 
   local status="local"
   if has_remote; then
-    if git_authed push "HEAD:refs/heads/$name"; then
+    # The branch, not HEAD.
+    #
+    # `HEAD` in this directory is the main working tree's commit — the
+    # owner's, not this run's — because this script runs from the root of the
+    # repository and the worktree is a directory beside it. Pushing HEAD
+    # under the branch's name published somebody else's work and left this
+    # run's commit behind, and the helper still printed STATUS=pushed.
+    # Measured on 22 November 2026: the branch on origin came back holding
+    # c51e44f, the main tree's commit, and not bf59de2, the commit the run
+    # had just made.
+    #
+    # The branch is one ref shared by every worktree, so naming it pushes
+    # the commit the worktree made and nothing else.
+    if git_authed push "$name:refs/heads/$name"; then
       status="pushed"
     fi
   fi

@@ -40,6 +40,11 @@ VisualiserMac/Tests/eval-results/
 # run and deleted at the end. It must never be committed.
 ops/seo/pulse/.token
 
+# The ship helper's log. It records why a push failed, so it has to live
+# beside the helper, but the helper runs in the owner's working tree and
+# this file is not theirs to have sitting there as untracked noise.
+ops/seo/pulse/.git-ship.log
+
 # Python bytecode from scripts/
 __pycache__/
 *.pyc
