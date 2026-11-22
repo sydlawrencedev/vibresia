@@ -13,7 +13,7 @@ export default (h) => ({
     slug: "best-music-visualizer-for-mac-2026",
     template: "2a",
     publishedISO: "2026-11-02",
-    updatedISO: "2026-11-02",
+    updatedISO: "2026-11-22",
     title: "Best Music Visualizer for Mac (2026): 7 Apps Compared",
     description: "Seven music visualisers for the Mac, with prices, what each is good at and where each falls short. Free and paid, checked November 2026.",
     eyebrow: "Mac music visualisers",
@@ -66,7 +66,7 @@ export default (h) => ({
         {
             h2: "What actually decides it",
             html: `<p>Three questions sort this list faster than any feature table.</p>
-    <p><b>Where does your music play?</b> Apple's visualiser only reacts to songs playing in the Music app. It doesn't see Spotify, YouTube in a browser, or a DJ app. Vibresia, Phosphor and Nyquist listen to the Mac's system audio instead, so they react to whatever is playing. MuVis plays its own files or listens through the microphone.</p>
+    <p><b>Where does your music play?</b> The <a href="/blog/apple-music-visualizer">Apple Music visualizer</a> only reacts to songs playing in the Music app. It doesn't see Spotify, YouTube in a browser, or a DJ app. Vibresia, Phosphor and Nyquist listen to the Mac's system audio instead, so they react to whatever is playing. MuVis plays its own files or listens through the microphone.</p>
     <p><b>Do you want to watch it or perform with it?</b> Most people want something on a second screen while they work or have friends round. That's what Vibresia, Phosphor and the Apple visualiser are for. Synesthesia is a performance tool, with MIDI controllers and video outputs, and it's the right pick if you play live. The visualisers on this list don't try to do that.</p>
     <p><b>Do you want to change it?</b> projectM gives you thousands of community MilkDrop presets to choose from. Vibresia lets you write a scene from scratch, as a single GLSL function, or describe one to an AI assistant and have it written for you. Phosphor's site doesn't mention making your own scenes.</p>`,
         },
