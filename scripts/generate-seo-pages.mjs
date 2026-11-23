@@ -1098,7 +1098,7 @@ export function renderAuthor(pages) {
     const url = `${ORIGIN}${AUTHOR_PATH}`;
     const page = {
         title: `${AUTHOR_DATA.name}, who makes Vibresia`,
-        description: `${AUTHOR_DATA.name} is ${AUTHOR_DATA.byline}, and writes its comparison pages. About ${AUTHOR_DATA.name.split(" ")[0]}, how the pages are researched, and how to report a mistake.`,
+        description: `${AUTHOR_DATA.name}, visual artist and developer, makes Vibresia and writes its comparison pages. How the pages are researched, and how to report a mistake.`,
         template: "author", slug: AUTHOR_DATA.slug, ogType: "profile",
     };
     const faq = [
