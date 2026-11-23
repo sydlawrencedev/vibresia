@@ -15,7 +15,7 @@ export default (h) => ({
     publishedISO: "2026-11-02",
     updatedISO: "2026-11-22",
     title: "Shadertoy Alternative for Music: Vibresia vs Shadertoy",
-    description: "Want your shaders to react to the music your Mac is playing? Vibresia is a free Mac app built for that. Shadertoy is better for everything else.",
+    description: "Want your shaders to react to the music your Mac is playing? Vibresia is a free app for that, with a beta on Windows. Shadertoy is better for everything else.",
     eyebrow: "Shadertoy alternative",
     breadcrumb: "Vibresia vs Shadertoy",
     h1: "Vibresia vs Shadertoy: an alternative for shaders that move to your music",
@@ -24,7 +24,7 @@ export default (h) => ({
     rows: [
         { label: "What it is", value: (h, s) => us(s) ? "A Mac music visualiser you can write scenes for" : h.rec(s).tagline },
         { label: "Price", value: (h, s) => us(s) ? "Free, every feature" : h.priceCell(s) },
-        { label: "Runs on", value: (h, s) => us(s) ? h.rec(s).requirements : "A web browser with WebGL" },
+        { label: "Runs on", value: (h, s) => us(s) ? `${h.rec(s).requirements}; the beta runs on 64-bit Windows 10 and 11` : "A web browser with WebGL" },
         { label: "Audio in", value: (h, s) => us(s) ? "System audio from any app (Spotify, Apple Music, a browser), or the microphone" : h.strength(s, 1) },
         { label: "Audio analysis", value: (h, s) => us(s) ? "Done for you: levels, bass, mids, treble, beat, tempo, spectrum" : "Not stated in our source" },
         { label: "Writing a shader", value: (h, s) => us(s) ? "One function, vec3 render(vec2 p, float t), or describe it to an AI assistant" : "GLSL in the browser" },
@@ -32,7 +32,7 @@ export default (h) => ({
     ],
     verdict: {
         pickUs: "you want a shader to react to the music you're playing on your Mac, from Spotify, Apple Music or anything else, full screen while you listen, without building the audio side; or you'd like an AI assistant to write one for you.",
-        pickThem: "you want to write and share shaders on any computer, learn from a big community's work, or use inputs like the webcam, keyboard, video or VR. Shadertoy runs in a browser everywhere; Vibresia is one Mac app.",
+        pickThem: "you want to write and share shaders on any computer, learn from a big community's work, or use inputs like the webcam, keyboard, video or VR. Shadertoy runs in a browser everywhere; Vibresia is an app for the Mac, with a community-built Windows beta that plays the same vibescapes.",
     },
     sections: [
         {
@@ -51,7 +51,7 @@ export default (h) => ({
         },
         {
             h2: "Where Shadertoy is the better choice",
-            html: `<p>For nearly everything that isn't music on your own Mac, use Shadertoy. It runs in a browser on any computer, takes the webcam, keyboard, mouse, video, textures and VR headsets as inputs, and has years of shared work to learn from. Vibresia is Mac only, needs ${h.rec("vibresia").requirements}, and its only input that matters is sound.</p>`,
+            html: `<p>For nearly everything that isn't music on your own Mac, use Shadertoy. It runs in a browser on any computer, takes the webcam, keyboard, mouse, video, textures and VR headsets as inputs, and has years of shared work to learn from. Vibresia's Mac app needs ${h.rec("vibresia").requirements}, and its only input that matters is sound. There is a community-built Windows beta by Llew Roberts that plays the same vibescapes, but it does not yet have every Mac feature, so on Windows Shadertoy is still the broader tool.</p>`,
         },
     ],
     faq: [
@@ -69,7 +69,7 @@ export default (h) => ({
         },
         {
             q: "Does Vibresia run in a browser?",
-            a: "Shared scenes play in any browser. To visualise your own music, you need the Mac app, on macOS 14.2 or later with Apple silicon.",
+            a: "Shared scenes play in any browser. To visualise your own music, you need the app itself: the Mac app on macOS 14.2 or later with Apple silicon, or the community-built Windows beta on 64-bit Windows 10 and 11.",
         },
     ],
     related: [

@@ -2,7 +2,11 @@
 // Target query: "projectm alternative" (content/url-plan.csv).
 // A head-to-head: just the two apps. The case for Vibresia is a finished,
 // signed Mac app that hears every app. projectM is the better pick for
-// MilkDrop's presets, and on Windows or Linux, and the page says so.
+// MilkDrop's presets, and on Windows or Linux, and the page says so. Vibresia
+// has a Windows beta, so on Windows this page compares presets and libraries,
+// not whether Vibresia runs. Vibresia
+// has a Windows beta, so on Windows this page compares presets and libraries,
+// not whether Vibresia runs.
 
 const us = (s) => s === "vibresia";
 
@@ -13,7 +17,7 @@ export default (h) => ({
     publishedISO: "2026-11-02",
     updatedISO: "2026-11-02",
     title: "projectM Alternative for Mac (2026): Vibresia vs projectM",
-    description: "projectM's Mac apps are still previews. Vibresia is a free, signed Mac visualiser that hears any app. Here's how they compare, and when projectM wins.",
+    description: "projectM's Mac apps are still previews. Vibresia is a free, signed Mac visualiser that hears any app, with a beta on Windows. Here's how they compare.",
     eyebrow: "projectM alternative",
     breadcrumb: "Vibresia vs projectM",
     h1: "Vibresia vs projectM: a finished alternative for the Mac",
@@ -23,14 +27,14 @@ export default (h) => ({
         { label: "What it is", value: (h, s) => us(s) ? "A finished Mac app with 18 built-in scenes" : h.rec(s).tagline },
         { label: "Price", value: (h, s) => us(s) ? "Free, every feature" : "Free" },
         { label: "Licence", value: (h, s) => `Open source (${h.rec(s).licence.name})` },
-        { label: "Runs on", value: (h, s) => us(s) ? h.rec(s).requirements : h.platforms(s) },
+        { label: "Runs on", value: (h, s) => us(s) ? `${h.rec(s).requirements}; the beta runs on 64-bit Windows 10 and 11` : h.platforms(s) },
         { label: "Mac app status", value: (h, s) => us(s) ? "Signed, notarised, updates from inside" : h.limit(s, 1) },
         { label: "MilkDrop presets", value: (h, s) => us(s) ? "No" : h.strength(s, 1) },
         { label: "Making your own", value: (h, s) => us(s) ? "One GLSL function, or describe it to an AI assistant" : "Write MilkDrop-style presets" },
     ],
     verdict: {
         pickUs: "you're on a Mac with Apple silicon and want something that installs and plays in a minute, reacts to every app's audio, and lets you make new scenes as code or by describing them to an AI assistant.",
-        pickThem: "you want MilkDrop's look and its community presets, you're on Windows or Linux, or you want an open-source library to build your own visualiser on. projectM plays .milk presets; Vibresia doesn't.",
+        pickThem: "you want MilkDrop's look and its community presets, you're on Windows or Linux, or you want an open-source library to build your own visualiser on. projectM plays .milk presets; Vibresia doesn't, on the Mac app or the Windows beta.",
     },
     sections: [
         {
@@ -49,7 +53,7 @@ export default (h) => ({
         },
         {
             h2: "Where projectM is the better choice",
-            html: `<p>If you're on Windows or Linux, projectM is the one of these two that runs: Vibresia is Mac only, and needs ${h.rec("vibresia").requirements}. If you want MilkDrop's presets, projectM plays them and Vibresia never will. And if you're building something of your own, projectM's library is made for other apps to build on, which is why apps like ProjectMilkSyphon use it.</p>
+            html: `<p>If you're on Linux, projectM is the one of these two that runs. On Windows, projectM is still the better tool, because Vibresia's build there is a beta that plays the same vibescapes and does not yet have every Mac feature, and the Mac app needs ${h.rec("vibresia").requirements}. If you want MilkDrop's presets, projectM plays them and Vibresia never will. And if you're building something of your own, projectM's library is made for other apps to build on, which is why apps like ProjectMilkSyphon use it.</p>
     <p>For a side-by-side of every way to get MilkDrop-style visuals on a Mac, presets included, see <a href="/blog/milkdrop-alternatives-mac-2026">MilkDrop alternatives for Mac</a>.</p>`,
         },
     ],

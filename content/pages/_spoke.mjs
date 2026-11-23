@@ -23,7 +23,7 @@ export function spoke(h, c) {
             c.own,
             {
                 h2: `How to get visuals for ${c.name} on a Mac`,
-                html: `<p>Vibresia is a free Mac app that listens to the Mac's system audio, so it doesn't need ${c.name} to support it. Install it, allow it to hear system audio the first time it asks, and play something in ${c.name}. The visuals follow the music straight away: it picks out the beat, the bass, mids and treble and the tempo on the Mac, and nothing is uploaded.</p>
+                html: `<p>Vibresia is a free app that listens to the Mac's system audio, so it doesn't need ${c.name} to support it. Install it, allow it to hear system audio the first time it asks, and play something in ${c.name}. The visuals follow the music straight away: it picks out the beat, the bass, mids and treble and the tempo on the Mac, and nothing is uploaded.</p>
     <p>It has 18 built-in scenes, and Auto Scan moves between them on the beat. If you want something of your own, a scene is a single GLSL function, or you can describe one to an AI assistant and have it written for you. It needs ${h.rec("vibresia").requirements}.</p>`,
             },
             {
