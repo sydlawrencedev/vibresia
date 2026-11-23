@@ -482,6 +482,16 @@ re-decided. It needs the owner's deploy.
   above says most of them are not, but the data cannot name the agent that
   made them, because the Worker does not record the user agent. That is the
   change in candidate 1.
+  - **Since this entry:** the Worker was deployed on 23 November 2026 and
+    now records the user agent. The event stream shows the boundary
+    exactly: the download events at 07:51 and 07:52 UTC carry no user
+    agent, and the two at 10:35 and 10:36 carry a full Chrome string. The
+    next run of this routine can name the agent, which is what candidate 1
+    needs in order to be measured rather than argued.
+    - **Two of those events are mine.** They carry `source=deploy-check`
+      and a `https://vibresia.com/` referrer, and they are legitimate
+      downloads counted correctly. The personal API key cannot delete
+      events, so they stay in the project.
 - **Whether the share pages ever worked.** There is no browser click on a
   share page in the project's whole history, so there is no before and no
   after to compare.
