@@ -1,8 +1,8 @@
 // /comparison/vibresia-vs-plane9
 // Target query: "plane9 alternatives" (content/url-plan.csv).
 // A head-to-head: just the two apps. Plane9 is Windows only, so the case for
-// Vibresia is the Mac. Plane9 wins on Windows, in VR and on scene count, and
-// the page says so.
+// Vibresia is the Mac, where its app is the full product. Plane9 still wins
+// on scene count and in VR, and the page says so.
 
 const us = (s) => s === "vibresia";
 
@@ -13,15 +13,15 @@ export default (h) => ({
     publishedISO: "2026-11-02",
     updatedISO: "2026-11-02",
     title: "Plane9 Alternative for Mac (2026): Vibresia vs Plane9",
-    description: "Plane9 is a free 3D visualiser for Windows only. On a Mac, Vibresia is the free alternative that reacts to whatever is playing. Here's how they compare.",
+    description: "Plane9 is a free 3D visualiser for Windows only. Vibresia is the free Mac alternative, and a beta plays the same vibescapes on Windows. Here's how they compare.",
     eyebrow: "Plane9 alternative",
     breadcrumb: "Vibresia vs Plane9",
     h1: "Vibresia vs Plane9: the free alternative for a Mac",
-    answer: `${h.link("plane9")} doesn't run on a Mac: its download page lists Windows only. If you're on a Mac and want what Plane9 gives Windows users, free visuals that move with the music, Vibresia is the alternative: it's free, it listens to whatever the Mac is playing, and you can write new scenes or have an AI assistant write them. On Windows, Plane9 is still the pick, with far more scenes and VR support. We make Vibresia, so check our reasons against the sources at the bottom.`,
+    answer: `${h.link("plane9")} doesn't run on a Mac: its download page lists Windows only. If you're on a Mac and want what Plane9 gives Windows users, free visuals that move with the music, Vibresia is the alternative: it's free, it listens to whatever the Mac is playing, and you can write new scenes or have an AI assistant write them. On Windows, Plane9 is still the pick, with far more scenes and VR support, and Vibresia's own Windows build is a beta by Llew Roberts that plays the same vibescapes. We make Vibresia, so check our reasons against the sources at the bottom.`,
     cta: "Try Vibresia free with what's playing now",
     rows: [
         { label: "Price", value: (h, s) => us(s) ? "Free, every feature" : `${h.priceCell(s)}, ad-free` },
-        { label: "Runs on", value: (h, s) => us(s) ? h.rec(s).requirements : h.limit(s, 0) },
+        { label: "Runs on", value: (h, s) => us(s) ? `${h.rec(s).requirements}; the beta runs on 64-bit Windows 10 and 11` : h.limit(s, 0) },
         { label: "Built-in scenes", value: (h, s) => us(s) ? "18, and Auto Scan moves through them on the beat" : h.strength(s, 0) },
         { label: "Ways to watch", value: (h, s) => us(s) ? "A window or full screen on the Mac" : h.strength(s, 1) },
         { label: "Hears", value: (h, s) => us(s) ? "System audio from any app, the microphone, or a demo tone" : "Not stated on its download page" },
@@ -30,7 +30,7 @@ export default (h) => ({
     ],
     verdict: {
         pickUs: "you're on a Mac with Apple silicon and want free visuals for Spotify, Apple Music, a browser or a film, and you'd like to write new scenes as code or by describing them to an AI assistant.",
-        pickThem: "you're on Windows and want a free 3D visualiser or screensaver with hundreds of scenes, or you want to watch in an Oculus Rift or HTC Vive. Vibresia doesn't run on Windows and has no VR mode.",
+        pickThem: "you're on Windows and want a free 3D visualiser or screensaver with hundreds of scenes, or you want to watch in an Oculus Rift or HTC Vive. Vibresia has no VR mode, and its Windows build is a beta by Llew Roberts that plays the same vibescapes.",
     },
     sections: [
         {
@@ -46,14 +46,14 @@ export default (h) => ({
         },
         {
             h2: "Where Plane9 is the better choice",
-            html: `<p>On a Windows PC, use Plane9: Vibresia is Mac only, and needs ${h.rec("vibresia").requirements}, so it won't run on an Intel Mac either. Plane9 also works as a screensaver and in Oculus Rift and HTC Vive headsets, and Vibresia does neither.</p>
+            html: `<p>On a Windows PC, use Plane9: Vibresia's Windows build is a beta that plays the same vibescapes, and its Mac app needs ${h.rec("vibresia").requirements}, so it won't run on an Intel Mac either. Plane9 also works as a screensaver and in Oculus Rift and HTC Vive headsets, and Vibresia does neither.</p>
     <p>If you're looking at other visualisers for the Mac too, <a href="/blog/best-music-visualizer-for-mac-2026">the best music visualizers for Mac</a> lists seven of them, with prices.</p>`,
         },
     ],
     faq: [
         {
             q: "Is there a Plane9 for Mac?",
-            a: "No. Plane9's download page lists Windows 7 to 10 only. On a Mac, Vibresia is a free visualiser that reacts to whatever is playing.",
+            a: "No. Plane9's download page lists Windows 7 to 10 only. On a Mac, Vibresia is a free visualiser that reacts to whatever is playing, and on Windows there is a community-built beta that plays the same vibescapes.",
         },
         {
             q: "Is Vibresia free like Plane9?",

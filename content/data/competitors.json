@@ -1078,7 +1078,7 @@
     "limits": [
       "Windows 7 to 10; the latest version listed is 2.5.1.3, from 29 December 2016"
     ],
-    "ourAngle": "Plane9 doesn't run on a Mac and hasn't had a release since 2016. Vibresia is the free, maintained option for Mac.",
+    "ourAngle": "Plane9 doesn't run on a Mac and hasn't had a release since 2016. Vibresia is the free, maintained option, with a Mac app and a community-built Windows beta.",
     "profile": {
       "sourceUrl": "https://www.plane9.com/download",
       "verifiedISO": "2026-11-02"
@@ -1322,7 +1322,7 @@
       "Live inputs including MIDI, OSC, DMX, timecode, Kinect, LeapMotion, Arduino and gamepads, with data sent back out to other software and hardware",
       "Receives and sends video over Syphon and NDI, and streams over RTMP, while controlling DMX fixtures, LED strips and ILDA lasers"
     ],
-    "ourAngle": "Millumin is a media server and show sequencer for someone who has already prepared their media, and it wins wherever Vibresia does not reach: it warps video onto surfaces and multi-projector setups, outputs to displays, capture cards, Syphon, NDI and RTMP, takes MIDI, OSC and DMX input and sends them back out, and plays multi-canvas timelines. Vibresia is a free Mac app that turns whatever the Mac is already playing into live visuals, with no plug-in and nothing to prepare, and it has no video output, no MIDI, OSC, NDI, Syphon or Spout output and no Windows version.",
+    "ourAngle": "Millumin is a media server and show sequencer for someone who has already prepared their media, and it wins wherever Vibresia does not reach: it warps video onto surfaces and multi-projector setups, outputs to displays, capture cards, Syphon, NDI and RTMP, takes MIDI, OSC and DMX input and sends them back out, and plays multi-canvas timelines. Vibresia's Mac app turns whatever the Mac is already playing into live visuals, with no plug-in and nothing to prepare, and a community-built Windows beta plays the same vibescapes. Vibresia has no video output, no MIDI, OSC, NDI, Syphon or Spout output, in either build.",
     "profile": {
       "sourceUrl": "https://millumin.com/",
       "verifiedISO": "2026-11-02"
@@ -1474,7 +1474,7 @@
       "Audio analysis binds bass, mid and treble to any parameter, with beat detection and Ableton Live Link",
       "Space Scanner uses structured light with a Canon DSLR to capture the projector's view for 3D calibration"
     ],
-    "ourAngle": "MadMapper wins on anything that leaves the screen: it drives projectors, LED arrays and DMX fixtures, and takes MIDI, OSC, NDI, Syphon and Spout, none of which Vibresia does, because Vibresia draws only into its own Mac window and sends nothing out. Vibresia wins on cost and immediacy: it is free, needs no input file or plug-in, and reacts to whatever the Mac is already playing, while MadMapper starts at a rental licence and asks you to build a show from surfaces, cues and timelines. Vibresia is Mac only, so on Windows MadMapper is the only one of the two you can run.",
+    "ourAngle": "MadMapper wins on anything that leaves the screen: it drives projectors, LED arrays and DMX fixtures, and takes MIDI, OSC, NDI, Syphon and Spout, none of which Vibresia does, because Vibresia draws only into its own window and sends nothing out. Vibresia wins on cost and immediacy: it is free, needs no input file or plug-in, and reacts to whatever the Mac is already playing, while MadMapper starts at a rental licence and asks you to build a show from surfaces, cues and timelines. Vibresia has a community-built Windows beta that plays the same vibescapes, but it does not yet have every Mac feature, and on Windows MadMapper is still the better tool, because it drives projectors, LED arrays and DMX fixtures, which Vibresia never will.",
     "profile": {
       "sourceUrl": "https://madmapper.com/madmapper/software",
       "verifiedISO": "2026-11-02"
@@ -1644,7 +1644,7 @@
       "It includes Studio Mode, a multiview that monitors eight scenes at once, and customisable transitions for running a live show",
       "It is free and open source under the GNU General Public License version 2, with the source published and community plug-ins listed on the project's forum"
     ],
-    "ourAngle": "OBS Studio is a production tool for recording and live streaming, and it wins on output and reach: it runs on Windows, macOS and Linux, writes video to files, streams to services, drives projector outputs and a virtual camera, and reaches other applications over the network through add-ons such as DistroAV for NDI and the OBS Spout plug-in for Spout. Vibresia has no video output, no recording or streaming, no MIDI, OSC, NDI, Syphon or Spout output, and it runs on macOS only. Vibresia wins on setup: it needs no scene building, no encoder configuration and no add-ons, and it responds to the audio already playing on the Mac.",
+    "ourAngle": "OBS Studio is a production tool for recording and live streaming, and it wins on output and reach: it runs on Windows, macOS and Linux, writes video to files, streams to services, drives projector outputs and a virtual camera, and reaches other applications over the network through add-ons such as DistroAV for NDI and the OBS Spout plug-in for Spout. Vibresia has no video output, no recording or streaming, no MIDI, OSC, NDI, Syphon or Spout output, and the Mac app runs on Apple silicon Macs with macOS 14.2 or later, while a community-built Windows beta plays the same vibescapes but does not yet have every Mac feature. Vibresia wins on setup: it needs no scene building, no encoder configuration and no add-ons, and it responds to the audio already playing on the Mac.",
     "profile": {
       "sourceUrl": "https://obsproject.com/",
       "verifiedISO": "2026-11-02"
@@ -1781,7 +1781,7 @@
       "Several PCs can be orchestrated from one primary machine to drive large-scale installations",
       "There is no copy protection, no feature limitations and no mandatory registration"
     ],
-    "ourAngle": "vvvv is a patch-based development environment for building whole applications, and it wins on breadth: it ships MIDI, OSC, DMX and Art-Net, Spout and NDI support, camera and depth sensor input, export to a standalone Windows application, multi-PC distributed rendering and live patching with state hot-reload. Vibresia wins on the Mac, because vvvv has no native macOS build at all, so it needs Windows or a virtual machine, and vvvv asks you to wire MIDI, OSC or lighting protocols into a graph yourself where Vibresia reacts to the system audio. Vibresia has no video output, no MIDI, OSC, NDI, Syphon or Spout output, and runs on macOS only, so anyone who needs to send video to a media server, drive lights or control a patch from hardware should choose vvvv.",
+    "ourAngle": "vvvv is a patch-based development environment for building whole applications, and it wins on breadth: it ships MIDI, OSC, DMX and Art-Net, Spout and NDI support, camera and depth sensor input, export to a standalone Windows application, multi-PC distributed rendering and live patching with state hot-reload. Vibresia wins on the Mac, because vvvv has no native macOS build at all, so it needs Windows or a virtual machine, and vvvv asks you to wire MIDI, OSC or lighting protocols into a graph yourself where Vibresia reacts to the system audio. Vibresia has no video output, no MIDI, OSC, NDI, Syphon or Spout output, on the Mac app or the Windows beta, so anyone who needs to send video to a media server, drive lights or control a patch from hardware should choose vvvv.",
     "profile": {
       "sourceUrl": "https://vvvv.org/",
       "verifiedISO": "2026-11-02"
@@ -2003,7 +2003,7 @@
       "It includes a video sequencer and a compositor, so video editing and finishing sit in the same file as the 3D work",
       "It runs on macOS, Windows and Linux, and the official requirements page describes it as cross-platform with a portable install that needs no internet connection"
     ],
-    "ourAngle": "Blender is a general 3D application where you build a scene and then render, and its realtime path is the EEVEE viewport, because viewport rendering supports Workbench and EEVEE but not Cycles. Vibresia is a Mac-only app that turns whatever the Mac is playing into live visuals with no plug-in, no 3D scene and no node graph, so it reacts to the music itself rather than to your inputs. Blender wins on scene control, final image quality, cross-platform use, video and animation output, and on cost, since it is free and open source. Vibresia wins on immediacy, on working with whatever is playing without routing audio into the app at all, and on being a small Mac app rather than a suite that wants a workstation.",
+    "ourAngle": "Blender is a general 3D application where you build a scene and then render, and its realtime path is the EEVEE viewport, because viewport rendering supports Workbench and EEVEE but not Cycles. Vibresia's Mac app turns whatever the Mac is playing into live visuals with no plug-in, no 3D scene and no node graph, so it reacts to the music itself rather than to your inputs, and a community-built Windows beta plays the same vibescapes. Blender wins on scene control, final image quality, cross-platform use, video and animation output, and on cost, since it is free and open source. Vibresia wins on immediacy, on working with whatever is playing without routing audio into the app at all, and on being a small app rather than a suite that wants a workstation.",
     "profile": {
       "sourceUrl": "https://www.blender.org/features/",
       "verifiedISO": "2026-11-02"
@@ -2143,7 +2143,7 @@
       "Automation covers macros, MIDI, DMX, timecode and Elgato Stream Deck, so one operator can run a show",
       "Support runs seven days a week with a stated average chat wait of under 90 seconds"
     ],
-    "ourAngle": "ProPresenter is a production show tool and Vibresia is a reactive audio visualiser, so they sit in different places. ProPresenter wins where a live production needs a show built in advance with lyric arrangements, scripture and copyright lookup, key and fill feeds to a switcher, MIDI, DMX and timecode control, a Windows build for the booth and many screens from one machine. Vibresia needs no show, no slides and no lyrics: it draws live visuals from whatever the Mac is already playing, with no plug-in and nothing to prepare. Vibresia has no video output and no MIDI, OSC, NDI, Syphon or Spout output, and it runs on Mac only, so a team that needs SDI, NDI or a Windows machine should use ProPresenter.",
+    "ourAngle": "ProPresenter is a production show tool and Vibresia is a reactive audio visualiser, so they sit in different places. ProPresenter wins where a live production needs a show built in advance with lyric arrangements, scripture and copyright lookup, key and fill feeds to a switcher, MIDI, DMX and timecode control, a Windows build for the booth and many screens from one machine. Vibresia needs no show, no slides and no lyrics: it draws live visuals from whatever the Mac is already playing, with no plug-in and nothing to prepare. Vibresia has no video output and no MIDI, OSC, NDI, Syphon or Spout output, in the Mac app or the community-built Windows beta, so a team that needs SDI or NDI should use ProPresenter.",
     "profile": {
       "sourceUrl": "https://www.renewedvision.com/propresenter",
       "verifiedISO": "2026-11-02"
@@ -2313,7 +2313,7 @@
       "Accepts live control from Art-Net and DMX, OSC, MIDI, MIDI Show Control, LTC, PosiStageNet and an HTTP REST API",
       "Takes live capture from capture cards, USB capture, network streams, VNC and NDI, and from local Spout textures published by other applications"
     ],
-    "ourAngle": "WATCHOUT wins where a show is specified and installed: synchronised multi-display playback, frame-accurate cueing, projection mapping and broadcast-grade output via GPU, SDI, ST 2110 and NDI, with input from Art-Net, OSC, MIDI, LTC and live capture, running unattended on locked-down media servers. Vibresia is a Mac-only app that visualises whatever the Mac is playing in the Mac's own windows: it has no video output, no MIDI, OSC, NDI, Syphon or Spout output, is not a media server, cannot drive projectors or LED walls, cannot pre-cue or synchronise separate displays, and cannot run unattended on a media server. Vibresia is free, needs no licence, no registration form and no media server hardware, and it suits someone who wants live visuals within minutes rather than a specified show system.",
+    "ourAngle": "WATCHOUT wins where a show is specified and installed: synchronised multi-display playback, frame-accurate cueing, projection mapping and broadcast-grade output via GPU, SDI, ST 2110 and NDI, with input from Art-Net, OSC, MIDI, LTC and live capture, running unattended on locked-down media servers. Vibresia's Mac app visualises whatever the Mac is playing in the Mac's own windows, and its community-built Windows beta plays the same vibescapes on Windows. Vibresia has no video output, no MIDI, OSC, NDI, Syphon or Spout output, is not a media server, cannot drive projectors or LED walls, cannot pre-cue or synchronise separate displays, and cannot run unattended on a media server. Vibresia is free, needs no licence, no registration form and no media server hardware, and it suits someone who wants live visuals within minutes rather than a specified show system.",
     "profile": {
       "sourceUrl": "https://www.dataton.com/watchout",
       "verifiedISO": "2026-11-02"
@@ -2468,7 +2468,7 @@
       "Look development and lighting run on USD-based Solaris tools, with Copernicus for textures and the Karma renderer for output, all inside the same scene",
       "PDG can distribute tasks, manage dependencies and create datasets for machine learning and AI applications"
     ],
-    "ourAngle": "Houdini wins where a full procedural 3D pipeline is needed: geometry, simulation, USD and Solaris look development, offline rendering, shared digital assets and studio-scale pipelines. It needs a paid licence, an Apple silicon Mac and a production pipeline, and it reads MIDI through the MIDI In CHOP but writes video only as files through the FFmpeg Encode Video TOP, with no OSC, Syphon, Spout, NDI or DMX output of its own. Vibresia is a free Mac app that turns whatever the Mac is playing into live visuals with no plug-in and no 3D system, and it has no video output and no MIDI, OSC, NDI, Syphon or Spout output, so a Houdini artist who needs shared textures in Resolume or TouchDesigner has to build a bridge, while a Vibresia user has no such step to take.",
+    "ourAngle": "Houdini wins where a full procedural 3D pipeline is needed: geometry, simulation, USD and Solaris look development, offline rendering, shared digital assets and studio-scale pipelines. It needs a paid licence, an Apple silicon Mac and a production pipeline, and it reads MIDI through the MIDI In CHOP but writes video only as files through the FFmpeg Encode Video TOP, with no OSC, Syphon, Spout, NDI or DMX output of its own. Vibresia's Mac app is free and turns whatever the Mac is playing into live visuals with no plug-in and no 3D system, and a community-built Windows beta plays the same vibescapes. Vibresia has no video output and no MIDI, OSC, NDI, Syphon or Spout output, so a Houdini artist who needs shared textures in Resolume or TouchDesigner has to build a bridge, while a Vibresia user has no such step to take.",
     "profile": {
       "sourceUrl": "https://www.sidefx.com/products/houdini/",
       "verifiedISO": "2026-11-02"
@@ -2666,7 +2666,7 @@
       "Offers a fully functional 60-day trial of the Pro edition, including 4K, MultiCorder and full Instant Replay",
       "Can be scripted, driven from a web controller, or controlled from MIDI devices and PTZ cameras from the 4K edition upwards"
     ],
-    "ourAngle": "vMix is a production switcher: it ingests cameras, NDI, OMT and SRT sources, records them, streams to up to five destinations and sends program output to monitors and other machines, so it wins whenever a multi-camera show needs switching, recording, streaming and replay on screen. Vibresia is a free Mac app that draws live visuals for whatever the Mac is already playing, with no capture, no switching, no recording and no streaming; it has no video output and no MIDI, OSC, NDI, Syphon or Spout output, and it runs on macOS only, where vMix has no build at all.",
+    "ourAngle": "vMix is a production switcher: it ingests cameras, NDI, OMT and SRT sources, records them, streams to up to five destinations and sends program output to monitors and other machines, so it wins whenever a multi-camera show needs switching, recording, streaming and replay on screen. Vibresia's Mac app is free and draws live visuals for whatever the Mac is already playing, with no capture, no switching, no recording and no streaming, and a community-built Windows beta plays the same vibescapes. Vibresia has no video output and no MIDI, OSC, NDI, Syphon or Spout output, in either build, and vMix has no build at all.",
     "profile": {
       "sourceUrl": "https://www.vmix.com/",
       "verifiedISO": "2026-11-02"
@@ -2854,7 +2854,7 @@
       "Lighting patched over Art-Net or USB with unlimited patchable DMX addresses, and QLab 5 ships with instrument definitions for over 1400 types of lighting fixture from over 60 manufacturers",
       "A free tier that already runs audio, video and lighting cues with unlimited cue lists, plus a 60-minute demo of every paid feature"
     ],
-    "ourAngle": "QLab is a show control system: it runs a designed show from a workspace of cues and sends output to projectors, lighting and control hardware, which is a different job from the one Vibresia does. Vibresia is a free Mac app that turns whatever the Mac is playing into live visuals, so it suits a musician, DJ or VJ who wants images on their own screen with no licence and no show file, while QLab suits a designer building a multi-department show with a technical director pressing GO. QLab wins clearly on output and control, with multi-screen video, masking and edge blending, unlimited DMX over Art-Net, MIDI, MSC and OSC remote control, NDI and Syphon video input and output, timecode, and a demo of every paid feature for 60 minutes. Vibresia has no video output, no MIDI, OSC, NDI, Syphon or Spout output, and is Mac only, so it cannot drive lights or projectors from a timeline and cannot stand in for a lighting or projection cue system. QLab is Mac only as well, so neither runs on Windows, and QLab's paid licences are perpetual one-time purchases rather than a monthly subscription.",
+    "ourAngle": "QLab is a show control system: it runs a designed show from a workspace of cues and sends output to projectors, lighting and control hardware, which is a different job from the one Vibresia does. Vibresia's Mac app is free and turns whatever the Mac is playing into live visuals, so it suits a musician, DJ or VJ who wants images on their own screen with no licence and no show file, while QLab suits a designer building a multi-department show with a technical director pressing GO. QLab wins clearly on output and control, with multi-screen video, masking and edge blending, unlimited DMX over Art-Net, MIDI, MSC and OSC remote control, NDI and Syphon video input and output, timecode, and a demo of every paid feature for 60 minutes. Vibresia has no video output, no MIDI, OSC, NDI, Syphon or Spout output, in the Mac app or the community-built Windows beta, so it cannot drive lights or projectors from a timeline and cannot stand in for a lighting or projection cue system. QLab is Mac only, so it does not run on Windows, and QLab's paid licences are perpetual one-time purchases rather than a monthly subscription.",
     "profile": {
       "sourceUrl": "https://qlab.app/",
       "verifiedISO": "2026-11-02"
@@ -3055,7 +3055,7 @@
       "Both tiers stream to native destinations such as YouTube, Facebook Live, Twitch, Vimeo, LinkedIn or any custom RTMP or SRT endpoint, and Pro adds Cloud Multistreaming",
       "Wirecast records the programme mix to disk while streaming, and Pro adds ISO recording that saves each camera feed as its own file plus multi-track audio recording"
     ],
-    "ourAngle": "Wirecast is a production switcher and Vibresia is a reactive audio visualiser, so the two sit in different categories. Wirecast wins wherever Vibresia does not compete at all: it captures multiple cameras, switches shots, chroma keys, hosts remote guests over Rendezvous, records ISO feeds and multistreams to YouTube, Twitch or any RTMP endpoint, and it runs on Windows as well as Mac. Vibresia wins on cost and setup, being free with no capture hardware, no per-seat subscription and no plug-in, reacting to the audio the machine is already playing. Vibresia has no video output, no MIDI, OSC, NDI, Syphon or Spout output, and is Mac only, so it cannot feed a Wirecast programme output or sit as a source inside a larger production chain.",
+    "ourAngle": "Wirecast is a production switcher and Vibresia is a reactive audio visualiser, so the two sit in different categories. Wirecast wins wherever Vibresia does not compete at all: it captures multiple cameras, switches shots, chroma keys, hosts remote guests over Rendezvous, records ISO feeds and multistreams to YouTube, Twitch or any RTMP endpoint, and it runs on Windows as well as Mac. Vibresia wins on cost and setup, being free with no capture hardware, no per-seat subscription and no plug-in, reacting to the audio the machine is already playing. Vibresia has no video output, no MIDI, OSC, NDI, Syphon or Spout output, in the Mac app or the community-built Windows beta, so it cannot feed a Wirecast programme output or sit as a source inside a larger production chain.",
     "profile": {
       "sourceUrl": "https://www.wirecast.io/",
       "verifiedISO": "2026-11-02"
@@ -3244,7 +3244,7 @@
       "Live inputs from capture cards, DirectShow devices and NDI sources, with preview shown as an internal NDI stream.",
       "Multi-machine operation with a Director master and player clients, plus frame synchronisation through NVIDIA Quadro Sync."
     ],
-    "ourAngle": "Pixera is a professional media server for Windows that drives projectors and LED walls from its own render engine, while Vibresia is a free Mac app that turns whatever the Mac is playing into live visuals with no plug-in and no video output. Pixera wins on video output to screens, uncompressed 8K playback, multi-server synchronisation, DMX and LED pixel mapping and a LUA scriptable show control framework. Vibresia wins on cost, on needing no server hardware, licence request or content library, and on reacting to whatever audio the Mac is already playing. Vibresia has no MIDI, OSC, NDI, Syphon or Spout output and runs on macOS only, while Pixera is Windows only.",
+    "ourAngle": "Pixera is a professional media server for Windows that drives projectors and LED walls from its own render engine, while Vibresia's Mac app turns whatever the Mac is playing into live visuals with no plug-in and no video output, and a community-built Windows beta plays the same vibescapes. Pixera wins on video output to screens, uncompressed 8K playback, multi-server synchronisation, DMX and LED pixel mapping and a LUA scriptable show control framework. Vibresia wins on cost, on needing no server hardware, licence request or content library, and on reacting to whatever audio the Mac is already playing. Vibresia has no MIDI, OSC, NDI, Syphon or Spout output, in the Mac app or the community-built Windows beta, while Pixera is Windows only.",
     "profile": {
       "sourceUrl": "https://pixera.one/en/software/overview/",
       "verifiedISO": "2026-11-03"
@@ -3612,7 +3612,7 @@
       "The free Designer Starter tier gives the full core software for learning, evaluating and pre-visualising.",
       "RenderStream is an open protocol for driving Unreal Engine, Unity, Notch, TouchDesigner and Spout content engines from the timeline."
     ],
-    "ourAngle": "disguise is a Windows-only production platform for programming, previsualising and delivering content to video hardware. It wins on output and control: it drives projectors, LED and broadcast video through DisplayPort, DVI, SDI, HDMI and ST 2110, and it takes MIDI, OSC, DMX and NDI inputs, whereas Vibresia has no video output, no MIDI, OSC, NDI, Syphon or Spout output and runs on Mac only. Vibresia wins on cost and setup: it is free and needs no server, dongle, licence or subscription, while disguise paid tiers run from $159 a month to $15,000 a year and its media servers are sold by quote.",
+    "ourAngle": "disguise is a Windows-only production platform for programming, previsualising and delivering content to video hardware. It wins on output and control: it drives projectors, LED and broadcast video through DisplayPort, DVI, SDI, HDMI and ST 2110, and it takes MIDI, OSC, DMX and NDI inputs, whereas Vibresia has no video output, no MIDI, OSC, NDI, Syphon or Spout output, in the Mac app or the community-built Windows beta. Vibresia wins on cost and setup: it is free and needs no server, dongle, licence or subscription, while disguise paid tiers run from $159 a month to $15,000 a year and its media servers are sold by quote.",
     "profile": {
       "sourceUrl": "https://www.disguise.one/",
       "verifiedISO": "2026-11-03"
@@ -3825,7 +3825,7 @@
       "A browser on any device on the network can drive switching, audio, media and macros, with LivePanel Pro on the Prizm and Vizion.",
       "Macros can be attached to control panel buttons, keyboard shortcuts, hotspots, MIDI and X-keys buttons or GPI triggers."
     ],
-    "ourAngle": "TriCaster is a live production switcher rather than a visualiser: it takes cameras and network feeds in and sends finished programme video out over SDI, NDI and local displays, so it wins on real video output, on input count and on multi-camera switching. Vibresia is a free Mac app that turns whatever the Mac is playing into live visuals with no plug-in, no camera and no switcher, but Vibresia has no video output at all and no MIDI, OSC, NDI, Syphon or Spout output, so it cannot feed a TriCaster, a recorder or a stream, and Vibresia runs on macOS only while TriCaster runs on Windows.",
+    "ourAngle": "TriCaster is a live production switcher rather than a visualiser: it takes cameras and network feeds in and sends finished programme video out over SDI, NDI and local displays, so it wins on real video output, on input count and on multi-camera switching. Vibresia's Mac app is free and turns whatever the Mac is playing into live visuals with no plug-in, no camera and no switcher, and a community-built Windows beta plays the same vibescapes. Vibresia has no video output at all and no MIDI, OSC, NDI, Syphon or Spout output, so it cannot feed a TriCaster, a recorder or a stream, and on Windows TriCaster is still the better tool, because it sends finished programme video out, which Vibresia never will.",
     "profile": {
       "sourceUrl": "https://www.vizrt.com/products/tricaster-family/",
       "verifiedISO": "2026-11-03"
@@ -4000,7 +4000,7 @@
       "Program and preview switching, DVEs, SuperSource, chroma keyers and the Fairlight mixer are all included with no licence fees or monthly charges.",
       "Program video leaves the switcher over HDMI, SDI and a USB webcam connection, so it feeds projectors, recorders, Zoom and streaming software."
     ],
-    "ourAngle": "ATEM is a hardware video switcher that needs cameras, a video source and its own control software, so Vibresia suits a visual set and ATEM suits a broadcast. Vibresia has no video output, no MIDI, OSC, NDI, Syphon or Spout output and runs on Mac only, whereas ATEM Software Control runs on Mac and Windows and accepts MIDI control surfaces. ATEM wins on broadcast video output, ISO recording, SDI connections, camera control and hardware streaming.",
+    "ourAngle": "ATEM is a hardware video switcher that needs cameras, a video source and its own control software, so Vibresia suits a visual set and ATEM suits a broadcast. Vibresia has no video output, no MIDI, OSC, NDI, Syphon or Spout output in the Mac app or the community-built Windows beta, whereas ATEM Software Control runs on Mac and Windows and accepts MIDI control surfaces. ATEM wins on broadcast video output, ISO recording, SDI connections, camera control and hardware streaming.",
     "profile": {
       "sourceUrl": "https://www.blackmagicdesign.com/products/atem",
       "verifiedISO": "2026-11-03"
@@ -4207,7 +4207,7 @@
       "Built-in AI tools such as AI Object Matte for isolating a moving subject and Content-Aware Fill for removing unwanted elements.",
       "Close integration with the rest of Creative Cloud, including layered PSD import and Dynamic Link to Premiere Pro."
     ],
-    "ourAngle": "After Effects is a paid subscription compositor for authored work that is delivered as rendered files. It wins on layered compositing, keyframe and expression control, 3D, its plug-in ecosystem and support for Windows as well as macOS. Vibresia wins on how quickly it reacts to playback, on there being no render step, and on price: it is free and needs no plug-in. Vibresia has no video output, no MIDI, OSC, NDI, Syphon or Spout output, and it is Mac only.",
+    "ourAngle": "After Effects is a paid subscription compositor for authored work that is delivered as rendered files. It wins on layered compositing, keyframe and expression control, 3D, its plug-in ecosystem and support for Windows as well as macOS. Vibresia wins on how quickly it reacts to playback, on there being no render step, and on price: it is free and needs no plug-in. Vibresia has no video output, no MIDI, OSC, NDI, Syphon or Spout output, in the Mac app or the community-built Windows beta.",
     "profile": {
       "sourceUrl": "https://www.adobe.com/products/aftereffects.html",
       "verifiedISO": "2026-11-03"

@@ -13,7 +13,7 @@ export default (h) => ({
     publishedISO: "2026-11-02",
     updatedISO: "2026-11-22",
     title: "Synesthesia Alternative for Mac: Vibresia vs Synesthesia",
-    description: `Want Synesthesia's visuals at home without paying ${h.cost("synesthesia", "Standard")}? Vibresia is a free Mac visualiser for whatever is playing. Here's where each one wins.`,
+    description: `Want Synesthesia's visuals at home without paying ${h.cost("synesthesia", "Standard")}? Vibresia is a free app for whatever is playing, with a beta on Windows. Here's where each one wins.`,
     eyebrow: "Synesthesia alternative",
     breadcrumb: "Vibresia vs Synesthesia",
     h1: "Vibresia vs Synesthesia: the free alternative for watching music at home",
@@ -22,7 +22,7 @@ export default (h) => ({
     rows: [
         { label: "Price", value: (h, s) => us(s) ? "Free, every feature" : `${h.price(s, "Standard")} (Standard), ${h.price(s, "Pro")} (Pro)` },
         { label: "Free version", value: (h, s) => us(s) ? "The whole app, no watermark, no account" : h.rec(s).trial.limits },
-        { label: "Runs on", value: (h, s) => us(s) ? h.rec(s).requirements : h.platforms(s) },
+        { label: "Runs on", value: (h, s) => us(s) ? `${h.rec(s).requirements}; the beta runs on 64-bit Windows 10 and 11` : h.platforms(s) },
         { label: "Built-in scenes", value: (h, s) => us(s) ? "18, and Auto Scan moves through them on the beat" : h.strength(s, 0) },
         { label: "Making your own", value: (h, s) => us(s) ? "One GLSL function, or describe it to an AI assistant" : h.strength(s, 3) },
         { label: "Live performance", value: (h, s) => us(s) ? "Not built for it: no MIDI mapping, OSC or video outputs" : `${h.strength(s, 1)}; ${h.strength(s, 2)}` },
@@ -30,7 +30,7 @@ export default (h) => ({
     ],
     verdict: {
         pickUs: "you want something beautiful moving to Spotify, Apple Music or a film on your own Mac, you'd rather not pay for it, and you'd like to make your own scenes by writing one function or asking an AI assistant.",
-        pickThem: `you play live. Synesthesia has mappable MIDI and OSC controls, Syphon, Spout and NDI on the Pro licence, and it runs on Windows as well as a Mac. Vibresia has none of those.`,
+        pickThem: `you play live. Synesthesia has mappable MIDI and OSC controls, Syphon, Spout and NDI on the Pro licence, and it runs on Windows as well as a Mac. Vibresia has none of those, in the Mac app or in the community-built Windows beta.`,
     },
     sections: [
         {
@@ -52,7 +52,7 @@ export default (h) => ({
         {
             h2: "Where Synesthesia is the better choice",
             html: `<p>If you're playing a set, use Synesthesia. It has MIDI and OSC controls you can map for performance, works alongside other VJ software over Syphon, Spout and NDI, and outputs to projectors and livestreams. Vibresia has no OSC, no Syphon, Spout or NDI output, and no controls built for a set.</p>
-    <p>Synesthesia also runs on Windows, and its homepage lists 80 built-in scenes with an in-app marketplace for more. Vibresia is Mac only, needs ${h.rec("vibresia").requirements}, and has 18 built-in scenes, so if you have an Intel Mac or a PC, Synesthesia is the one of these two that will run.</p>`,
+    <p>Synesthesia also runs on Windows, and its homepage lists 80 built-in scenes with an in-app marketplace for more. Vibresia's Mac app needs ${h.rec("vibresia").requirements} and has 18 built-in scenes, and its community-built Windows beta by Llew Roberts plays the same vibescapes but does not yet have every Mac feature, so if you have an Intel Mac or a PC, Synesthesia is still the better tool, with a bigger scene library, a marketplace and the live controls for a set.</p>`,
         },
     ],
     faq: [

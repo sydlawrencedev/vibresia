@@ -104,7 +104,7 @@ export const VIBRESIA = {
     slug: "vibresia",
     name: "Vibresia",
     homepage: `${ORIGIN}/`,
-    platforms: ["macos"],
+    platforms: ["macos", "windows"],
     requirements: "macOS 14.2 or later, Apple silicon",
     bestFor: "Mac users who want visuals for whatever the Mac is playing, free, and people who'd like to write or describe their own.",
     strengths: [
@@ -113,7 +113,7 @@ export const VIBRESIA = {
         "Free and open source (MIT), with no account, no trial and no ads",
     ],
     limits: [
-        "Mac only, and only on Apple silicon with macOS 14.2 or later",
+        "The Mac app needs Apple silicon with macOS 14.2 or later, and the Windows build is a beta that does not yet have every Mac feature",
         "Doesn't play MilkDrop presets, and has no VJ outputs such as Syphon, Spout or NDI",
     ],
     pricing: {
@@ -308,7 +308,7 @@ function thirdOptionHtml(h, page) {
     if (!pair.thirdOption) return "";
     return `<section class="third-option">
       <h2>Where both fall short, and a third option</h2>
-      <p>${escapeHtml(pair.thirdOptionWhy)} If what you want is visuals for whatever your Mac is playing, Vibresia, which we make, is a free Mac app that listens to the Mac's system audio, so it works with Spotify, Apple Music or a browser with no plug-in. It doesn't play MilkDrop presets: it has 18 scenes of its own, and a new one is a single GLSL function or a sentence to an AI assistant. It needs ${escapeHtml(h.rec("vibresia").requirements)}.</p>
+      <p>${escapeHtml(pair.thirdOptionWhy)} If what you want is visuals for whatever your Mac is playing, Vibresia, which we make, is a free app that listens to the Mac's system audio, so it works with Spotify, Apple Music or a browser with no plug-in. It doesn't play MilkDrop presets: it has 18 scenes of its own, and a new one is a single GLSL function or a sentence to an AI assistant. It needs ${escapeHtml(h.rec("vibresia").requirements)}.</p>
     </section>`;
 }
 

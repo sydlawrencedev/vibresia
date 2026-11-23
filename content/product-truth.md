@@ -60,8 +60,10 @@ your own, or have an AI assistant write one for you.
 
 ## What it does not do
 
-- **No Windows, Linux, iOS, iPadOS or Android version.** No Intel Mac support.
-  Requires macOS 14.2 or later on Apple silicon.
+- **No Linux, iOS, iPadOS or Android version.** No Intel Mac support. The Mac
+  app needs macOS 14.2 or later on Apple silicon and is the full product. A
+  community-built Windows beta by Llew Roberts runs on 64-bit Windows 10 and
+  11. It plays the same vibescapes, but it does not yet have every Mac feature.
 - **No web app.** The browser plays shared vibescapes; it does not visualise
   your own music.
 - **Not a DJ, VJ or live-performance tool.** No timeline, no MIDI/OSC/NDI/
@@ -98,7 +100,8 @@ your own, or have an AI assistant write one for you.
 
 ## Who it is not for
 
-- Anyone on Windows, Linux, mobile or an Intel Mac.
+- Anyone on Linux, mobile or an Intel Mac, and anyone on Windows who needs
+  one of the Mac features the beta does not have yet.
 - Professional VJs who need outputs, mapping, timelines or MIDI/OSC control.
 - Anyone who wants visuals inside a streaming app's own window.
 
