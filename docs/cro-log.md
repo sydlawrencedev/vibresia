@@ -9,6 +9,769 @@ addresses, no personal data.
 
 ---
 
+## 2026-11-22: weekly CRO check
+
+### Data health
+
+**The browser side is live. The worker side is counting things that are not
+downloads.** Both facts sit at the top of this report, because the second one
+makes most of the numbers below wrong rather than merely thin.
+
+- Window: **2026-10-25 22:56:11 to 2026-11-22 22:56:11 UTC, pinned at both
+  ends**. The routine's rolling shape (`now() - INTERVAL 7 DAY`) was run first
+  and returned the same counts, so the window did not move while the report was
+  being written. The 7-day window is 2026-11-15 22:56:11 to 2026-11-22
+  22:56:11.
+- Events seen (28 days, `properties.$lib = 'vibresia-web'`): 1542 `$pageview`,
+  867 `download_requested`, 509 `demo_played`, 478 `mode_card_viewed`, 43
+  `download_clicked`, 27 `page_view` (legacy), 17 `gallery_card_clicked`, 16
+  `outbound_clicked`, 13 `send_to_mac_clicked`, 11 `install_command_copied`, 3
+  `coffee_clicked`, 1 `live_scene_mic`.
+- Last 7 days: 518 `$pageview`, 386 `download_requested`, 168 `demo_played`,
+  117 `mode_card_viewed`, 19 `download_clicked`, 9 `gallery_card_clicked`, 7
+  `outbound_clicked`, 6 `install_command_copied`, 4 `send_to_mac_clicked`, 1
+  `coffee_clicked`.
+- Capture is live. The last `$pageview` was 2026-11-22 19:24 UTC, the last
+  `download_clicked` 2026-11-22 13:12 UTC, the last `download_requested`
+  2026-11-22 22:38 UTC, the last `install_command_copied` 2026-11-19 15:21
+  UTC.
+- The project's earliest event for this site is 2026-10-20 12:47 UTC, so the
+  first five days of the window are empty by construction rather than by
+  failure.
+
+#### The capture gap is 824 wide, and it has a cause that is not the browser
+
+Three numbers for one funnel, same 28 days, three different writers:
+
+| Signal | Count | Written by | What it counts |
+|---|---|---|---|
+| `download_requested` | 867 | the Worker, on every request to `/download` | requests |
+| `download_clicked` | 43 | the browser, on a click | clicks |
+| `Application Installed` | 28, from 28 distinct people | the app, when Vibresia is first run | installs |
+
+The gap between the first two is 824. The third number is the check on both: 28
+people installed the app in 28 days, so a download count of 867 is 31 times the
+number of installs. The app's own `Application Installed` events line up with
+the browser's clicks to the second, which is what makes the third number
+trustworthy as a check.
+
+**The 11-12 fix is live and it did not close the gap.** The deployed page was
+fetched today: `https://vibresia.com/share/warp` carries
+`data-track="download_clicked" data-placement="share-cta"`. Across the whole
+site, **all 154 anchors that point at `/download`, in 80 HTML files, carry a
+`data-track` attribute.** The missing attribute is no longer the explanation,
+and the last two runs both said it was.
+
+| Window | Worker requests | Browser clicks | Requests per click |
+|---|---|---|---|
+| 28 days to 2026-11-12 (the last run's window) | 408 | 34 | 12.0 |
+| 28 days to 2026-11-22 (this window) | 867 | 43 | 20.2 |
+| 2026-11-12 16:00 to 2026-11-22 22:56 (since the deploy) | 524 | 24 | 21.8 |
+
+**Share and short-link browser clicks are still zero, in the window and since
+the project began.** The site has recorded 58 `download_clicked` events in
+total, ever. None of them is on `/share/*` or `/s/*`.
+
+#### What the other 828 requests are
+
+Five checks, each one on the worker's own event data.
+
+1. **A real click always carries the page it came from.** Joining every
+   worker request to the browser's clicks on the same source family within 120
+   seconds: **39 of the 867 requests have a browser click, and all 39 carry a
+   full page URL as the HTTP referrer** (`https://vibresia.com/blog/apple-music-visualizer`
+   and so on). The other 828 do not.
+2. **598 of the 867 (69%) carry no HTTP referrer at all.** A browser
+   navigating from a page on this site sends one. Every request that can be
+   tied to a click has one, and not one of the 598 has a click behind it.
+3. **They arrive in linked groups, which a person cannot do.** 67 groups of
+   two or more arrived from one address within 60 seconds, holding 395
+   requests. The largest group is 66 requests inside two seconds from one
+   address in the Netherlands: every one of the 19 `share_*` sources, all 19
+   share pages, in one sweep. On 2026-11-19 at 04:43 UTC the worker recorded
+   the `seo-*` links of 12 different pages, two seconds apart, from three
+   addresses in the United States. On the home page the `hero`, `hero-mac` and
+   `hero-windows` links are requested within the same second of each other,
+   and again for the three `after_gallery*` links. One person clicks one
+   button.
+4. **17 of the 21 pages carrying an `seo-*` source have more downloads than
+   visits**, and 2 more have exactly as many. A download cannot come from a
+   visit that did not happen.
+5. **The Worker's own bot filter did not catch them.** `worker/index.js` line
+   100 filters on a user-agent regex, and line 108 adds Apple's preview
+   fetcher. Neither matched the agents that produced these requests.
+
+**Conclusion.** The worker's `download_requested` is a request count. Most of
+it is automated link walking. It is not a conversion count and must not be used
+as one. **The conversion count available today is the browser's 43 clicks, and
+the only measure of a completed install is the app's 28.** Every rate below
+prints the worker count and the browser count side by side, and the rate that
+is quoted is the browser's.
+
+#### Anything else that would make the numbers wrong
+
+- **The project carries more than one site.** Unfiltered over 28 days the
+  project holds 5,766 events with no `$lib` (the desktop app's own events),
+  3,527 with `$lib = 'vibresia-web'` and 1,730 with `$lib = 'posthog-ios'`.
+  Every number in this report is filtered on `properties.$lib =
+  'vibresia-web'`. The `audiovane-web` site named in the 11-11 and 11-12
+  reports no longer appears in this window.
+- **`page_view` is a legacy event.** 27 events, last seen 2026-11-04, nothing
+  in the repository fires it, `site/analytics.js` fires `$pageview`. Counted
+  separately and excluded from the visit column, because adding both
+  double-counts visits.
+- **`vibescape_card_viewed` does not exist in the data.** The conversion model
+  lists it as a funnel step and the routine's step-1 table lists it. A direct
+  count over the window returns **0** and nothing in the repository fires it.
+  The real name is `mode_card_viewed`, which fires 478 times, on the home page
+  only.
+- **`mode_card_viewed` fell from 845 to 478 and it is not a traffic drop.** The
+  daily series shows 54 events on 2026-10-20 and 334 on 2026-10-21 against
+  **zero** `$pageview` on both days: the build then in production fired the
+  card event without firing a pageview. The comparison with the 11-12 figure
+  is not like for like.
+- **`mode_card_viewed` is intermittent.** It fires on 19 of the 26 days in the
+  window, and 2026-11-11 carried 274 pageviews and 0 card events.
+- **The `platform` property on the worker event only exists from the Windows
+  deploy.** 566 of the 867 events have no `platform`, 223 say `mac` and 78 say
+  `windows`. A platform split is only readable for the part of the window
+  after that deploy.
+- **The worker's `distinct_id` is the constant `downloads`.** The event counts
+  requests, not people. The `seen` flag reports 863 false and 4 true.
+- **26 worker requests are probes and tests against `/download`** (one `test`
+  source, eleven `asdf alt=` payload injections in assorted encodings, three
+  `issue39-test-N`, one `verify-issue-39` and one hex-encoded payload). They
+  are counted in the worker total and excluded from every page attribution
+  below. Last week it was 27.
+- **`footer` downloads cannot be split by page.** The footer's download link
+  carries `src=footer` on all 80 pages, so its 38 downloads belong to the
+  site, not to a page type. The 11-12 report folded them into Home. That was
+  wrong and this report does not repeat it.
+- **`content/product-truth.md` is out of date.** It was checked on 2026-11-02
+  and says "No Windows, Linux, iOS, iPadOS or Android version". The site now
+  carries a community-built Windows beta with its own download route, and
+  `VisualiserWindows/` is in the repository. Any copy written from the truth
+  sheet this week would be wrong about the platform. The owner owns that file
+  and its update.
+
+### By page type
+
+Raw counts beside every rate. A rate without its counts is unreadable.
+
+Visits are `$pageview`. The worker column is `download_requested` attributed by
+the `source` parameter. The browser column is `download_clicked`. **The rate is
+the browser column over the visits**, because that is the only conversion
+count that survives the data health above.
+
+| Page type | Visits 28d | Visits 7d | Downloads (worker) | Download clicks 28d | Download clicks 7d | Click rate | Signal (5 per page, 10 per type, on clicks) |
+|---|---|---|---|---|---|---|---|
+| Home | 462 | 130 | 208 | 36 | 18 | 7.8% (36/462) | Cleared (36 clicks) |
+| Comparison | 423 | 197 | 120 | 1 | 0 | 0.2% (1/423) | Insufficient signal (1 click) |
+| Blog | 69 | 26 | 53 | 1 | 0 | 1.4% (1/69) | Insufficient signal (1 click) |
+| Question | 150 | 64 | 208 | 5 | 1 | 3.3% (5/150) | Insufficient signal (5 clicks) |
+| Vibescape (share pages) | 131 | 58 | 153 | 0 | 0 | 0.0% (0/131) | Insufficient signal (0 clicks) |
+| Vibescape (short links) | 153 | 12 | 0 | 0 | 0 | 0.0% (0/153) | Insufficient signal (0 clicks) |
+| Vibescape gallery | 55 | 15 | 0 | 0 | 0 | 0.0% (0/55) | Insufficient signal (0 clicks) |
+| Agents | 45 | 6 | 0 | 0 | 0 | 0.0% (0/45) | Insufficient signal (0 clicks) |
+| Comparison hub | 20 | 2 | 0 | 0 | 0 | 0.0% (0/20) | Insufficient signal (0 clicks) |
+| Vibe | 18 | 5 | 0 | 0 | 0 | 0.0% (0/18) | Insufficient signal (0 clicks) |
+| Author | 10 | 3 | 0 | 0 | 0 | 0.0% (0/10) | Insufficient signal (0 clicks) |
+| Share index (`/share/`) | 4 | 0 | 8 | 0 | 0 | 0.0% (0/4) | Insufficient signal (0 clicks) |
+| Probe paths (`/probe-nested`, `/probe-top`) | 2 | 0 | 0 | 0 | 0 | n/a | Excluded |
+| **Total** | **1542** | **518** | **750** | **43** | **19** | | |
+
+Downloads not attributable to a page, listed separately so the table above
+sums honestly:
+
+| Worker downloads not attributable to a page | Count | Why |
+|---|---|---|
+| Blank source | 53 | The link carried no `source` at all |
+| Footer link | 38 | `src=footer` on all 80 pages, so it cannot be split by page |
+| Probe and test strings | 26 | See the data health block |
+
+**One type clears the gate and it is the one the routine already knows.** The
+home page, on 36 browser clicks against 462 visits. Every other type is under
+the 10-click type gate. Of the 49 blog and comparison pages the site
+publishes, 42 have no click at all and 7 have exactly one.
+
+**There is still no bottom quartile, and this time the reason is not volume.**
+Last week's report said the rates could not be read because 11 of the 15
+gated pages had more downloads than visits. This run has the cause of that:
+the download counts are not page conversions. On the browser's own count, the
+home page is at 7.8% and the 642 visits to the blog, comparison and question
+pages are at 1.1% (7 clicks). That is a real gap, but 7 clicks cannot carry a
+conclusion about a page, and this report will not turn it into one.
+
+#### Page level: the pages that carry an `seo-*` download source
+
+All 21 pages, with both counts. The worker column is the number the last two
+reports ranked on. The browser column is the one that counts people.
+
+| Page | Visits | Downloads (worker) | Browser clicks | Worker column over visits |
+|---|---|---|---|---|
+| `/blog/apple-music-visualizer` | 26 | 24 | 1 | 92% |
+| `/blog/youtube-music-visualizer-mac` | 14 | 21 | 1 | 150% |
+| `/blog/amazon-music-visualizer-mac` | 15 | 20 | 1 | 133% |
+| `/blog/does-milkdrop-work-on-mac` | 14 | 20 | 0 | 143% |
+| `/comparison/vibresia-vs-projectm` | 16 | 19 | 0 | 119% |
+| `/comparison/projectm-vs-milkdrop` | 13 | 19 | 0 | 146% |
+| `/comparison/vibresia-vs-shadertoy` | 11 | 19 | 0 | 173% |
+| `/blog/parachord-visualizer-mac` | 11 | 19 | 0 | 173% |
+| `/blog/best-music-visualizer-for-mac-2026` | 31 | 18 | 0 | 58% |
+| `/comparison/vibresia-vs-touchdesigner` | 18 | 18 | 0 | 100% |
+| `/blog/mixcloud-visualizer-mac` | 12 | 18 | 0 | 150% |
+| `/blog/tidal-visualizer-mac` | 10 | 18 | 0 | 180% |
+| `/blog/plex-visualizer-mac` | 8 | 17 | 1 | 213% |
+| `/comparison/vibresia-vs-synesthesia` | 16 | 16 | 1 | 100% |
+| `/comparison/vibresia-vs-magic-music-visuals` | 13 | 16 | 0 | 123% |
+| `/blog/milkdrop-alternatives-mac-2026` | 22 | 15 | 1 | 68% |
+| `/blog/spotify-visualizer-mac` | 14 | 15 | 1 | 107% |
+| `/blog/twitch-visualizer-mac` | 11 | 15 | 0 | 136% |
+| `/blog/soundcloud-visualizer-mac` | 9 | 15 | 0 | 167% |
+| `/blog/deezer-visualizer-mac` | 12 | 14 | 0 | 117% |
+| `/comparison/vibresia-vs-plane9` | 8 | 13 | 0 | 163% |
+| `/blog/vlc-visualizer-mac` | 8 | 12 | 0 | 150% |
+
+**None of these pages clears the 5-download page gate on the browser's count.**
+The highest is 1 click. The other 28 blog and comparison pages in the site
+carry 0 clicks each.
+
+The worker column is printed because it is the number the last two reports
+ranked on, and because the pattern is the finding: **17 of these 21 pages
+record more downloads than visits, 2 record exactly as many, and 2 record
+fewer.** A page cannot convert more people than visited it.
+
+#### The share pages
+
+| Share page | Visits | Downloads (worker) | Browser clicks |
+|---|---|---|---|
+| `/share/spectrum` | 3 | 10 | 0 |
+| `/share/hamster` | 4 | 10 | 0 |
+| `/share/warp` | 5 | 10 | 0 |
+| `/share/tunnel` | 9 | 10 | 0 |
+| `/share/waveform` | 11 | 10 | 0 |
+| `/share/silk` | 10 | 9 | 0 |
+| `/share/vortex` | 10 | 9 | 0 |
+| `/share/flux` | 9 | 9 | 0 |
+| `/share/band` | 6 | 9 | 0 |
+| `/share/ribbons` | 7 | 8 | 0 |
+| `/share/particles` | 5 | 8 | 0 |
+| `/share/kaleidoscope` | 5 | 8 | 0 |
+| `/share/liquid` | 8 | 8 | 0 |
+| `/share/` index | 4 | 8 | 0 |
+| `/share/badger` | 5 | 7 | 0 |
+| `/share/llama` | 12 | 7 | 0 |
+| `/share/danceFloor` | 4 | 7 | 0 |
+| `/share/machine` | 6 | 7 | 0 |
+| `/share/nyan` | 12 | 7 | 0 |
+| **Total** | **135** | **161** | **0** |
+
+The short-link pages (`/s/*`, which the Worker renders for a share somebody
+made) add **153 visits and 0 browser clicks**.
+
+Every one of the 19 share sources carries between 7 and 10 downloads, and the
+page it names carries between 3 and 12 visits. The counts are flat against the
+traffic, which is what a sweep looks like and not what a conversion looks
+like.
+
+### The queue
+
+At most three candidates. Each with the evidence, the change, the metric, the
+guardrail, the review window and a keep/revert rule.
+
+#### 1. `worker/index.js`: the download counter counts link walkers
+
+This goes first because every number in every report depends on it, and
+because the other two candidates cannot be measured until it lands.
+
+- **Evidence:** 867 worker requests against 43 browser clicks and 28 app
+  installs in the same 28 days. 39 requests have a browser click within 120
+  seconds and all 39 carry a page URL as the referrer; the other 828 do not.
+  598 of the 867 carry no referrer at all. 395 of the 828 arrive in 67 groups
+  of two or more from one address inside 60 seconds, the largest group being
+  all 19 `share_*` sources in two seconds. 17 of the 21 `seo-*` pages record
+  more downloads than visits. The Worker's own filters are a user-agent regex
+  (line 100) and one rule for Apple's preview fetcher (line 108), and neither
+  matched.
+- **Proposed change, in `worker/index.js`:** (a) send the request's user agent
+  with the event as a coarse class rather than the raw string, so a person can
+  be told from a link walker in the data; (b) record the `seen` parameter as
+  the tri-state it is (`0`, `1`, or absent) instead of a boolean, because
+  `site/analytics.js` appends `seen` to every download link on every page, so
+  a request carrying it came from a page on this site and a request without it
+  did not; (c) do not count a request that carries neither a `seen` parameter
+  nor a same-site referer as a download, and record it separately as
+  `download_request_ignored` so the excluded volume is visible rather than
+  gone.
+  **This is instrumentation on the server. It is not a page change and it is
+  not a copy change.**
+- **Primary metric:** the number of counted downloads that have a browser
+  click within 120 seconds. It is 39 of 867 today (4.5%). It should be above
+  90% within a week of the deploy.
+- **Guardrail:** the counted download total must not fall below the app's
+  install count. 28 people installed the app in 28 days. If the count falls
+  under 28, real downloads are being lost, and the change is wrong.
+- **Review window:** 28 days from the deploy date, or until 60 counted
+  downloads have been recorded, whichever is longer. Below 60 the matched
+  fraction is too small to read.
+- **Keep/revert:** keep if the matched fraction is above 90% and the counted
+  total is at or above the install count over the same window. Revert if the
+  matched fraction does not rise, because that means the unmatched requests
+  are people and the filter is wrong.
+- **Not shipped this run.** The owner reviews and merges. See "What did not
+  ship".
+- **One coordination note:** another routine is working in a separate
+  worktree today (`.worktrees/fix/error-check-2026-11-22`, branch
+  `fix/error-check-2026-11-22`) and it has edits open against `worker/index.js`
+  and `site/analytics.js`. This candidate touches `worker/index.js`, so it
+  should be cut after that work lands, not alongside it.
+
+#### 2. `/share/*` and `/s/*`: the download is behind the deep link, and the line under the button starts at the button
+
+- **Evidence:** 135 visits across the 19 share pages and 153 visits across the
+  short-link pages, **0 browser download clicks on either, ever**. 161 worker
+  requests are attributed to the share family, and the 11-12 run's explanation
+  for them (a missing `data-track` attribute) has been disproved: the
+  attribute is on the deployed page today and the click count is still zero.
+  Reading the page, three things stand out:
+  1. The "Download for Mac" link carries `hidden` in the markup.
+     `site/share/share-page.js` reveals it only when the `vibresia://open`
+     deep link fails, which takes 1500ms, and it removes it entirely once
+     `localStorage.vibresia_installed` is set. A reader who has the app never
+     sees it, and a reader on a phone, where the deep link does nothing at
+     all, may never reach it either.
+  2. The line under the buttons starts at the button: "Press **Open in
+     Vibresia** and the app will switch to Warp. You'll need Vibresia on your
+     Mac — free, no account." It says what the button does before it says
+     what Vibresia is, and the reader is often somebody who has never heard
+     of the app. The line also carries em dashes, which the brand rules do
+     not allow.
+  3. There is no install command on the page at all (`install.sh` appears
+     zero times in `site/share/warp.html` and `site/share/index.html`), so
+     the reader who cannot use the deep link has one hidden button and no
+     command to copy.
+  The video is not the problem here: `site/share/warp.mp4` is 438K with
+  `preload="metadata"`.
+- **Proposed change:** replace the two `<small>` lines in the `.share-cta`
+  block so each says what Vibresia is before it says what the button does,
+  and says the app is for the Mac and is free. Copy, in the 18 generated
+  pages and `site/share/index.html`. **The words must come from the
+  content-brand subagent.** See "What did not ship" for why they are not
+  written yet.
+- **Primary metric:** browser `download_clicked` events on `/share/*` and
+  `/s/*` pages. The baseline is 0, in the 28-day window and since the site
+  began.
+- **Guardrail:** the "Open in Vibresia" deep link must not lose readers. The
+  deep link is the better path for a reader who already has the app, and the
+  change must not push them towards downloading it instead. The worker count
+  for the `share_*` sources must also not be used as the metric: it is
+  currently 161 against 135 visits and it is mostly automated.
+- **Review window:** 28 days from the deploy date. Below that the counts are
+  too small to read against.
+- **Keep/revert:** keep if the browser click count on the share pages rises
+  above 0, with the deep-link clicks flat. Revert if the deep-link clicks
+  fall. Inconclusive if there are fewer than 5 browser clicks on the share
+  pages at the end of the window, because that is still under the gate.
+- **Parked this week.** `scripts/locked-routes.sh` reports `/share/*`,
+  `/share/index` and every share page as locked. The share pages were
+  rewritten on 2026-11-17 by the Windows beta release and by the footer
+  attribution, both inside the 7-day window.
+
+#### 3. `/blog/*` and `/comparison/*`: the search pages have no mid-funnel event and no rate that can be read
+
+- **Evidence:** 642 visits across the blog, comparison and question pages
+  (423, 69 and 150) and **7 browser download clicks in 28 days**, one on each
+  of 7 pages. Every one of the 49 search pages the site publishes is under
+  the 5-download page gate on the browser's count, and the type gate is
+  cleared by one type only (the home page, on 36 clicks). The routine's own
+  instruction is to compare a page's downloads with its command copies and
+  find the page that gets copies but not downloads: **there are no command
+  copies on any search page.** All 11 `install_command_copied` events in the
+  window are on the home page (8) or on `/agents` (3). The search pages have
+  no mid-funnel signal at all, so there is no way to tell whether a search
+  reader who does not download is lost at the pitch or at the install
+  instruction.
+- **Proposed change:** put the install command on the search pages, in the
+  same place the home page puts it, so the mid-funnel event exists. Layout,
+  in the generator `scripts/generate-seo-pages.mjs` and the pages it writes.
+  **No copy: the wording of the command block is the home page's existing
+  wording, and if new words are needed they come from the content-brand
+  subagent.**
+- **Primary metric:** `install_command_copied` events on `/blog/*` and
+  `/comparison/*` pages, over 28 days. The baseline is 0.
+- **Guardrail:** the browser download clicks on the search pages must not
+  fall, and the total `install_command_copied` count on the home page must
+  not fall. A command block that takes somebody off the download button has
+  cost more than it won.
+- **Review window:** 28 days from the deploy date.
+- **Keep/revert:** keep if the search pages record command copies and the
+  browser clicks on those pages do not fall. Revert if the home page's
+  command copies fall. Inconclusive if the search pages record fewer than 5
+  command copies in the window.
+- **Parked this week.** All 49 search pages are locked: they were rewritten on
+  2026-11-17 by the Windows beta release and by the footer attribution, both
+  inside the 7-day window. This candidate also cannot be judged until
+  candidate 1 lands, because until then the download side of the comparison
+  is a request count.
+
+### What shipped
+
+| Change | Branch | SHA | Deploy date |
+|---|---|---|---|
+| Nothing | n/a | n/a | n/a |
+
+**Nothing shipped this run.** No branch was cut, no worktree was created,
+nothing was committed and no file was edited except this log. The routine's
+step 5 describes the owner reviewing and merging, and a merge is not a deploy
+either way: the site ships when the Worker is deployed (`npx wrangler
+deploy`), and the app ships when a release is cut.
+
+The change in candidate 1 is specified in full above, with the evidence, the
+primary metric, the guardrail, the review window and the keep/revert rule, so
+that it can be cut as a branch and reviewed without anything else being
+re-decided. It needs the owner's deploy.
+
+### What did not ship, and why
+
+- **No copy change to the share pages.** Copy belongs to the content-brand
+  subagent. This run could not reach it: the harness refused to spawn a
+  subagent from this session (`Subagent depth limit reached`), in the
+  background and in the foreground. **The words are therefore unmade**, and
+  candidate 2 stays a brief until that agent writes them. The brief is the
+  one above: the `.share-cta` block, the Vibescape audience from the
+  conversion model, and the one number, which is 0 browser clicks on the
+  share pages.
+- **No change to any search page.** 7 browser clicks across 49 pages is
+  insufficient signal, not a failure. All 49 are locked this week anyway.
+- **No change to the Agents page.** 45 visits and 0 clicks is insufficient
+  signal. It is locked this week as well.
+- **No change to the home page.** The hero button is above the fold and
+  carries 29 of the site's 36 browser clicks. At 462 visits and 36 clicks
+  there is no evidence of a layout problem, and the home page is the
+  benchmark the other types are measured against.
+- **No layout change to the share pages' video.** The mp4 is 438K and the
+  `preload` is `metadata`.
+- **No change to the `page_view` legacy event.** It stopped on 2026-11-04
+  and nothing in the repository fires it. Whether to remove it from the
+  reporting or to treat it as a break is a question for the owner.
+- **No change to `vibescape_card_viewed`.** It fires 0 times and nothing in
+  the repository fires it. Whether to add the event or drop it from the
+  conversion model is a question for the owner.
+- **No change to the price, the promise or the product.** The app is free
+  and the download is the whole funnel.
+- **The bottom-quartile exercise could not be performed.** The routine
+  expects to rank pages and ship a fix for the worst of them. On the only
+  conversion count that survives the data health, 42 of the 49 blog and
+  comparison pages have no click at all and 7 have exactly one. There is no
+  quartile to rank. What the data does support is the counter itself, which
+  is candidate 1.
+
+### What could not be measured
+
+- **How many people downloaded.** The worker's event uses a constant
+  `distinct_id`, so it counts requests. The app's `Application Installed`
+  event counts people (28 people, 28 events) but it is a different id space
+  and cannot be joined to a web visitor: a join on `distinct_id` between the
+  two returns **0** people.
+- **Which page a worker download belongs to, for 117 of the 867.** 53 have a
+  blank source, 38 are the site-wide footer link, and 26 are probes.
+- **The conversion rate of any page except the home page.** 43 clicks and 37
+  distinct people across the whole site. One person moves the site's click
+  rate by 0.06 points and a page's rate by much more.
+- **Whether the 828 unmatched worker requests are people.** The evidence
+  above says most of them are not, but the data cannot name the agent that
+  made them, because the Worker does not record the user agent. That is the
+  change in candidate 1.
+- **Whether the share pages ever worked.** There is no browser click on a
+  share page in the project's whole history, so there is no before and no
+  after to compare.
+- **What the 9 installs with no browser click near them were.** 19 of the 28
+  installs can be tied to a click within 180 seconds. The other 9 either
+  downloaded without the browser event firing, or installed another way.
+
+---
+
+## 2026-11-22: Organic acquisition
+
+Second step of the weekly CRO check. This section puts search and conversion
+side by side per page type, so a search change is judged on whether it brought
+people who downloaded, not only on clicks. It reads data and proposes changes.
+**It deploys nothing.**
+
+### Data health
+
+**Two of the three checks pass. The third fails for the fourth week running,
+and because it fails the review queue below is empty. It would be empty
+anyway, for a second reason that has nothing to do with the check.**
+
+- **GSC export: complete to its stated date. Pass.** Generated today,
+  2026-11-22, by `ops/seo/pulse/gsc-export.py --days 28 --name gsc-28d`. It
+  covers 2026-10-23 to 2026-11-20 and names 2026-11-20 as the latest
+  complete date. A direct daily pull for the same window returns 20 date
+  rows with no gaps and data on every day from 2026-11-02 to 2026-11-20, so
+  the window is not truncated. The row cap is 25,000, and the page dimension
+  returned 55 rows while the query x page query returned 75, so nothing was
+  capped. The previous window (2026-09-25 to 2026-10-23) has 0 clicks and 0
+  impressions: the site has only just started to appear in search.
+- **A download event fired in the last 7 days. Pass.** 386
+  `download_requested`, 19 `download_clicked` and 6 `install_command_copied`
+  in the 7 days to 2026-11-22 22:56 UTC. The last worker download was
+  2026-11-22 22:38 UTC and the last browser click 2026-11-22 13:12 UTC.
+- **`landing_page` and `landing_referrer` coverage: FAIL, 0%.** The routine
+  asks what share of the traffic carries these two properties. The answer is
+  that the properties do not exist: nothing sets them, and the only hit for
+  either name in the repository is the line in this routine that asks the
+  question. This is the fourth week running, and this run does not swap in
+  different properties and carry on, because that is the substitution the
+  dry-run check is there to stop.
+  The equivalent question is answered below as a measurement, with its own
+  limits. `docs/conversion-model.md` records the mapping: the site sends
+  `$initial_pathname` and `$initial_referring_domain` on the person through
+  `$set_once`. **881 of 1,271 persons (69.3%) carry both.** The 390 without
+  one are people whose first event was not a pageview, which is what the
+  conversion model says to expect. The referring domains are `$direct` (765),
+  LinkedIn (52), Google (46), Minith Labs (4), GitHub (3), Bing (2) and
+  nine others. **49 of the 881 first landings came from a search engine
+  (5.6%).**
+  The fix belongs to the owner and is small: the routine's check should name
+  the properties the site already sends, read from the person rather than
+  from the event. Until that happens this routine reports the same failure
+  every week.
+
+**Window.** The analytics window is 28 days, **2026-10-25 22:56:11 to
+2026-11-22 22:56:11 UTC, pinned at both ends**. The GSC window is 28 days,
+2026-10-23 to 2026-11-20, cut two days back because Search Console lags.
+**The two windows are not the same window and their numbers are not a
+cohort.** They sit in separate columns below and are never divided by one
+another.
+
+**A second site shares the analytics project.** Every query here is filtered
+on `properties.$lib = 'vibresia-web'`. Without it the numbers are wrong.
+
+**The capture gap is open and it is 824 wide.** This section does not attempt
+to close it and does not use it to argue anything. It is described in the CRO
+section above: the worker counted 867 requests where the app recorded 28
+installs, and the fix is candidate 1 there.
+
+**The export's page list is not the page dimension, and the difference is
+large.** `ops/seo/pulse/gsc-export.py` writes the export's `totals` from a
+page-dimension query (31 clicks, 966 impressions, 55 pages) and writes the
+export's `pages` list from the query x page rows, which cover **160
+impressions and 5 clicks across 30 pages**. Every GSC column below is read
+from the page dimension, because that is the sounder one. This is the same
+trap the 11-11 and 11-12 runs flagged, and it is still open in the export.
+
+### Baseline, by page type
+
+Search numbers and analytics numbers sit in separate columns. There is no
+column that divides one by the other, because a Search Console click and a
+PostHog download are not the same people and this data cannot join them.
+
+**Search side (GSC, 2026-10-23 to 2026-11-20).** **Analytics side (PostHog,
+2026-10-25 22:56:11 to 2026-11-22 22:56:11).**
+
+| Page type | GSC clicks | GSC impressions | GSC pages | Visits | From a search referrer | Worker requests attributed to the page | Browser download clicks |
+|---|---|---|---|---|---|---|---|
+| Home | 6 | 20 | 1 | 462 | 15 | 208 | 36 |
+| Comparison hub | 0 | 18 | 1 | 20 | 0 | 0 | 0 |
+| Comparison | 10 | 456 | 26 | 423 | 15 | 120 | 1 |
+| Blog | 7 | 124 | 3 | 69 | 15 | 53 | 1 |
+| Question | 8 | 297 | 10 | 150 | 13 | 208 | 5 |
+| Vibescape (share pages) | 0 | 42 | 13 | 131 | 0 | 153 | 0 |
+| Vibescape (short links) | 0 | 0 | 0 | 153 | 0 | 0 | 0 |
+| Vibescape gallery | 0 | 0 | 0 | 55 | 0 | 0 | 0 |
+| Share index (`/share/`) | 0 | 0 | 0 | 4 | 0 | 8 | 0 |
+| Agents | 0 | 9 | 1 | 45 | 1 | 0 | 0 |
+| Author | 0 | 0 | 0 | 10 | 0 | 0 | 0 |
+| Vibe | 0 | 0 | 0 | 18 | 0 | 0 | 0 |
+| Probe paths | 0 | 0 | 0 | 2 | 0 | 0 | 0 |
+| **Total** | **31** | **966** | **55** | **1542** | **59** | **750** | **43** |
+
+Notes on the columns.
+
+- **Page types come from the sitemaps, not from the URL pattern.**
+  `site/sitemaps/questions.xml` holds 12 question pages published under
+  `/blog/`, so those twelve are counted as Question and not as Blog.
+- **"From a search referrer" is a pageview whose `referrer` is a search
+  engine.** 59 of 1542 pageviews (3.8%) carry one. 1255 of 1542 (81.4%)
+  carry no referrer at all. The referrers that are there are our own bare
+  domain (148), LinkedIn (56), Google (50), Minith Labs (7), Bing (3),
+  GitHub (4) and others.
+- **The worker column is a request count, not a conversion count.** It is
+  printed because it is the number the last three reports ranked on. The
+  reasoning and the evidence are in the CRO section above: 828 of the 867
+  worker requests have no browser click behind them, and 598 carry no referrer
+  at all.
+- **The GSC page dimension and the query dimension still disagree.** The page
+  dimension reports 31 clicks and 966 impressions across 55 pages. The query
+  dimension reports 5 clicks and 160 impressions across 30 pages. **806 of the
+  966 impressions (83.4%) carry no query string at all, and 26 of the 31
+  clicks do.** Any conclusion drawn from the query list describes at most 160
+  of the 966 impressions.
+
+### The signal gate
+
+A page type needs 10 downloads in 28 days. A single page needs 5. Below that,
+insufficient signal. **On the browser's count, which is the only count that
+survives the data health, one type clears the type gate and no page clears
+the page gate.**
+
+| Page type | Browser download clicks | Type gate (10) |
+|---|---|---|
+| Home | 36 | Cleared |
+| Question | 5 | Insufficient signal |
+| Blog | 1 | Insufficient signal |
+| Comparison | 1 | Insufficient signal |
+| Every other type | 0 | Insufficient signal |
+
+Last week this table said Question 70, Comparison 41 and Blog 19, all cleared,
+on the worker count. On the count that survives the health check, the same
+three types hold 5, 1 and 1.
+
+### Page level
+
+The 21 pages that carry an `seo-*` source, with both counts. The full table is
+in the CRO section above.
+
+| Page | Visits | From a search referrer | GSC clicks | GSC impressions | GSC position | Worker requests | Browser clicks | Gate (5) |
+|---|---|---|---|---|---|---|---|---|
+| `/blog/apple-music-visualizer` | 26 | 4 | 3 | 177 | 15.30 | 24 | 1 | Insufficient signal |
+| `/blog/youtube-music-visualizer-mac` | 14 | 3 | 2 | 14 | 5.86 | 21 | 1 | Insufficient signal |
+| `/blog/amazon-music-visualizer-mac` | 15 | 2 | 1 | 16 | 6.38 | 20 | 1 | Insufficient signal |
+| `/blog/does-milkdrop-work-on-mac` | 14 | 1 | 0 | 18 | 5.17 | 20 | 0 | Insufficient signal |
+| `/comparison/projectm-vs-milkdrop` | 13 | 0 | 0 | 0 | n/a | 19 | 0 | Insufficient signal |
+| `/comparison/vibresia-vs-projectm` | 16 | 0 | 0 | 0 | n/a | 19 | 0 | Insufficient signal |
+| `/comparison/vibresia-vs-shadertoy` | 11 | 0 | 0 | 3 | 49.33 | 19 | 0 | Insufficient signal |
+| `/blog/parachord-visualizer-mac` | 11 | 0 | 0 | 0 | n/a | 19 | 0 | Insufficient signal |
+| `/blog/tidal-visualizer-mac` | 10 | 0 | 0 | 7 | 5.86 | 18 | 0 | Insufficient signal |
+| `/blog/best-music-visualizer-for-mac-2026` | 31 | 11 | 6 | 75 | 12.75 | 18 | 0 | Insufficient signal |
+| `/comparison/vibresia-vs-touchdesigner` | 18 | 0 | 0 | 6 | 19.17 | 18 | 0 | Insufficient signal |
+| `/blog/mixcloud-visualizer-mac` | 12 | 0 | 0 | 4 | 7.50 | 18 | 0 | Insufficient signal |
+| `/blog/plex-visualizer-mac` | 8 | 2 | 1 | 14 | 9.86 | 17 | 1 | Insufficient signal |
+| `/comparison/vibresia-vs-magic-music-visuals` | 13 | 0 | 1 | 5 | 30.00 | 16 | 0 | Insufficient signal |
+| `/comparison/vibresia-vs-synesthesia` | 16 | 0 | 0 | 22 | 15.55 | 16 | 1 | Insufficient signal |
+| `/blog/soundcloud-visualizer-mac` | 9 | 0 | 0 | 0 | n/a | 15 | 0 | Insufficient signal |
+| `/blog/milkdrop-alternatives-mac-2026` | 22 | 3 | 1 | 31 | 13.35 | 15 | 1 | Insufficient signal |
+| `/blog/spotify-visualizer-mac` | 14 | 2 | 1 | 20 | 22.90 | 15 | 1 | Insufficient signal |
+| `/blog/twitch-visualizer-mac` | 11 | 0 | 0 | 4 | 9.00 | 15 | 0 | Insufficient signal |
+| `/blog/deezer-visualizer-mac` | 12 | 0 | 0 | 3 | 8.00 | 14 | 0 | Insufficient signal |
+| `/comparison/vibresia-vs-plane9` | 8 | 0 | 0 | 0 | n/a | 13 | 0 | Insufficient signal |
+| `/blog/vlc-visualizer-mac` | 8 | 0 | 0 | 38 | 18.47 | 12 | 0 | Insufficient signal |
+
+**No page clears the 5-download page gate.** The highest is 1 browser click.
+
+### First value
+
+The routine asks for the first download, by the same people, within 28 days of
+the visit. The worker's event cannot carry it, because its `distinct_id` is a
+constant. The browser's click can, and the app's install event can.
+
+**The app's `Application Installed` event is the only event in the project
+that means a person finished installing.** 28 events from 28 distinct people
+in the window. Joining it to the browser's clicks on time:
+
+| Measure | Count |
+|---|---|
+| App installs in 28 days | 28, from 28 people |
+| Installs within 180 seconds of a browser download click | 19 |
+| Of those, the click came from a search referrer | 5 |
+| Of those, the click came from the home page with no search referrer | 14 |
+| Installs with no click within 180 seconds | 9 |
+
+The gap between the click and the install runs from 7 seconds to 129 seconds,
+with most inside 20. That is what a download, an install and a first launch
+look like.
+
+**This is the measure the last two reports said could not be measured.** They
+were right that it cannot be joined on identity, because the app and the site
+do not share an id space (a join on `distinct_id` returns 0 people). It can be
+joined on time, and it is a time join, so it is a measurement with limits and
+not a cohort.
+
+**5 of the 28 people who installed Vibresia came from a search referrer, and
+those 5 are 5 of the 19 matched installs.** Both numbers are printed because at
+this volume one person moves the share by five points. Three of the 5 came
+from a question page and two from the home page.
+
+### The queue
+
+**Empty.**
+
+The rule is that a failing data-health check empties the queue, and the
+`landing_page` / `landing_referrer` check failed at 0% coverage for the
+fourth week running. That is the first reason, and it stands on its own.
+
+The second reason is that the queue could not have been filled from this data
+even if the check had passed:
+
+- **Every page with search signal is locked.** `scripts/locked-routes.sh`
+  reports 79 locked routes. **All 55 pages that carry GSC impressions are in
+  the locked list**, including `/`, every blog page, every comparison page,
+  every share page, `/agents` and `/vibescapes`. There is nothing to propose
+  against.
+- **The three pages with the strongest signal are all locked.**
+  `/blog/apple-music-visualizer` (177 impressions, 3 clicks),
+  `/blog/best-music-visualizer-for-mac-2026` (75 impressions, 6 clicks) and
+  `/comparison/vmix-vs-resolume` (56 impressions, 0 clicks) are all in the
+  locked list.
+- **No page has a defensible search-side gap.** 31 clicks and 966 impressions
+  over 28 days against an empty previous window, and 83.4% of the impressions
+  carry no query string at all. The two query-side facts the data does
+  support are that `/blog/apple-music-visualizer` holds the most impressions
+  of any page (177) at position 15.30, and that
+  `/blog/best-music-visualizer-for-mac-2026` holds 75 impressions and 6 of the
+  31 clicks at position 12.75. The best position of any page with a click is
+  1.00, on `/comparison/resolume-vs-obs`, which has 1 impression and 1 click.
+  One click on one impression is not a result. At these volumes one click
+  moves a rate by 50 percentage points.
+- **38 of the 55 pages with impressions hold no click at all** (405
+  impressions), and their impression-weighted average position is 9.14, so
+  they are not ranking badly, they are ranking for queries nobody clicks on
+  a result page yet. There is no per-page signal to act on.
+- **The page gate cleared on no page.** On the count that survives the data
+  health, no page clears 5 browser clicks and only one type clears 10. There
+  is no cluster here to rank and no untargeted query cluster that this data
+  can distinguish from noise.
+
+### What could not be measured
+
+- **The rate at which search brings people who download, as a ratio.** The
+  first-value measure above is a time join between two event streams, not a
+  join on identity, and it covers 19 of the 28 installs. The GSC clicks and
+  the PostHog downloads cannot be divided by one another as if they were a
+  cohort.
+- **Which query produced a download.** The GSC query data covers 160 of 966
+  impressions and 5 of 31 clicks, the analytics data cannot be joined to the
+  search data, and the two windows are not the same window. There is no path
+  from a query to a download in this dataset.
+- **Whether the 59 search-referrer pageviews and the 31 GSC clicks are the
+  same people.** They cannot be the same set with any confidence. One search
+  click may produce no recorded pageview, and one recorded pageview may come
+  from a click GSC did not count. The two numbers are printed side by side
+  and deliberately not reconciled.
+- **What the 38 pages with impressions and no click are doing.** They hold
+  405 impressions and 0 clicks at an impression-weighted position of 9.14.
+  There is no per-page signal to act on.
+- **How many distinct people downloaded.** The worker event counts requests.
+  The app's install event counts people but cannot be joined to a visitor.
+- **Whether the 9 installs with no nearby click were downloads the browser
+  missed or installs another way.**
+
+### What did not ship
+
+Nothing. No branch was cut, no worktree was created, nothing was committed,
+nothing was deployed and no file was edited except this log. This routine
+reads data and proposes changes; it does not ship them.
+
+The one change this week's numbers ask for came from the CRO section above,
+and it is instrumentation on the Worker rather than a search change. The two
+things this section asks for are a decision from the owner on the
+`landing_page` / `landing_referrer` check, which asks for properties the site
+does not fire, and an update to `content/product-truth.md`, which still says
+there is no Windows version.
+
+---
+
 ## 2026-11-12: weekly CRO check
 
 ### Data health
