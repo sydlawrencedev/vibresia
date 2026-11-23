@@ -184,7 +184,25 @@ def aggregate_by_query(rows):
 
 
 def aggregate_by_page(rows):
-    """One row per page, with its top queries."""
+    """One row per page, with its top queries.
+
+    DEPRECATED as the source of a page's numbers. Use
+    aggregate_pages_by_dimension() instead, and read why below.
+
+    GSC withholds the query string for most impressions on a small site.
+    Measured on sc-domain:vibresia.com, 22 November 2026, over 28 days:
+    the page dimension disclosed 966 impressions across 30 pages, while the
+    query dimension disclosed 159 and the query+page dimension 160. The
+    other 806 impressions — 83.4% of the total — exist in Search Console
+    but carry no query string, so they appear in NO query-keyed row.
+
+    This function therefore under-counts a page by everything GSC chose not
+    to attach a query to. On 22 November it reported 35 impressions for
+    /blog/apple-music-visualizer; the page dimension reports 177. It is
+    kept because the shape is still useful for the query lists, but the
+    per-page clicks, impressions, ctr and position must come from the page
+    dimension.
+    """
     agg = defaultdict(lambda: {
         "clicks": 0, "impressions": 0, "pos_weighted": 0.0, "queries": [],
     })
@@ -209,6 +227,52 @@ def aggregate_by_page(rows):
             "ctr": round((a["clicks"] / a["impressions"]) * 100, 2) if a["impressions"] else 0,
             "position": round(a["pos_weighted"] / a["impressions"], 2) if a["impressions"] else 0,
             "queries": sorted(a["queries"], key=lambda q: -q["impressions"])[:10],
+        })
+    return sorted(out, key=lambda r: -r["impressions"])
+
+
+def aggregate_pages_by_dimension(page_rows, query_page_rows):
+    """One row per page, from the PAGE dimension, with its top queries.
+
+    The page's clicks, impressions, ctr and position come from GSC's page
+    dimension, which discloses every impression for that page. The query
+    list comes from the query+page dimension, which only carries the
+    impressions GSC chose to attach a query to.
+
+    The two do not have to agree, and on a small site they usually do not:
+    806 of 966 impressions on sc-domain:vibresia.com over 28 days had no
+    query string. Building a page's numbers from query-keyed rows therefore
+    under-counts it, and it under-counts every page on the site by the same
+    invisible remainder. See aggregate_by_page() for the measurement.
+
+    `queries` is the disclosed subset, and is marked as such with
+    `queriesDiscloseAllImpressions`, so a report cannot mistake a short
+    query list for a short page.
+    """
+    queries_for_page = defaultdict(list)
+    for r in query_page_rows:
+        q, page = r["keys"][0], r["keys"][1]
+        queries_for_page[page].append({
+            "query": q,
+            "clicks": r.get("clicks", 0),
+            "impressions": r.get("impressions", 0),
+            "position": round(r.get("position", 0), 2),
+        })
+
+    out = []
+    for r in page_rows:
+        page = r["keys"][0]
+        impressions = r.get("impressions", 0)
+        clicks = r.get("clicks", 0)
+        out.append({
+            "page": page,
+            "clicks": clicks,
+            "impressions": impressions,
+            "ctr": round((clicks / impressions) * 100, 2) if impressions else 0,
+            "position": round(r.get("position", 0), 2),
+            "queries": sorted(queries_for_page.get(page, []),
+                              key=lambda q: -q["impressions"])[:10],
+            "queriesDiscloseAllImpressions": False,
         })
     return sorted(out, key=lambda r: -r["impressions"])
 
@@ -248,12 +312,19 @@ def main():
             "ctr": "percentage (0-100), NOT a fraction",
             "position": "average position, lower is better",
             "deltaPosition": "current - previous; NEGATIVE is an IMPROVEMENT",
+            "queryDisclosure": (
+                "GSC withholds the query string for most impressions on a small "
+                "site. pages[] is built from the PAGE dimension and so carries "
+                "every impression; queries[] and pages[].queries come from the "
+                "QUERY dimensions and carry only the disclosed subset. The two "
+                "do not sum to the same number, and they are not meant to."
+            ),
         },
         "current": {
             "window": {"startDate": cur[0], "endDate": cur[1]},
             "totals": summarise(cur_pages),
             "queries": aggregate_by_query(cur_qp),
-            "pages": aggregate_by_page(cur_qp),
+            "pages": aggregate_pages_by_dimension(cur_pages, cur_qp),
             "queryPageRows": [
                 {
                     "query": r["keys"][0],
@@ -270,7 +341,7 @@ def main():
             "window": {"startDate": prev[0], "endDate": prev[1]},
             "totals": summarise(prev_pages),
             "queries": aggregate_by_query(prev_qp),
-            "pages": aggregate_by_page(prev_qp),
+            "pages": aggregate_pages_by_dimension(prev_pages, prev_qp),
         },
         "rowCap": 25000,
     }
@@ -286,6 +357,8 @@ def main():
     print(f"\nWrote {out_path}")
     print(f"({len(output['current']['queryPageRows'])} query x page rows, "
           f"{len(output['current']['queries'])} queries)")
+    print(f"(pages[] holds {len(output['current']['pages'])} pages from the page "
+          f"dimension; their query lists are the disclosed subset only)")
 
 
 if __name__ == "__main__":
